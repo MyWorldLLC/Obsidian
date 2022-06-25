@@ -1,12 +1,27 @@
-package myworld.client.obsidian;
+/*
+ *    Copyright 2022 MyWorld, LLC
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
+package myworld.obsidian;
 
 import com.sun.javafx.embed.AbstractEvents;
 import javafx.scene.input.KeyCode;
-import myworld.client.obsidian.input.KeyChars;
-import myworld.client.obsidian.input.MouseButton;
-import myworld.client.obsidian.input.MouseWheelAxis;
-import myworld.client.obsidian.util.InputStates;
-import myworld.math.Vec2;
+import myworld.obsidian.input.KeyChars;
+import myworld.obsidian.input.MouseButton;
+import myworld.obsidian.input.MouseWheelAxis;
+import myworld.obsidian.input.InputStates;
 
 public class InputHandler {
 
@@ -19,7 +34,8 @@ public class InputHandler {
 
     protected int mousePopupTrigger;
 
-    protected Vec2 mouseWheelMultipliers;
+    protected double mouseWheelXMultiplier;
+    protected double mouseWheelYMultiplier;
     protected boolean mouseInertia;
 
     public InputHandler(JfxHost host){
@@ -33,7 +49,9 @@ public class InputHandler {
 
         mousePopupTrigger = DEFAULT_MOUSE_POPUP_TRIGGER;
 
-        mouseWheelMultipliers = new Vec2(50);
+
+        mouseWheelXMultiplier = 50;
+        mouseWheelYMultiplier = 50;
         mouseInertia = false;
     }
 
@@ -173,17 +191,22 @@ public class InputHandler {
     }
 
     public void setMouseWheelMultipliers(double xMultiplier, double yMultiplier){
-        mouseWheelMultipliers = new Vec2(xMultiplier, yMultiplier);
+        mouseWheelXMultiplier = xMultiplier;
+        mouseWheelYMultiplier = yMultiplier;
     }
 
-    public Vec2 getMouseWheelMultipliers(){
-        return mouseWheelMultipliers;
+    public double getMouseWheelXMultiplier(){
+        return mouseWheelXMultiplier;
+    }
+
+    public double getMouseWheelYMultiplier(){
+        return mouseWheelYMultiplier;
     }
 
     public double getMouseWheelMultiplier(MouseWheelAxis axis){
         return switch (axis){
-            case HORIZONTAL -> mouseWheelMultipliers.x();
-            case VERTICAL -> mouseWheelMultipliers.y();
+            case HORIZONTAL -> mouseWheelXMultiplier;
+            case VERTICAL -> mouseWheelYMultiplier;
         };
     }
 
