@@ -1,19 +1,73 @@
 plugins {
-    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
 }
 
-group 'com.myworldvw'
-version '1.0-SNAPSHOT'
+def getGitVersion(){
+    "git describe --tags --always --first-parent".execute().text.trim()
+}
+
+def getGitCredentials(){
+    def process = "git credential fill".execute()
+    def stream = new PrintStream(process.getOutputStream(), true)
+    stream.println("url=https://github.com/")
+    stream.close()
+
+    process.text.trim().split("\n").collectEntries {it.split("=")}
+}
+
+def getPlatform(){
+    def platform = System.getProperty('os.name').toLowerCase()
+    if(platform.contains('win')){
+        platform = 'win'
+    }else if(platform.contains('mac')){
+        platform = 'mac'
+    }else if(platform.contains('linux')){
+        platform = 'linux'
+    }
+    return platform
+}
+
+def jfxVersion = "16"
+javafx {
+    version = jfxVersion
+    modules = ['javafx.graphics']
+    configuration = 'compileOnly'
+}
+
+group = 'com.myworldvw'
+version = getGitVersion()
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation "org.openjfx:javafx-base:$jfxVersion:$platform"
+    implementation "org.openjfx:javafx-graphics:$jfxVersion:$platform"
+    implementation "org.openjfx:javafx-controls:$jfxVersion:$platform"
+    implementation "org.openjfx:javafx-web:$jfxVersion:$platform"
+    implementation "org.openjfx:javafx-media:$jfxVersion:$platform"
 }
 
-test {
-    useJUnitPlatform()
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication){
+
+            groupId = project.group
+            artifactId = 'obsidian'
+            version = project.version
+
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
 }
