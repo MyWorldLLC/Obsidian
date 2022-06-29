@@ -17,6 +17,7 @@ def getGitCredentials(){
 
     process.text.trim().split("\n").collectEntries {it.split("=")}
 }
+def gitCredentials = getGitCredentials()
 
 def getPlatform(){
     def platform = System.getProperty('os.name').toLowerCase()
@@ -70,5 +71,13 @@ publishing {
     }
     repositories {
         mavenLocal()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/MyWorldLLC/Packages")
+            credentials {
+                username = System.getenv("GITHUB_USER") ?: gitCredentials["username"]
+                password = System.getenv("GITHUB_TOKEN") ?: gitCredentials["password"]
+            }
+        }
     }
 }
