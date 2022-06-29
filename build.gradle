@@ -6,7 +6,7 @@ plugins {
 
 def getGitVersion(){
     def version = "git describe --tags --always --first-parent".execute().text.trim()
-    version.contains('-') ? version[0..version.indexOf('-')] + '-SNAPSHOT' : version
+    version.contains('-') ? version[0..<version.indexOf('-')] + '-SNAPSHOT' : version
 }
 
 def getGitCredentials(){
