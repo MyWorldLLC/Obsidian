@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian.input;
+package myworld.obsidian.jfx.input;
 
 import java.util.HashMap;
 import java.util.Map;

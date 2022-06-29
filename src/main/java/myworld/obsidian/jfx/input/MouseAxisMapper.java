@@ -14,18 +14,17 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian;
+package myworld.obsidian.jfx.input;
 
-import myworld.obsidian.input.MouseButton;
+import com.sun.javafx.embed.AbstractEvents;
 import myworld.obsidian.input.MouseWheelAxis;
 
-public interface InputHandler {
+public class MouseAxisMapper {
 
-    void keyEvent(int keyCode, char keyChar, boolean isDown, boolean repeating);
-
-    void mouseWheelEvent(MouseWheelAxis axis, double wheelDelta, double wheelTotal, int x, int y);
-
-    void mouseButtonEvent(MouseButton button, boolean isDown, int x, int y);
-
-    void mouseMoveEvent(int x, int y);
+    public static int map(MouseWheelAxis axis){
+        return switch (axis){
+            case VERTICAL -> AbstractEvents.MOUSEEVENT_VERTICAL_WHEEL;
+            case HORIZONTAL -> AbstractEvents.MOUSEEVENT_HORIZONTAL_WHEEL;
+        };
+    }
 }

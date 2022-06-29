@@ -14,7 +14,9 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian;
+package myworld.obsidian.jfx;
+
+import myworld.obsidian.ObsidianPixels;
 
 public interface RedrawListener {
 

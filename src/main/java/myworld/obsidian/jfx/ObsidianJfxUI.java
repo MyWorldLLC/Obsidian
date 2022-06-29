@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian;
+package myworld.obsidian.jfx;
 
 import com.sun.glass.ui.Pixels;
 import com.sun.javafx.stage.EmbeddedWindow;
@@ -24,12 +24,14 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
-import myworld.obsidian.swapchain.Swapchain;
+import myworld.obsidian.CursorHandler;
+import myworld.obsidian.WindowInfo;
+import myworld.obsidian.jfx.swapchain.Swapchain;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-public class ObsidianUI {
+public class ObsidianJfxUI {
 
     public static CompletableFuture<Boolean> init(){
         var future = new CompletableFuture<Boolean>();
@@ -61,19 +63,19 @@ public class ObsidianUI {
     protected final WindowInfo windowInfo;
     protected final CursorHandler cursorHandler;
     protected final JfxHost host;
-    protected final InputHandler input;
+    protected final JfxInputHandler input;
     protected EmbeddedWindow window;
     protected final Group root;
 
-    public ObsidianUI(WindowInfo windowInfo, String... cssStyles){
+    public ObsidianJfxUI(WindowInfo windowInfo, String... cssStyles){
         this(windowInfo, null, cssStyles);
     }
 
-    public ObsidianUI(WindowInfo windowInfo, CursorHandler cursorHandler, String... cssStyles){
+    public ObsidianJfxUI(WindowInfo windowInfo, CursorHandler cursorHandler, String... cssStyles){
         this.windowInfo = windowInfo;
         this.cursorHandler = cursorHandler;
         host = new JfxHost(this);
-        input = new InputHandler(host);
+        input = new JfxInputHandler(host);
         root = new Group();
         inJfx(() -> {
             window = new EmbeddedWindow(host);
@@ -84,7 +86,7 @@ public class ObsidianUI {
         });
     }
 
-    public ObsidianUI applyStyles(String... cssStyles){
+    public ObsidianJfxUI applyStyles(String... cssStyles){
         inJfx(() -> window.getScene().getStylesheets().addAll(cssStyles));
         return this;
     }
@@ -143,7 +145,7 @@ public class ObsidianUI {
         return cursorHandler;
     }
 
-    public InputHandler getInputHandler(){
+    public JfxInputHandler getInputHandler(){
         return input;
     }
 

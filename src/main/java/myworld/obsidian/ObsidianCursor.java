@@ -16,8 +16,6 @@
 
 package myworld.obsidian;
 
-import com.sun.javafx.cursor.CursorType;
-
 public class ObsidianCursor {
 
     public enum Type {
@@ -25,21 +23,21 @@ public class ObsidianCursor {
     }
 
     protected final Type type;
-    protected final CursorType fxCursorType;
+    protected final String cursorType;
     protected final ObsidianPixels cursorPixels;
     protected final double hotspotX;
     protected final double hotspotY;
 
-    private ObsidianCursor(Type type, CursorType fxCursorType, ObsidianPixels cursorPixels, double hotspotX, double hotspotY){
+    private ObsidianCursor(Type type, String cursorType, ObsidianPixels cursorPixels, double hotspotX, double hotspotY){
         this.type = type;
-        this.fxCursorType = fxCursorType;
+        this.cursorType = cursorType;
         this.cursorPixels = cursorPixels;
         this.hotspotX = hotspotX;
         this.hotspotY = hotspotY;
     }
 
-    public static ObsidianCursor ofType(CursorType fxCursorType){
-        return new ObsidianCursor(Type.SIMPLE, fxCursorType, null, 0, 0);
+    public static ObsidianCursor ofType(String cursorType){
+        return new ObsidianCursor(Type.SIMPLE, cursorType, null, 0, 0);
     }
 
     public static ObsidianCursor ofImage(ObsidianPixels pixels, double hotspotX, double hotspotY){
@@ -50,8 +48,8 @@ public class ObsidianCursor {
         return type;
     }
 
-    public CursorType getFxCursorType() {
-        return fxCursorType;
+    public String getCursorType() {
+        return cursorType;
     }
 
     public ObsidianPixels getCursorPixels() {

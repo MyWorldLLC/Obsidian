@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian;
+package myworld.obsidian.jfx;
 
 import com.sun.javafx.cursor.CursorFrame;
 import com.sun.javafx.cursor.ImageCursorFrame;
@@ -25,13 +25,15 @@ import com.sun.javafx.embed.EmbeddedStageInterface;
 import com.sun.javafx.embed.HostInterface;
 import com.sun.javafx.tk.Toolkit;
 import javafx.scene.image.PixelFormat;
-import myworld.obsidian.swapchain.Swapchain;
+import myworld.obsidian.ObsidianCursor;
+import myworld.obsidian.ObsidianPixels;
+import myworld.obsidian.jfx.swapchain.Swapchain;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JfxHost implements HostInterface {
 
-    protected final ObsidianUI ui;
+    protected final ObsidianJfxUI ui;
 
     protected final AtomicReference<RedrawListener> redrawListener;
     protected Swapchain swapchain;
@@ -44,7 +46,7 @@ public class JfxHost implements HostInterface {
 
     protected boolean focused;
 
-    public JfxHost(ObsidianUI ui){
+    public JfxHost(ObsidianJfxUI ui){
         this.ui = ui;
         redrawListener = new AtomicReference<>();
         prefWidth = -1;
@@ -159,7 +161,7 @@ public class JfxHost implements HostInterface {
         if(cursorHandler != null){
 
             if(cursorFrame instanceof StandardCursorFrame standardCursor){
-                cursorHandler.cursorRequested(ObsidianCursor.ofType(standardCursor.getCursorType()));
+                cursorHandler.cursorRequested(ObsidianCursor.ofType(standardCursor.getCursorType().name()));
             }else if(cursorFrame instanceof ImageCursorFrame imageCursor){
                 var srcImage = Toolkit.getImageAccessor().fromPlatformImage(imageCursor.getPlatformImage());
                 var dstImage = new ObsidianPixels((int)Math.ceil(srcImage.getWidth()), (int)Math.ceil(srcImage.getHeight()));

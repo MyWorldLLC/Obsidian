@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian.swapchain;
+package myworld.obsidian.jfx.swapchain;
 
 import myworld.obsidian.ObsidianPixels;
 
