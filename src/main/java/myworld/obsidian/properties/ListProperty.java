@@ -150,7 +150,6 @@ public class ListProperty<T> extends PropertyBase<ListChangeListener<T>> impleme
 
     @Override
     public void replaceAll(UnaryOperator<T> operator) {
-        values.replaceAll(operator);
         for(int i = 0; i < values.size(); i++){
             var oldValue = values.get(i);
             var newValue = operator.apply(oldValue);

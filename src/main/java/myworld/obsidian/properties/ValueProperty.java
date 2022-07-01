@@ -16,7 +16,6 @@
 
 package myworld.obsidian.properties;
 
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ValueProperty<T> extends PropertyBase<ValueChangeListener<T>> {

@@ -16,16 +16,16 @@
 
 package myworld.obsidian.properties;
 
-public interface ListChangeListener<T> {
+public interface MapChangeListener<K, V> {
 
-    default void onAdd(ListProperty<T> prop, int index, T element){
-        onChange(prop, index, null, element);
+    default void onAdd(MapProperty<K, V> prop, K key, V value){
+        onChange(prop, key, null, value);
     }
 
-    void onChange(ListProperty<T> prop, int index, T oldValue, T newValue);
+    void onChange(MapProperty<K, V> prop, K key, V oldValue, V newValue);
 
-    default void onRemove(ListProperty<T> prop, int index, T element){
-        onChange(prop, index, element, null);
+    default void onRemove(MapProperty<K, V> prop, K key, V value){
+        onChange(prop, key, value, null);
     }
 
 }
