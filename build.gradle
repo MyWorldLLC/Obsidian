@@ -56,6 +56,9 @@ dependencies {
 java {
     withSourcesJar()
     withJavadocJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(16)
+    }
 }
 
 publishing {
