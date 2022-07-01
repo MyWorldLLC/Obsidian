@@ -14,29 +14,7 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian.properties;
+package myworld.obsidian.geometry;
 
-import java.util.concurrent.atomic.AtomicReference;
-
-public class ValueProperty<T> extends Property<ValueChangeListener<T>> {
-    protected final AtomicReference<T> value;
-
-    public ValueProperty(){
-        value = new AtomicReference<>();
-    }
-
-    public ValueProperty(T initialValue){
-        value = new AtomicReference<>(initialValue);
-    }
-
-    public void set(T value){
-        var oldValue = this.value.get();
-        this.value.set(value);
-        listeners.forEach(l -> l.onChange(this, oldValue, value));
-    }
-
-    public T get(){
-        return value.get();
-    }
-
+public record Point2D(double x, double y) {
 }

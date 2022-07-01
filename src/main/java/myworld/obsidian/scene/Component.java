@@ -14,19 +14,23 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian.components;
+package myworld.obsidian.scene;
 
+import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.properties.ValueProperty;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Component {
 
     protected final ValueProperty<Component> parent;
-    protected final CopyOnWriteArrayList<Component> children;
+    protected final ListProperty<Component> children;
+    protected final ListProperty<Object> styles;
+    protected final ListProperty<Effect> effects;
 
     public Component(Component... children){
         parent = new ValueProperty<>();
-        this.children = new CopyOnWriteArrayList<>(children);
+        this.children = new ListProperty<>(children);
+        styles = new ListProperty<>();
+        effects = new ListProperty<>();
     }
 
     public void addChild(Component child){
@@ -34,13 +38,15 @@ public class Component {
             throw new IllegalStateException("Component has already been added as a child");
         }
         children.add(child);
-        child.parentProperty().set(this);
+        child.parent().set(this);
+        child.onAttach();
     }
 
     public boolean removeChild(Component child){
         var removed = children.removeIf(c -> c == child);
         if(removed){
-            child.parentProperty().set(null);
+            child.parent().set(null);
+            child.onDetach();
         }
         return removed;
     }
@@ -49,9 +55,24 @@ public class Component {
         return children.stream().anyMatch(c -> c == child);
     }
 
-    public ValueProperty<Component> parentProperty(){
+    public ValueProperty<Component> parent(){
         return parent;
     }
 
+    public ListProperty<Component> children(){
+        return children;
+    }
+
+    public ListProperty<Object> styles(){
+        return styles;
+    }
+
+    public ListProperty<Effect> effects(){
+        return effects;
+    }
+
+    public void onAttach(){}
+
+    public void onDetach(){}
 
 }

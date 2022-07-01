@@ -14,29 +14,19 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian.properties;
+package myworld.obsidian.layout;
 
-import java.util.concurrent.atomic.AtomicReference;
+import myworld.obsidian.ObsidianUI;
 
-public class ValueProperty<T> extends Property<ValueChangeListener<T>> {
-    protected final AtomicReference<T> value;
+public class LayoutEngine {
 
-    public ValueProperty(){
-        value = new AtomicReference<>();
+    protected final ObsidianUI ui;
+
+    public LayoutEngine(ObsidianUI ui){
+        this.ui = ui;
     }
 
-    public ValueProperty(T initialValue){
-        value = new AtomicReference<>(initialValue);
+    public void layout(){
+        // TODO
     }
-
-    public void set(T value){
-        var oldValue = this.value.get();
-        this.value.set(value);
-        listeners.forEach(l -> l.onChange(this, oldValue, value));
-    }
-
-    public T get(){
-        return value.get();
-    }
-
 }

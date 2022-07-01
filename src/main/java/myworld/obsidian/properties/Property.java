@@ -16,27 +16,25 @@
 
 package myworld.obsidian.properties;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ValueProperty<T> extends Property<ValueChangeListener<T>> {
-    protected final AtomicReference<T> value;
+public abstract class Property<T> {
 
-    public ValueProperty(){
-        value = new AtomicReference<>();
+    protected final CopyOnWriteArrayList<T> listeners;
+
+    protected Property(){
+        listeners = new CopyOnWriteArrayList<>();
     }
 
-    public ValueProperty(T initialValue){
-        value = new AtomicReference<>(initialValue);
+    public void addListener(T listener){
+        listeners.add(listener);
     }
 
-    public void set(T value){
-        var oldValue = this.value.get();
-        this.value.set(value);
-        listeners.forEach(l -> l.onChange(this, oldValue, value));
+    public void removeListener(T listener){
+        listeners.removeIf(l -> l == listener);
     }
 
-    public T get(){
-        return value.get();
+    protected void subscribeAll(Property<T> other){
+        listeners.forEach(other::addListener);
     }
-
 }

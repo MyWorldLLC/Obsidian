@@ -14,27 +14,7 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian.properties;
+package myworld.obsidian.geometry;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
-public class PropertyBase<T> {
-
-    protected final CopyOnWriteArrayList<T> listeners;
-
-    protected PropertyBase(){
-        listeners = new CopyOnWriteArrayList<>();
-    }
-
-    public void addListener(T listener){
-        listeners.add(listener);
-    }
-
-    public void removeListener(T listener){
-        listeners.removeIf(l -> l == listener);
-    }
-
-    protected void subscribeAll(PropertyBase<T> other){
-        listeners.forEach(other::addListener);
-    }
+public record Point3D(double x, double y, double z) {
 }

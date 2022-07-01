@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
-public class ListProperty<T> extends PropertyBase<ListChangeListener<T>> implements List<T>  {
+public class ListProperty<T> extends Property<ListChangeListener<T>> implements List<T>  {
 
     protected final List<T> values;
 
@@ -33,6 +33,10 @@ public class ListProperty<T> extends PropertyBase<ListChangeListener<T>> impleme
 
     public ListProperty(int initialCapacity){
         values = Collections.synchronizedList(new ArrayList<>(initialCapacity));
+    }
+
+    public ListProperty(T[] initialValues){
+        values = Collections.synchronizedList(Arrays.asList(initialValues));
     }
 
     private ListProperty(List<T> backedBy){

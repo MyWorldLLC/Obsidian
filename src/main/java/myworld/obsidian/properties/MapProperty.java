@@ -22,7 +22,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class MapProperty<K, V> extends PropertyBase<MapChangeListener<K, V>> implements Map<K, V> {
+public class MapProperty<K, V> extends Property<MapChangeListener<K, V>> implements Map<K, V> {
 
     protected final Map<K, V> values;
 
