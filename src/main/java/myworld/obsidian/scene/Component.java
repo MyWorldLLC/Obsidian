@@ -26,11 +26,21 @@ public class Component {
     protected final ListProperty<Object> styles;
     protected final ListProperty<Effect> effects;
 
+    protected final ValueProperty<Boolean> needsUpdate;
+
     public Component(Component... children){
         parent = new ValueProperty<>();
         this.children = new ListProperty<>(children);
         styles = new ListProperty<>();
         effects = new ListProperty<>();
+        needsUpdate = new ValueProperty<>();
+    }
+
+    protected void requestVisualUpdate(){
+        needsUpdate.set(true);
+        if(hasParent()){
+            getParent().requestVisualUpdate();
+        }
     }
 
     public void addChild(Component child){
@@ -59,12 +69,28 @@ public class Component {
         return parent;
     }
 
+    public Component getParent(){
+        return parent.get();
+    }
+
+    public boolean hasParent(){
+        return getParent() != null;
+    }
+
     public ListProperty<Component> children(){
         return children;
     }
 
     public ListProperty<Object> styles(){
         return styles;
+    }
+
+    public void style(Object style){
+        styles.add(style);
+    }
+
+    public void removeStyle(Object style){
+        styles.remove(style);
     }
 
     public ListProperty<Effect> effects(){

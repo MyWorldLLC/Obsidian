@@ -51,6 +51,8 @@ dependencies {
     implementation "org.openjfx:javafx-controls:$jfxVersion:$platform"
     implementation "org.openjfx:javafx-web:$jfxVersion:$platform"
     implementation "org.openjfx:javafx-media:$jfxVersion:$platform"
+
+    implementation 'org.lwjgl:lwjgl-stb:3.3.1'
 }
 
 java {

@@ -16,6 +16,7 @@
 
 package myworld.obsidian;
 
+import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.geometry.Dimension2D;
 import myworld.obsidian.layout.LayoutEngine;
@@ -26,11 +27,22 @@ public class ObsidianUI {
     protected final ValueProperty<Dimension2D> dimensions;
     protected final Component root;
     protected final LayoutEngine layout;
+    protected final DisplayEngine display;
 
     public ObsidianUI(){
         root = new Component();
         dimensions = new ValueProperty<>(new Dimension2D(100, 100));
         layout = new LayoutEngine(this);
+        display = new DisplayEngine(this);
+        display.registerRoot(root);
+    }
+
+    public LayoutEngine getLayout(){
+        return layout;
+    }
+
+    public DisplayEngine getDisplay(){
+        return display;
     }
 
     public Component getRoot(){
