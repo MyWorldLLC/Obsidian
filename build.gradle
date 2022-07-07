@@ -53,6 +53,7 @@ dependencies {
     implementation "org.openjfx:javafx-media:$jfxVersion:$platform"
 
     implementation 'org.lwjgl:lwjgl-stb:3.3.1'
+    implementation 'org.lwjgl:lwjgl-yoga:3.3.1'
 }
 
 java {

@@ -17,16 +17,55 @@
 package myworld.obsidian.layout;
 
 import myworld.obsidian.ObsidianUI;
+import myworld.obsidian.properties.ListChangeListener;
+import myworld.obsidian.properties.ListProperty;
+import myworld.obsidian.scene.Component;
+
+import static org.lwjgl.util.yoga.Yoga.*;
 
 public class LayoutEngine {
 
     protected final ObsidianUI ui;
 
+    protected final ListChangeListener<Component> listener;
+
     public LayoutEngine(ObsidianUI ui){
         this.ui = ui;
+        listener = this::onComponentChange;
+        ui.getRoot().children().addListener(this::onComponentChange);
+    }
+
+    public void enable(){
+        ui.getRoot().children().addListener(listener);
+    }
+
+    public void disable(){
+        ui.getRoot().children().removeListener(listener);
     }
 
     public void layout(){
         // TODO
+    }
+
+    protected void onComponentChange(ListProperty<Component> children, int index, Component oldValue, Component newValue){
+        if(oldValue == null && newValue != null){
+            addLayout(newValue);
+        }else if(oldValue != null && newValue == null){
+            removeLayout(oldValue);
+        }
+    }
+
+    protected void addLayout(Component component){
+        component.children().addListener(listener);
+        component.tag(new YogaTag(YGNodeNew()));
+    }
+
+    protected void removeLayout(Component component){
+        component.children().removeListener(listener);
+        var layout = component.getTag(YogaTag.class);
+        if(layout != null){
+            YGNodeFree(layout.node());
+            component.removeTag(YogaTag.class);
+        }
     }
 }
