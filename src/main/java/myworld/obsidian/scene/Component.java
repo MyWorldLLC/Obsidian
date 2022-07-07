@@ -25,6 +25,7 @@ public class Component {
     protected final ListProperty<Component> children;
     protected final ListProperty<Object> styles;
     protected final ListProperty<Effect> effects;
+    protected final ListProperty<Object> tags;
 
     protected final ValueProperty<Boolean> needsUpdate;
 
@@ -33,6 +34,7 @@ public class Component {
         this.children = new ListProperty<>(children);
         styles = new ListProperty<>();
         effects = new ListProperty<>();
+        tags = new ListProperty<>();
         needsUpdate = new ValueProperty<>();
     }
 
@@ -95,6 +97,31 @@ public class Component {
 
     public ListProperty<Effect> effects(){
         return effects;
+    }
+
+    public ListProperty<Object> tags(){
+        return tags;
+    }
+
+    public void tag(Object tag){
+        removeTag(tag.getClass());
+        tags.add(tag);
+    }
+
+    public boolean removeTag(Class<?> type){
+        return tags.removeIf(t -> t.getClass().equals(type));
+    }
+
+    public boolean hasTag(Class<?> type){
+        return getTag(type) != null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getTag(Class<T> type){
+        return (T) tags
+                .stream()
+                .filter(t -> type.isAssignableFrom(t.getClass())).findFirst()
+                .orElse(null);
     }
 
     public void onAttach(){}
