@@ -44,7 +44,13 @@ public class LayoutEngine {
     }
 
     public void layout(){
-        // TODO
+        var yogaTag = ui.getRoot().getTag(YogaTag.class);
+        if(yogaTag != null){
+            var dimensions = ui.getDimensions().get();
+            var fWidth = (float) dimensions.width();
+            var fHeight = (float) dimensions.height();
+            YGNodeCalculateLayout(yogaTag.node(), fWidth, fHeight, YGFlexDirectionRow);
+        }
     }
 
     protected void onComponentChange(ListProperty<Component> children, int index, Component oldValue, Component newValue){
