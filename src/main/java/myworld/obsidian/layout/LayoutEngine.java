@@ -49,7 +49,7 @@ public class LayoutEngine {
             var dimensions = ui.getDimensions().get();
             var fWidth = (float) dimensions.width();
             var fHeight = (float) dimensions.height();
-            YGNodeCalculateLayout(yogaTag.node(), fWidth, fHeight, YGFlexDirectionRow);
+            YGNodeCalculateLayout(yogaTag.node(), fWidth, fHeight, YGDirectionLTR);
         }
     }
 
