@@ -16,26 +16,31 @@
 
 package myworld.obsidian.scene;
 
+import myworld.obsidian.layout.ComponentLayout;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.properties.ValueProperty;
+import myworld.obsidian.styles.ComponentStyles;
 
 public class Component {
 
     protected final ValueProperty<Component> parent;
     protected final ListProperty<Component> children;
-    protected final ListProperty<Object> styles;
     protected final ListProperty<Effect> effects;
     protected final ListProperty<Object> tags;
 
     protected final ValueProperty<Boolean> needsUpdate;
+    protected final ComponentLayout layout;
+    protected final ComponentStyles styles;
 
     public Component(Component... children){
         parent = new ValueProperty<>();
         this.children = new ListProperty<>(children);
-        styles = new ListProperty<>();
         effects = new ListProperty<>();
         tags = new ListProperty<>();
         needsUpdate = new ValueProperty<>();
+
+        layout = new ComponentLayout();
+        styles = new ComponentStyles();
     }
 
     protected void requestVisualUpdate(){
@@ -83,16 +88,12 @@ public class Component {
         return children;
     }
 
-    public ListProperty<Object> styles(){
+    public ComponentLayout layout(){
+        return layout;
+    }
+
+    public ComponentStyles styles(){
         return styles;
-    }
-
-    public void style(Object style){
-        styles.add(style);
-    }
-
-    public void removeStyle(Object style){
-        styles.remove(style);
     }
 
     public ListProperty<Effect> effects(){
