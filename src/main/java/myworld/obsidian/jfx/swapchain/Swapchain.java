@@ -24,7 +24,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Swapchain {
 
     public enum Format {
-        ARGB8, BGRA8_PRE
+        ARGB8, BGRA8_PRE;
+
+        public ObsidianPixels.Format toPixelFormat(){
+            return switch (this){
+                case ARGB8 -> ObsidianPixels.Format.ARGB8;
+                case BGRA8_PRE -> ObsidianPixels.Format.BGRA8_PRE;
+            };
+        }
     }
 
     private static final int READ = 0;
@@ -44,9 +51,9 @@ public class Swapchain {
         lock = new ReentrantLock();
         writeListener = new AtomicReference<>();
         chain = new ObsidianPixels[]{
-            new ObsidianPixels(wPixels, vPixels),
-            new ObsidianPixels(wPixels, vPixels),
-            new ObsidianPixels(wPixels, vPixels)
+            new ObsidianPixels(format.toPixelFormat(), wPixels, vPixels),
+            new ObsidianPixels(format.toPixelFormat(), wPixels, vPixels),
+            new ObsidianPixels(format.toPixelFormat(), wPixels, vPixels)
         };
         this.format = format;
         this.wPixels = wPixels;

@@ -21,13 +21,23 @@ import java.nio.IntBuffer;
 
 public class ObsidianPixels {
 
+    public enum Format {
+        RGBA8, ARGB8, BGRA8_PRE
+    }
+
     protected final ByteBuffer buff;
     protected final IntBuffer intBuff;
 
+    protected final Format format;
     protected final int vPixels;
     protected final int wPixels;
 
     public ObsidianPixels(int wPixels, int vPixels){
+        this(Format.RGBA8, wPixels, vPixels);
+    }
+
+    public ObsidianPixels(Format format, int wPixels, int vPixels){
+        this.format = format;
         this.wPixels = wPixels;
         this.vPixels = vPixels;
 
@@ -46,5 +56,8 @@ public class ObsidianPixels {
     }
     public int getWPixels() {
         return wPixels;
+    }
+    public Format getFormat(){
+        return format;
     }
 }
