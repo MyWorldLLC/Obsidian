@@ -71,6 +71,7 @@ public class LayoutEngine {
     protected void addLayout(Component component){
         component.children().addListener(listener);
         component.tag(new YogaTag(YGNodeNew()));
+        component.children().forEach(this::addLayout);
     }
 
     protected void removeLayout(Component component){
@@ -79,6 +80,7 @@ public class LayoutEngine {
         if(layout != null){
             YGNodeFree(layout.node());
             component.removeTag(YogaTag.class);
+            component.children().forEach(this::removeLayout);
         }
     }
 
