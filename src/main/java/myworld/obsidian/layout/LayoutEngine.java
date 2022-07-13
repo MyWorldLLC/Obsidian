@@ -29,6 +29,8 @@ import static org.lwjgl.util.yoga.Yoga.YGNodeStyleSetMaxHeight;
 
 public class LayoutEngine {
 
+    public static final float LAYOUT_UNDEFINED = -1;
+
     protected final ObsidianUI ui;
 
     protected final ListChangeListener<Component> listener;
@@ -58,6 +60,22 @@ public class LayoutEngine {
             var fHeight = (float) dimensions.height();
             YGNodeCalculateLayout(yogaTag.node(), fWidth, fHeight, YGDirectionLTR);
         }
+    }
+
+    public float getWidth(Component component){
+        var tag = component.getTag(YogaTag.class);
+        if(tag != null){
+            return YGNodeLayoutGetWidth(tag.node());
+        }
+        return LAYOUT_UNDEFINED;
+    }
+
+    public float getHeight(Component component){
+        var tag = component.getTag(YogaTag.class);
+        if(tag != null){
+            return YGNodeLayoutGetHeight(tag.node());
+        }
+        return LAYOUT_UNDEFINED;
     }
 
     protected void onComponentChange(ListProperty<Component> children, int index, Component oldValue, Component newValue){
