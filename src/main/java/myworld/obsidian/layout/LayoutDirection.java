@@ -1,5 +1,5 @@
 package myworld.obsidian.layout;
 
 public enum LayoutDirection {
-    LTR, RTL
+    LTR, RTL, INHERIT
 }

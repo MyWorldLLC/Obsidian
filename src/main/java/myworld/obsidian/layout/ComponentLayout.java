@@ -11,11 +11,12 @@ public class ComponentLayout {
     protected final ValueProperty<FlexWrap> flexWrap;
     protected final ValueProperty<Float> flexGrow;
     protected final ValueProperty<Float> flexShrink;
-    protected final ValueProperty<Float> flexBasis;
+    protected final ValueProperty<LayoutDimension> flexBasis;
 
     protected final ValueProperty<ItemAlignment> alignContent;
     protected final ValueProperty<ItemAlignment> alignSelf;
     protected final ValueProperty<ItemAlignment> alignItems;
+
     protected final ValueProperty<Float> aspectRatio;
 
     protected final ValueProperty<ItemJustification> justifyContent;
@@ -27,6 +28,12 @@ public class ComponentLayout {
     protected final ValueProperty<LayoutDimension> width;
     protected final ValueProperty<LayoutDimension> height;
 
+    protected final ValueProperty<LayoutDimension> minWidth;
+    protected final ValueProperty<LayoutDimension> maxWidth;
+
+    protected final ValueProperty<LayoutDimension> minHeight;
+    protected final ValueProperty<LayoutDimension> maxHeight;
+
     public ComponentLayout(){
         positionType = new ValueProperty<>(PositionType.RELATIVE);
         offsets = new ValueProperty<>();
@@ -35,21 +42,111 @@ public class ComponentLayout {
         flexWrap = new ValueProperty<>(FlexWrap.NO_WRAP);
         flexGrow = new ValueProperty<>(0f);
         flexShrink = new ValueProperty<>(1f);
-        flexBasis = new ValueProperty<>();
+        flexBasis = new ValueProperty<>(LayoutDimension.AUTO);
 
-        alignContent = new ValueProperty<>();
+        alignContent = new ValueProperty<>(ItemAlignment.FLEX_START);
         alignSelf = new ValueProperty<>(ItemAlignment.AUTO);
         alignItems = new ValueProperty<>(ItemAlignment.STRETCH);
-        aspectRatio = new ValueProperty<>();
+
+        aspectRatio = new ValueProperty<>(2f);
 
         justifyContent = new ValueProperty<>(ItemJustification.FLEX_START);
-        layoutDirection = new ValueProperty<>(LayoutDirection.LTR);
+        layoutDirection = new ValueProperty<>(LayoutDirection.INHERIT);
 
-        margin = new ValueProperty<>(Offsets.ZERO);
+        margin = new ValueProperty<>(Offsets.AUTO);
         padding = new ValueProperty<>(Offsets.ZERO);
 
         width = new ValueProperty<>(LayoutDimension.AUTO);
         height = new ValueProperty<>(LayoutDimension.AUTO);
+
+        minWidth = new ValueProperty<>(LayoutDimension.AUTO);
+        maxWidth = new ValueProperty<>(LayoutDimension.AUTO);
+
+        minHeight = new ValueProperty<>(LayoutDimension.AUTO);
+        maxHeight = new ValueProperty<>(LayoutDimension.AUTO);
     }
 
+    public ValueProperty<PositionType> positionType() {
+        return positionType;
+    }
+
+    public ValueProperty<Offsets> offsets() {
+        return offsets;
+    }
+
+    public ValueProperty<FlexDirection> flexDirection() {
+        return flexDirection;
+    }
+
+    public ValueProperty<FlexWrap> flexWrap() {
+        return flexWrap;
+    }
+
+    public ValueProperty<Float> flexGrow() {
+        return flexGrow;
+    }
+
+    public ValueProperty<Float> flexShrink() {
+        return flexShrink;
+    }
+
+    public ValueProperty<LayoutDimension> flexBasis() {
+        return flexBasis;
+    }
+
+    public ValueProperty<ItemAlignment> alignContent() {
+        return alignContent;
+    }
+
+    public ValueProperty<ItemAlignment> alignSelf() {
+        return alignSelf;
+    }
+
+    public ValueProperty<ItemAlignment> alignItems() {
+        return alignItems;
+    }
+
+    public ValueProperty<Float> aspectRatio() {
+        return aspectRatio;
+    }
+
+    public ValueProperty<ItemJustification> justifyContent() {
+        return justifyContent;
+    }
+
+    public ValueProperty<LayoutDirection> layoutDirection() {
+        return layoutDirection;
+    }
+
+    public ValueProperty<Offsets> margin() {
+        return margin;
+    }
+
+    public ValueProperty<Offsets> padding() {
+        return padding;
+    }
+
+    public ValueProperty<LayoutDimension> width() {
+        return width;
+    }
+
+    public ValueProperty<LayoutDimension> height() {
+        return height;
+    }
+
+    public ValueProperty<LayoutDimension> minWidth(){
+        return minWidth;
+    }
+
+    public ValueProperty<LayoutDimension> maxWidth(){
+        return maxWidth;
+    }
+
+    public ValueProperty<LayoutDimension> minHeight(){
+        return minHeight;
+    }
+
+    public ValueProperty<LayoutDimension> maxHeight(){
+        return maxHeight;
+    }
 }
