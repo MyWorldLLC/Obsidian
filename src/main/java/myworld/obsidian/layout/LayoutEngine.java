@@ -29,7 +29,10 @@ import static org.lwjgl.util.yoga.Yoga.YGNodeStyleSetMaxHeight;
 
 public class LayoutEngine {
 
-    public static final float LAYOUT_UNDEFINED = -1;
+    // We use Float.NaN since Yoga defines YGUndefined as Float.NaN - this
+    // gives API consistency in case we directly return values from Yoga that
+    // are undefined.
+    public static final float LAYOUT_UNDEFINED = Float.NaN;
 
     protected final ObsidianUI ui;
 
