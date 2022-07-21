@@ -109,7 +109,6 @@ public class ExampleRunner {
                 ColorSpace.getDisplayP3(),
                 new SurfaceProps(PixelGeometry.RGB_H)
         );
-        surface.getCanvas().clear(0x000000FF);
     }
 
     public void run(){
