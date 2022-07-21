@@ -31,6 +31,24 @@ def getPlatform(){
     return platform
 }
 
+def getSkijaPlatform(){
+    def platforms = [
+            'win': 'windows',
+            'mac': 'macos-x64',
+            'linux': 'linux'
+    ]
+    platforms[getPlatform()]
+}
+
+def getLwjglPlatform(){
+    def platforms = [
+            'win': 'windows',
+            'mac': 'macos',
+            'linux': 'linux'
+    ]
+    platforms[getPlatform()]
+}
+
 def jfxVersion = "16"
 javafx {
     version = jfxVersion
@@ -43,6 +61,23 @@ version = getGitVersion()
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://packages.jetbrains.team/maven/p/skija/maven'
+    }
+}
+
+sourceSets {
+    example {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+        java {
+            srcDir 'example/java'
+        }
+    }
+}
+
+configurations {
+    exampleImplementation.extendsFrom(implementation)
 }
 
 dependencies {
@@ -54,6 +89,14 @@ dependencies {
 
     implementation 'org.lwjgl:lwjgl-stb:3.3.1'
     implementation 'org.lwjgl:lwjgl-yoga:3.3.1'
+    implementation "org.jetbrains.skija:skija-${getSkijaPlatform()}:0.93.1"
+
+    exampleCompileClasspath 'org.lwjgl:lwjgl:3.3.1'
+    exampleCompileClasspath 'org.lwjgl:lwjgl-glfw:3.3.1'
+    exampleCompileClasspath 'org.lwjgl:lwjgl-opengl:3.3.1'
+    exampleRuntimeOnly "org.lwjgl:lwjgl:3.3.1:natives-${getLwjglPlatform()}"
+    exampleRuntimeOnly "org.lwjgl:lwjgl-glfw:3.3.1:natives-${getLwjglPlatform()}"
+    exampleRuntimeOnly "org.lwjgl:lwjgl-opengl:3.3.1:natives-${getLwjglPlatform()}"
 }
 
 java {
@@ -86,4 +129,9 @@ publishing {
             }
         }
     }
+}
+
+task run(type: JavaExec){
+    classpath = sourceSets.example.compileClasspath + sourceSets.example.runtimeClasspath
+    mainClass = 'myworld.obsidian.example.ExampleRunner'
 }
