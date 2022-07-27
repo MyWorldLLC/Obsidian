@@ -17,6 +17,7 @@
 package myworld.obsidian.properties;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public class ValueProperty<T> extends Property<ValueChangeListener<T>> {
     protected final AtomicReference<T> value;
@@ -33,6 +34,15 @@ public class ValueProperty<T> extends Property<ValueChangeListener<T>> {
         var oldValue = this.value.get();
         this.value.set(value);
         listeners.forEach(l -> l.onChange(this, oldValue, value));
+    }
+
+    public boolean ifSet(Consumer<T> c){
+        var v = value.get();
+        if(v != null){
+            c.accept(v);
+            return true;
+        }
+        return false;
     }
 
     public T get(){

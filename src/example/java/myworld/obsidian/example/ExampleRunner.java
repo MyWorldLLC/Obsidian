@@ -17,6 +17,7 @@
 package myworld.obsidian.example;
 
 import myworld.obsidian.ObsidianUI;
+import myworld.obsidian.display.DisplayEngine;
 import org.lwjgl.glfw.*;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -29,11 +30,6 @@ import org.jetbrains.skija.impl.*;
 public class ExampleRunner {
 
     protected long window;
-
-    protected DirectContext context;
-    protected BackendRenderTarget renderTarget;
-
-    protected Surface surface;
 
     protected ObsidianUI ui;
 
@@ -72,43 +68,29 @@ public class ExampleRunner {
         if("false".equals(System.getProperty("skija.staticLoad"))){
             Library.load(); // Load Skia lib if it's not statically linked
         }
-        context = DirectContext.makeGL();
 
         glfwSetWindowSizeCallback(window, (win, width, height) -> {
             createSurface();
         });
-        createSurface();
 
         // TODO - user input
 
         glfwSwapInterval(1); // Use VSync
 
-        ui = new ObsidianUI();
+        ui = ObsidianUI.createForGL(getWidth(), getHeight(), 0);
+    }
+
+    public int getRenderWidth(){
+        return (int) (getWidth() / getXScale() * getDPI());
+    }
+
+    public int getRenderHeight(){
+        return (int) (getHeight() / getYScale() * getDPI());
     }
 
     public void createSurface(){
-        if(surface != null){
-            renderTarget.close();
-            surface.close();
-        }
-
-        renderTarget = BackendRenderTarget.makeGL(
-                (int) (getWidth() / getXScale() * getDPI()),
-                (int) (getHeight() / getYScale() * getDPI()),
-                0,
-                8,
-                0,
-                FramebufferFormat.GR_GL_RGBA8
-        );
-
-        surface = Surface.makeFromBackendRenderTarget(
-                context,
-                renderTarget,
-                SurfaceOrigin.BOTTOM_LEFT,
-                SurfaceColorFormat.RGBA_8888,
-                ColorSpace.getDisplayP3(),
-                new SurfaceProps(PixelGeometry.RGB_H)
-        );
+        ui.display().ifSet(DisplayEngine::close);
+        ui.setDisplay(DisplayEngine.createForGL(getRenderWidth(), getRenderHeight(), 0));
     }
 
     public void run(){
@@ -117,13 +99,13 @@ public class ExampleRunner {
             glfwPollEvents();
             ui.update(1.0/64.0); // Assume a constant refresh rate
             renderUI();
-            context.flush();
+            ui.getDisplay().flush();
             glfwSwapBuffers(window);
         }
     }
 
     public void renderUI(){
-        var canvas = surface.getCanvas();
+        var canvas = ui.getDisplay().getCanvas();
         canvas.clear(0x000000FF);
 
         var paint = new Paint();

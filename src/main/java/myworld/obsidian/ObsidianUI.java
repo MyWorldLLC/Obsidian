@@ -26,23 +26,39 @@ public class ObsidianUI {
 
     protected final ValueProperty<Dimension2D> dimensions;
     protected final Component root;
-    protected final LayoutEngine layout;
-    protected final DisplayEngine display;
+    protected final ValueProperty<LayoutEngine> layout;
+    protected final ValueProperty<DisplayEngine> display;
 
-    public ObsidianUI(){
+    public static ObsidianUI createForGL(int width, int height, int framebufferHandle){
+        return new ObsidianUI(DisplayEngine.createForGL(width, height, framebufferHandle));
+    }
+
+    public static ObsidianUI createForCpu(int width, int height){
+        return new ObsidianUI(DisplayEngine.createForCpu(width, height));
+    }
+
+    public ObsidianUI(DisplayEngine display){
         root = new Component();
         dimensions = new ValueProperty<>(new Dimension2D(100, 100));
-        layout = new LayoutEngine(this);
-        display = new DisplayEngine(this);
+        layout = new ValueProperty<>(new LayoutEngine(this));
+        this.display = new ValueProperty<>(display);
         display.registerRoot(root);
     }
 
     public LayoutEngine getLayout(){
-        return layout;
+        return layout.get();
+    }
+
+    public ValueProperty<DisplayEngine> display(){
+        return display;
     }
 
     public DisplayEngine getDisplay(){
-        return display;
+        return display.get();
+    }
+
+    public void setDisplay(DisplayEngine display){
+        this.display.set(display);
     }
 
     public Component getRoot(){
@@ -54,13 +70,17 @@ public class ObsidianUI {
     }
 
     public void update(double tpf){
-        layout.layout();
+        layout.get().layout();
         updateEffects(root, tpf);
     }
 
     protected void updateEffects(Component component, double tpf){
         component.effects().forEach(e -> e.update(tpf));
         component.children().forEach(c -> updateEffects(c, tpf));
+    }
+
+    public void cleanup(){
+        display.ifSet(DisplayEngine::close);
     }
 
 }

@@ -17,4 +17,20 @@
 package myworld.obsidian.geometry;
 
 public record Bounds2D(Point2D origin, double width, double height) {
+
+    public double left(){
+        return origin.x();
+    }
+
+    public double top(){
+        return origin.y();
+    }
+
+    public double right(){
+        return left() + width;
+    }
+
+    public double bottom(){
+        return top() + height;
+    }
 }

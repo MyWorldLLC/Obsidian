@@ -16,19 +16,56 @@
 
 package myworld.obsidian.display;
 
-import myworld.obsidian.ObsidianUI;
+import myworld.obsidian.geometry.Bounds2D;
 import myworld.obsidian.properties.ListChangeListener;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.scene.Component;
+import org.jetbrains.skija.*;
 
-public class DisplayEngine {
+import javax.imageio.ImageIO;
 
-    protected final ObsidianUI ui;
+public class DisplayEngine implements AutoCloseable {
+
+    protected final DirectContext context;
+    protected final BackendRenderTarget renderTarget;
+    protected final Surface surface;
 
     protected final ListChangeListener<Component> sceneListener;
 
-    public DisplayEngine(ObsidianUI ui){
-        this.ui = ui;
+    public static DisplayEngine createForGL(int width, int height, int framebufferHandle){
+        var context = DirectContext.makeGL();
+        var renderTarget = BackendRenderTarget.makeGL(
+                width,
+                height,
+                0,
+                8,
+                framebufferHandle,
+                FramebufferFormat.GR_GL_RGBA8);
+
+        var surface = Surface.makeFromBackendRenderTarget(
+                context,
+                renderTarget,
+                SurfaceOrigin.BOTTOM_LEFT,
+                SurfaceColorFormat.RGBA_8888,
+                ColorSpace.getDisplayP3(),
+                new SurfaceProps(PixelGeometry.RGB_H)
+        );
+
+        return new DisplayEngine(context, renderTarget, surface);
+    }
+
+    public static DisplayEngine createForCpu(int width, int height){
+        var colorInfo = new ColorInfo(ColorType.RGBA_8888, ColorAlphaType.PREMUL, ColorSpace.getSRGB());
+        var surface = Surface.makeRaster(getImageInfo(width, height));
+
+        return new DisplayEngine(null, null, surface);
+    }
+
+    protected DisplayEngine(DirectContext context, BackendRenderTarget renderTarget, Surface surface){
+        this.context = context;
+        this.renderTarget = renderTarget;
+        this.surface = surface;
+
         sceneListener = this::onSceneChange;
     }
 
@@ -45,6 +82,73 @@ public class DisplayEngine {
             newValue.children().addListener(sceneListener);
         }else if(oldValue != null && newValue == null){
             oldValue.children().removeListener(sceneListener);
+        }
+    }
+
+    public Canvas getCanvas(){
+        return surface.getCanvas();
+    }
+
+    public Image snapshot(){
+        return surface.makeImageSnapshot();
+    }
+
+    public Image snapshot(Bounds2D area){
+        return surface.makeImageSnapshot(
+                new IRect(
+                (int) area.left(),
+                (int) area.top(),
+                (int) area.right(),
+                (int) area.bottom()
+                ));
+    }
+
+    public Bitmap makeWritableBitmap(){
+        return makeWritableBitmap(surface.getWidth(), surface.getHeight());
+    }
+
+    public Bitmap makeWritableBitmap(int width, int height){
+        final var bytesPerRow = width * surface.getImageInfo().getBytesPerPixel();
+        var data = new byte[bytesPerRow * height];
+        return Bitmap.makeFromImage(Image.makeRaster(surface.getImageInfo(), data, bytesPerRow));
+    }
+
+    public Bitmap getSurfacePixels(Bitmap target){
+        return getSurfacePixels(target, 0, 0);
+    }
+
+    public Bitmap getSurfacePixels(Bitmap target, int srcX, int srcY){
+        surface.readPixels(target, srcX, srcY);
+        return target;
+    }
+
+    protected static ImageInfo getImageInfo(int width, int height){
+        var colorInfo = new ColorInfo(ColorType.RGBA_8888, ColorAlphaType.PREMUL, ColorSpace.getSRGB());
+        return new ImageInfo(colorInfo, width, height);
+    }
+
+    protected ImageInfo getImageInfo(){
+        return getImageInfo(surface.getWidth(), surface.getHeight());
+    }
+
+    public void flush(){
+        if(context != null){
+            context.flush();
+        }
+    }
+
+    @Override
+    public void close() {
+        if(renderTarget != null){
+            renderTarget.close();
+        }
+
+        if(surface != null){
+            surface.close();
+        }
+
+        if(context != null){
+            context.close();
         }
     }
 }
