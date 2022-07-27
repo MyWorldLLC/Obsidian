@@ -135,6 +135,13 @@ public class DisplayEngine implements AutoCloseable {
         return getImageInfo(surface.getWidth(), surface.getHeight());
     }
 
+    public void render(Component component){
+
+        // TODO - get style objects that describe this component's visual appearance & render
+
+        component.children().forEach(this::render);
+    }
+
     public void flush(){
         if(context != null){
             context.flush();

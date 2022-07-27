@@ -74,6 +74,18 @@ public class ObsidianUI {
         updateEffects(root, tpf);
     }
 
+    public void render(){
+        display.ifSet(d -> {
+            d.render(root);
+            d.flush();
+        });
+    }
+
+    public void updateAndRender(double tpf){
+        update(tpf);
+        render();
+    }
+
     protected void updateEffects(Component component, double tpf){
         component.effects().forEach(e -> e.update(tpf));
         component.children().forEach(c -> updateEffects(c, tpf));
