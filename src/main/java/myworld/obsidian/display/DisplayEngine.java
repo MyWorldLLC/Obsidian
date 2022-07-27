@@ -60,7 +60,6 @@ public class DisplayEngine implements AutoCloseable {
     }
 
     public static DisplayEngine createForCpu(int width, int height){
-        var colorInfo = new ColorInfo(ColorType.RGBA_8888, ColorAlphaType.PREMUL, ColorSpace.getSRGB());
         var surface = Surface.makeRaster(getImageInfo(width, height));
 
         return new DisplayEngine(null, null, surface);
