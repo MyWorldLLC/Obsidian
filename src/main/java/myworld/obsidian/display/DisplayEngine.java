@@ -21,10 +21,15 @@ import myworld.obsidian.properties.ListChangeListener;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.scene.Component;
 import org.jetbrains.skija.*;
-
-import javax.imageio.ImageIO;
+import org.jetbrains.skija.impl.Library;
 
 public class DisplayEngine implements AutoCloseable {
+
+    static {
+        if("false".equals(System.getProperty("skija.staticLoad"))){
+            Library.load(); // Load Skia lib if it's not statically linked
+        }
+    }
 
     protected final DirectContext context;
     protected final BackendRenderTarget renderTarget;

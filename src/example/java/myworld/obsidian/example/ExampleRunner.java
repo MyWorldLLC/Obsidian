@@ -65,10 +65,6 @@ public class ExampleRunner {
 
         glfwMakeContextCurrent(window);
 
-        if("false".equals(System.getProperty("skija.staticLoad"))){
-            Library.load(); // Load Skia lib if it's not statically linked
-        }
-
         glfwSetWindowSizeCallback(window, (win, width, height) -> {
             createSurface();
         });
