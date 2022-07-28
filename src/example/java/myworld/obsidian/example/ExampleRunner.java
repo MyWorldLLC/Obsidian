@@ -50,7 +50,6 @@ public class ExampleRunner {
         runner.cleanup();
 
         glfwTerminate();
-
     }
 
     public void init(){
@@ -87,6 +86,7 @@ public class ExampleRunner {
     public void createSurface(){
         ui.display().ifSet(DisplayEngine::close);
         ui.setDisplay(DisplayEngine.createForGL(getRenderWidth(), getRenderHeight(), 0));
+        renderUI();
     }
 
     public void run(){
@@ -95,8 +95,6 @@ public class ExampleRunner {
             glfwPollEvents();
             ui.update(1.0/64.0); // Assume a constant refresh rate
             renderUI();
-            ui.getDisplay().flush();
-            glfwSwapBuffers(window);
         }
     }
 
@@ -109,6 +107,9 @@ public class ExampleRunner {
         paint.setStroke(false);
 
         canvas.drawLine(0, 0, 100, 100, paint);
+
+        ui.getDisplay().flush();
+        glfwSwapBuffers(window);
     }
 
     public void cleanup(){

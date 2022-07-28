@@ -133,6 +133,9 @@ publishing {
 }
 
 task run(type: JavaExec){
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(16)
+    }
     classpath = sourceSets.example.compileClasspath + sourceSets.example.runtimeClasspath
     mainClass = 'myworld.obsidian.example.ExampleRunner'
 }
