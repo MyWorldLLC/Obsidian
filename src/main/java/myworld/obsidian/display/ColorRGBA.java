@@ -17,4 +17,15 @@
 package myworld.obsidian.display;
 
 public record ColorRGBA(byte r, byte g, byte b, byte a) {
+
+    public ColorRGBA(int color){
+        this(extractChannel(color, 24), extractChannel(color, 16), extractChannel(color, 8), extractChannel(color, 0));
+    }
+    public int toInt(){
+        return (r << 24) | (g << 16) | (b << 8) | a;
+    }
+
+    public static byte extractChannel(int color, int shift){
+        return (byte) (color >> shift);
+    }
 }
