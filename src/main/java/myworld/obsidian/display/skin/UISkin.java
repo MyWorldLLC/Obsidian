@@ -7,12 +7,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class UISkin {
 
-    protected final Map<String, Object> variables;
+    protected final Variables variables;
 
-    protected final Map<String, StyleClass> componentSkins;
+    protected final Map<String, ComponentSkin> componentSkins;
 
     public UISkin(){
-        variables = new ConcurrentHashMap<>();
+        variables = new Variables();
         componentSkins = new ConcurrentHashMap<>();
     }
 }

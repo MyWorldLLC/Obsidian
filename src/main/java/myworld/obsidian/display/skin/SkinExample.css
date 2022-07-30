@@ -14,14 +14,14 @@
   text: string;
   display: image;
   mask: color;
-  hover: boolean?; /* A trailing ? means the variable is optional and will not generate a warning if missing */
+  hover: boolean;
 }
 
 /* > selectors on the component define a layer. Layers are rendered in declared order.
    Name is only significant for debug purposes.
 */
 component-name > background {
-  classes: class-1, class-2, class-3; /* Apply definitions from the given set of classes */
+  classes: class-1 class-2 class-3; /* Apply definitions from the given set of classes */
   geometry: rounded-rectangle(95%, 90%, 5px);
   position: 0;
   /* image-typed inputs are blitted as a color map, multiple colors are rendered one over the
