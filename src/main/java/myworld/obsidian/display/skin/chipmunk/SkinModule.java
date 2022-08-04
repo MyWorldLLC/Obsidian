@@ -18,31 +18,6 @@ public class SkinModule implements ChipmunkModule {
     protected String name;
     protected String description;
 
-    protected final Map<String, Map<String, Object>> styles = new HashMap<>();
-    protected final Map<String, Map<String, String>> components = new HashMap<>();
-
-    @AllowChipmunkLinkage
-    protected final Map<String, Object> vars = new HashMap<>();
-
-    @AllowChipmunkLinkage
-    public void style(String name, Map<String, Object> style){
-        styles.put(name, style);
-    }
-
-    @AllowChipmunkLinkage
-    public void component(String name, Map<String, String> component){
-        components.put(name, component);
-    }
-
-    @AllowChipmunkLinkage
-    public void component(String name, Map<String, Object> component, Map<String, Map<String, Object>> stateStyles){
-
-    }
-
-    public Map<String, Map<String, Object>> getStyles(){
-        return styles;
-    }
-
     @AllowChipmunkLinkage
     public void skin(String name, String description){
         this.name = name;
@@ -67,8 +42,12 @@ public class SkinModule implements ChipmunkModule {
         return description;
     }
 
-    public Map<String, Object> getVars(){
-        return vars;
+    public void setHelperLoader(Consumer<List<String>> helperLoader){
+        this.helperLoader = helperLoader;
+    }
+
+    public void setComponentLoader(Consumer<List<String>> componentLoader){
+        this.componentLoader = componentLoader;
     }
 
 }

@@ -1,7 +1,6 @@
 def component(){
 
     name('')
-    extends('some-other-component')
     data({
         'text': 'string',
         'display': 'image',
@@ -12,17 +11,17 @@ def component(){
     vars['somevar'] = '#AAFFAA55'
 
     style('all-hover', # This style could also be defined in the root skin file
-        {
+    {
             'color': '#AABBCCDD'
-        }
-    )
+    })
 
-    state('hover', {
+    state('hover',
+    {
         'styles': 'all-hover'
     })
 
     layer('background',
-      {
+    {
         'styles': ['style-1', 'style-2', 'style-3'],
         'geometry': roundedRectangle('95%', '90%', '5px'),
         'position': '0',
@@ -32,13 +31,11 @@ def component(){
         'border-color': 'white',
         'border-width': '2%',
         'border-position': '0'
-      }
-    )
+    })
 
     layer('text',
-      {
+    {
         'geometry': 'text', # string-typed inputs are rendered as text
         'color': 'black'
-      }
-    )
+    })
 }
