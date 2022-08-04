@@ -17,8 +17,12 @@ public class SkinModule implements ChipmunkModule {
     protected String description;
 
     @AllowChipmunkLinkage
-    public void skin(String name, String description){
+    public void name(String name){
         this.name = name;
+    }
+
+    @AllowChipmunkLinkage
+    public void description(String description){
         this.description = description;
     }
 

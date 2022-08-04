@@ -26,6 +26,8 @@ import java.util.Map;
 
 public class ComponentModule implements ChipmunkModule {
 
+    public static final String MODULE_NAME = "obsidian.component";
+
     public record LayerDef(String name, Map<String, Object> style){}
 
     protected String name;

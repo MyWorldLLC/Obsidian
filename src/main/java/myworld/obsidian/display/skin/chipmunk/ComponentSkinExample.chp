@@ -1,3 +1,7 @@
+from obsidian.component import *
+from obsidian.style import *
+from obsidian.ui import *
+
 def component(){
 
     name('')

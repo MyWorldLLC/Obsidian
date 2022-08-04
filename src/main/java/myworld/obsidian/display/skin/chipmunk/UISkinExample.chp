@@ -1,3 +1,6 @@
+from obsidian.vars import *
+from obsidian.skin import *
+
 def skin(){
     name('Obsidian')
     description('Dark-themed UI skin for Obsidian')
