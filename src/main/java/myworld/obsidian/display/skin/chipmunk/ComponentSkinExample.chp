@@ -1,0 +1,44 @@
+def component(){
+
+    name('')
+    extends('some-other-component')
+    data({
+        'text': 'string',
+        'display': 'image',
+        'mask': 'color',
+        'hover': 'boolean'
+    })
+
+    vars['somevar'] = '#AAFFAA55'
+
+    style('all-hover', # This style could also be defined in the root skin file
+        {
+            'color': '#AABBCCDD'
+        }
+    )
+
+    state('hover', {
+        'styles': 'all-hover'
+    })
+
+    layer('background',
+      {
+        'styles': ['style-1', 'style-2', 'style-3'],
+        'geometry': roundedRectangle('95%', '90%', '5px'),
+        'position': '0',
+        # image-typed inputs are blitted as a color map, multiple colors are rendered one over the
+      	# other (allows stacking visual color effects)
+        'color': ['display', vars['somevar']], # interface variables are just used directly by name, skin variables need to be fetched from the vars map
+        'border-color': 'white',
+        'border-width': '2%',
+        'border-position': '0'
+      }
+    )
+
+    layer('text',
+      {
+        'geometry': 'text', # string-typed inputs are rendered as text
+        'color': 'black'
+      }
+    )
+}

@@ -1,0 +1,18 @@
+def skin(){
+    name('Obsidian')
+    description('Dark-themed UI skin for Obsidian')
+
+    # The skin file can set variables too
+    vars['somevar'] = '#AABBCCDD'
+
+    # "Helper" files can set global variables, but cannot define components
+    helpers([
+        '/vars.chp',
+        '/base-styles.chp'
+    ])
+
+    # "Component" files define components, but cannot set global variables
+    components([
+        '/ComponentSkinExample.chp'
+    ])
+}

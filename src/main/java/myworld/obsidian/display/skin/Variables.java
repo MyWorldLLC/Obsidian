@@ -31,6 +31,10 @@ public class Variables {
         vars = new ConcurrentHashMap<>(from.vars);
     }
 
+    public Variables(Map<String, Object> from){
+        vars = new ConcurrentHashMap<>(from);
+    }
+
     public Object get(String name){
         return vars.get(name);
     }
@@ -46,6 +50,10 @@ public class Variables {
 
     public void set(String name, Object value){
         vars.put(name, value);
+    }
+
+    public void set(Map<String, Object> vars){
+        this.vars.putAll(vars);
     }
 
     public boolean isDefined(String name){
