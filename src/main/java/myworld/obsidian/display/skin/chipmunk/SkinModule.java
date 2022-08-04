@@ -3,9 +3,7 @@ package myworld.obsidian.display.skin.chipmunk;
 import chipmunk.runtime.ChipmunkModule;
 import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class SkinModule implements ChipmunkModule {
