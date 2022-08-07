@@ -16,6 +16,7 @@
 
 package myworld.obsidian.scene;
 
+import myworld.obsidian.display.skin.Variables;
 import myworld.obsidian.layout.ComponentLayout;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.properties.ValueProperty;
@@ -27,6 +28,7 @@ public class Component {
     protected final ListProperty<Component> children;
     protected final ListProperty<Effect> effects;
     protected final ListProperty<Object> tags;
+    protected final Variables data;
 
     protected final ValueProperty<Boolean> needsUpdate;
     protected final ComponentLayout layout;
@@ -37,6 +39,8 @@ public class Component {
         this.children = new ListProperty<>(children);
         effects = new ListProperty<>();
         tags = new ListProperty<>();
+        data = new Variables();
+
         needsUpdate = new ValueProperty<>();
 
         layout = new ComponentLayout();
@@ -102,6 +106,10 @@ public class Component {
 
     public ListProperty<Object> tags(){
         return tags;
+    }
+
+    public Variables data(){
+        return data;
     }
 
     public void tag(Object tag){

@@ -16,12 +16,23 @@
 
 package myworld.obsidian.display;
 
+import myworld.obsidian.display.skin.StyleClass;
+import myworld.obsidian.display.skin.StyleRule;
+import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.geometry.Bounds2D;
 import myworld.obsidian.properties.ListChangeListener;
 import myworld.obsidian.properties.ListProperty;
+import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import org.jetbrains.skija.*;
 import org.jetbrains.skija.impl.Library;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class DisplayEngine implements AutoCloseable {
 
@@ -34,6 +45,8 @@ public class DisplayEngine implements AutoCloseable {
     protected final DirectContext context;
     protected final BackendRenderTarget renderTarget;
     protected final Surface surface;
+    protected final Map<String, UISkin> skins;
+    protected final ValueProperty<String> selectedSkin;
 
     protected final ListChangeListener<Component> sceneListener;
 
@@ -69,6 +82,8 @@ public class DisplayEngine implements AutoCloseable {
         this.context = context;
         this.renderTarget = renderTarget;
         this.surface = surface;
+        skins = new ConcurrentHashMap<>();
+        selectedSkin = new ValueProperty<>();
 
         sceneListener = this::onSceneChange;
     }
@@ -87,6 +102,18 @@ public class DisplayEngine implements AutoCloseable {
         }else if(oldValue != null && newValue == null){
             oldValue.children().removeListener(sceneListener);
         }
+    }
+
+    public void registerSkin(UISkin skin){
+        skins.put(skin.getName(), skin);
+    }
+
+    public UISkin getSkin(String name){
+        return skins.get(name);
+    }
+
+    public void useSkin(String name){
+        selectedSkin.set(name);
     }
 
     public Canvas getCanvas(){
@@ -136,10 +163,26 @@ public class DisplayEngine implements AutoCloseable {
     }
 
     public void render(Component component){
+        render(component, getSkin(selectedSkin.get()));
+    }
 
-        // TODO - get style objects that describe this component's visual appearance & render
+    public void render(Component component, UISkin uiSkin){
 
-        component.children().forEach(this::render);
+        var skin = uiSkin.getComponentSkin(component.getClass().getSimpleName());
+        if(skin != null){
+            // TODO - get style objects that describe this component's visual appearance & render
+            var renderVars = component.data();
+
+            for(var layer : skin.layers()){
+                var activeStates = skin.activeForLayer(layer.layer(), renderVars);
+                // TODO
+            }
+
+        }else{
+            // TODO - log a warning
+        }
+
+        component.children().forEach((c) -> render(c, uiSkin));
     }
 
     public void flush(){
