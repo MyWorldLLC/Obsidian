@@ -24,8 +24,8 @@ import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
-import org.jetbrains.skija.*;
-import org.jetbrains.skija.impl.*;
+import io.github.humbleui.skija.*;
+import io.github.humbleui.skija.impl.*;
 
 public class ExampleRunner {
 

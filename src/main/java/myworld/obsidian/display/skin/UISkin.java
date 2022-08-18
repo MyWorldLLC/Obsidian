@@ -11,11 +11,13 @@ public class UISkin {
     protected final Variables variables;
 
     protected final Map<String, ComponentSkin> componentSkins;
+    protected final Map<String, StyleClass> styles;
 
     public UISkin(String name){
         this.name = name;
         variables = new Variables();
         componentSkins = new ConcurrentHashMap<>();
+        styles = new ConcurrentHashMap<>();
     }
 
     public String getName(){
@@ -24,5 +26,9 @@ public class UISkin {
 
     public ComponentSkin getComponentSkin(String componentName){
         return componentSkins.get(componentName);
+    }
+
+    public StyleClass getStyle(String name){
+        return styles.get(name);
     }
 }

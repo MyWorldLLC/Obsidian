@@ -16,6 +16,7 @@
 
 package myworld.obsidian.display;
 
+import io.github.humbleui.types.IRect;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.StyleRule;
 import myworld.obsidian.display.skin.UISkin;
@@ -24,13 +25,10 @@ import myworld.obsidian.properties.ListChangeListener;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
-import org.jetbrains.skija.*;
-import org.jetbrains.skija.impl.Library;
+import io.github.humbleui.skija.*;
+import io.github.humbleui.skija.impl.Library;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -170,12 +168,29 @@ public class DisplayEngine implements AutoCloseable {
 
         var skin = uiSkin.getComponentSkin(component.getClass().getSimpleName());
         if(skin != null){
-            // TODO - get style objects that describe this component's visual appearance & render
             var renderVars = component.data();
 
             for(var layer : skin.layers()){
                 var activeStates = skin.activeForLayer(layer.layer(), renderVars);
-                // TODO
+                var style = StyleClass.merge(activeStates);
+
+                // Mix-in style imports - pull from component styles first, then skin styles
+                var styles = style.rule("styles");
+                if(styles != null){
+                    List<String> styleClasses = styles.arg(0);
+                    for(String mixName : styleClasses){
+                        var mixStyle = skin.findNamed(mixName);
+                        if(mixStyle == null){
+                            mixStyle = uiSkin.getStyle(mixName);
+                        }
+
+                        if(mixStyle != null){
+                            style = StyleClass.merge(mixStyle, style);
+                        }
+                    }
+                }
+
+
             }
 
         }else{
