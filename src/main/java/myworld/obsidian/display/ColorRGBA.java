@@ -28,4 +28,12 @@ public record ColorRGBA(byte r, byte g, byte b, byte a) {
     public static byte extractChannel(int color, int shift){
         return (byte) (color >> shift);
     }
+
+    public static ColorRGBA of(int r, int g, int b){
+        return of(r, g, b, 255);
+    }
+
+    public static ColorRGBA of(int r, int g, int b, int a){
+        return new ColorRGBA((byte)r, (byte)g, (byte) b, (byte)a);
+    }
 }

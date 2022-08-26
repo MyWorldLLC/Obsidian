@@ -31,4 +31,16 @@ public class UISkin {
     public StyleClass getStyle(String name){
         return styles.get(name);
     }
+
+    public Variables variables(){
+        return variables;
+    }
+
+    public Map<String, ComponentSkin> componentSkins(){
+        return componentSkins;
+    }
+
+    public Map<String, StyleClass> styles(){
+        return styles;
+    }
 }

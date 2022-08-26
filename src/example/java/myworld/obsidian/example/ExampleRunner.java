@@ -18,6 +18,7 @@ package myworld.obsidian.example;
 
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.display.DisplayEngine;
+import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
 import org.lwjgl.glfw.*;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -52,7 +53,7 @@ public class ExampleRunner {
         glfwTerminate();
     }
 
-    public void init(){
+    public void init() throws Exception {
 
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -73,6 +74,8 @@ public class ExampleRunner {
         glfwSwapInterval(1); // Use VSync
 
         ui = ObsidianUI.createForGL(getWidth(), getHeight(), 0);
+        ui.getDisplay().registerSkin(ChipmunkSkinLoader.loadFromClasspath(ChipmunkSkinLoader.DEFAULT_SKIN));
+        ui.getDisplay().useSkin("Obsidian");
     }
 
     public int getRenderWidth(){
@@ -100,13 +103,9 @@ public class ExampleRunner {
 
     public void renderUI(){
         var canvas = ui.getDisplay().getCanvas();
-        canvas.clear(0x000000FF);
+        canvas.clear(0x00000000);
 
-        var paint = new Paint();
-        paint.setColor(0xFFFFFFFF);
-        paint.setStroke(false);
-
-        canvas.drawLine(0, 0, 100, 100, paint);
+        ui.getDisplay().render(ui, ui.getRoot());
 
         ui.getDisplay().flush();
         glfwSwapBuffers(window);

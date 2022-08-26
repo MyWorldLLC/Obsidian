@@ -76,7 +76,7 @@ public class ObsidianUI {
 
     public void render(){
         display.ifSet(d -> {
-            d.render(root);
+            d.render(this, root);
             d.flush();
         });
     }

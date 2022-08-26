@@ -18,6 +18,8 @@ package myworld.obsidian.geometry;
 
 public record Bounds2D(Point2D origin, double width, double height) {
 
+    public static final Bounds2D ZERO = new Bounds2D(new Point2D(0, 0), 0, 0);
+
     public double left(){
         return origin.x();
     }

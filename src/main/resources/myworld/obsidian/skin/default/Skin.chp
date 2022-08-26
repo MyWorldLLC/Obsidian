@@ -1,0 +1,11 @@
+from obsidian.vars import *
+from obsidian.skin import *
+
+def skin(){
+    name('Obsidian')
+    description('Default UI skin for Obsidian')
+
+    components([
+        '/Example.chp'
+    ])
+}

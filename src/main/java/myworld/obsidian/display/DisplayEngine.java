@@ -17,6 +17,7 @@
 package myworld.obsidian.display;
 
 import io.github.humbleui.types.IRect;
+import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.StyleRule;
 import myworld.obsidian.display.skin.UISkin;
@@ -160,11 +161,11 @@ public class DisplayEngine implements AutoCloseable {
         return getImageInfo(surface.getWidth(), surface.getHeight());
     }
 
-    public void render(Component component){
-        render(component, getSkin(selectedSkin.get()));
+    public void render(ObsidianUI ui, Component component){
+        render(ui, component, getSkin(selectedSkin.get()));
     }
 
-    public void render(Component component, UISkin uiSkin){
+    public void render(ObsidianUI ui, Component component, UISkin uiSkin){
 
         var skin = uiSkin.getComponentSkin(component.getClass().getSimpleName());
         if(skin != null){
@@ -190,14 +191,14 @@ public class DisplayEngine implements AutoCloseable {
                     }
                 }
 
-
+                Renderer.render(getCanvas(), ui.getLayout().getBounds(component), renderVars, style);
             }
 
         }else{
             // TODO - log a warning
         }
 
-        component.children().forEach((c) -> render(c, uiSkin));
+        component.children().forEach((c) -> render(ui, c, uiSkin));
     }
 
     public void flush(){

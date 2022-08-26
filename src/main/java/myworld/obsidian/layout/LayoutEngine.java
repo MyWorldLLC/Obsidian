@@ -17,6 +17,8 @@
 package myworld.obsidian.layout;
 
 import myworld.obsidian.ObsidianUI;
+import myworld.obsidian.geometry.Bounds2D;
+import myworld.obsidian.geometry.Point2D;
 import myworld.obsidian.properties.ListChangeListener;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.scene.Component;
@@ -79,6 +81,20 @@ public class LayoutEngine {
             return YGNodeLayoutGetHeight(tag.node());
         }
         return LAYOUT_UNDEFINED;
+    }
+
+    public Bounds2D getBounds(Component component){
+        var tag = component.getTag(YogaTag.class);
+        if(tag != null){
+            return new Bounds2D(
+                    new Point2D(
+                            YGNodeLayoutGetLeft(tag.node()),
+                            YGNodeLayoutGetTop(tag.node())),
+                    YGNodeLayoutGetWidth(tag.node()),
+                    YGNodeLayoutGetHeight(tag.node())
+            );
+        }
+        return Bounds2D.ZERO;
     }
 
     protected void onComponentChange(ListProperty<Component> children, int index, Component oldValue, Component newValue){
