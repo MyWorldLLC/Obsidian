@@ -1,14 +1,14 @@
+module component
+
 from obsidian.component import *
 from obsidian.style import *
-from obsidian.ui import *
 
 def component(){
 
     name('Example')
 
-    layer('background',
-    {
-        'geometry': roundedRectangle('95%', '90%', '5px'),
+    layer('background', {
+        'geometry': '', #roundedRectangle('95%', '90%', '5px'),
         'color': '#FFFFFFFF'
     })
 }

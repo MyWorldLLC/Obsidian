@@ -3,6 +3,7 @@ package myworld.obsidian.display.skin.chipmunk;
 import chipmunk.runtime.ChipmunkModule;
 import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -10,8 +11,8 @@ public class SkinModule implements ChipmunkModule {
 
     public static final String MODULE_NAME = "obsidian.skin";
 
-    protected Consumer<List<String>> helperLoader;
-    protected Consumer<List<String>> componentLoader;
+    protected final List<String> helpers = new ArrayList<>();
+    protected final List<String> components = new ArrayList<>();
 
     protected String name;
     protected String description;
@@ -28,12 +29,12 @@ public class SkinModule implements ChipmunkModule {
 
     @AllowChipmunkLinkage
     public void helpers(List<String> scriptPaths){
-        helperLoader.accept(scriptPaths);
+        helpers.addAll(scriptPaths);
     }
 
     @AllowChipmunkLinkage
     public void components(List<String> scriptPaths){
-        componentLoader.accept(scriptPaths);
+        components.addAll(scriptPaths);
     }
 
     public String getSkinName() {
@@ -44,12 +45,12 @@ public class SkinModule implements ChipmunkModule {
         return description;
     }
 
-    public void setHelperLoader(Consumer<List<String>> helperLoader){
-        this.helperLoader = helperLoader;
+    public List<String> getHelpers(){
+        return helpers;
     }
 
-    public void setComponentLoader(Consumer<List<String>> componentLoader){
-        this.componentLoader = componentLoader;
+    public List<String> getComponents(){
+        return components;
     }
 
 }

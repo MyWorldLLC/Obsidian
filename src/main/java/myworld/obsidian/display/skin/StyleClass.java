@@ -12,7 +12,7 @@ public record StyleClass(String name, String layer, String stateParam, StyleRule
     }
 
     public StyleClass(StyleRule... rules){
-        this("", null, null, rules);
+        this(null, null, null, rules);
     }
 
     public boolean isLayer(){
@@ -45,6 +45,22 @@ public record StyleClass(String name, String layer, String stateParam, StyleRule
     public static StyleClass merge(Stream<StyleClass> classes){
         return new StyleClass(classes.flatMap(style -> Arrays.stream(style.rules()))
                 .collect(Collectors.toSet()).toArray(new StyleRule[]{}));
+    }
+
+    public static StyleClass forName(String name, Collection<StyleRule> rules){
+        return new StyleClass(name, null, null, rules.toArray(new StyleRule[]{}));
+    }
+
+    public static StyleClass forLayer(String layer, Collection<StyleRule> rules){
+        return new StyleClass(null, layer, null, rules.toArray(new StyleRule[]{}));
+    }
+
+    public static StyleClass forState(String stateParam, Collection<StyleRule> rules){
+        return new StyleClass(null, null, stateParam, rules.toArray(new StyleRule[]{}));
+    }
+
+    public static StyleClass forLayerState(String layer, String stateParam, Collection<StyleRule> rules){
+        return new StyleClass(null, layer, stateParam, rules.toArray(new StyleRule[]{}));
     }
 
 }

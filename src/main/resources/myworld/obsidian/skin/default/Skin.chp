@@ -1,3 +1,5 @@
+module skin
+
 from obsidian.vars import *
 from obsidian.skin import *
 

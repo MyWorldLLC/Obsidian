@@ -24,6 +24,10 @@ public class UISkin {
         return name;
     }
 
+    public void addComponentSkin(ComponentSkin skin){
+        componentSkins.put(skin.name(), skin);
+    }
+
     public ComponentSkin getComponentSkin(String componentName){
         return componentSkins.get(componentName);
     }

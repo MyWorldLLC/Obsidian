@@ -18,23 +18,25 @@ package myworld.obsidian.display.skin.chipmunk;
 
 import chipmunk.runtime.ChipmunkModule;
 import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
+import myworld.obsidian.display.skin.ComponentInterface;
+import myworld.obsidian.display.skin.StyleClass;
+import myworld.obsidian.display.skin.StyleRule;
+import myworld.obsidian.display.skin.VarType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ComponentModule implements ChipmunkModule {
 
     public static final String MODULE_NAME = "obsidian.component";
 
-    public record LayerDef(String name, Map<String, Object> style){}
+    protected final List<StyleClass> styles = new ArrayList<>();
 
     protected String name;
-    protected final Map<String, String> componentInterface = new HashMap<>();
-
-    protected final List<LayerDef> layers = new ArrayList<>();
-    protected final Map<String, Map<String, Object>> stateStyles = new HashMap<>();
+    protected final ComponentInterface componentInterface = new ComponentInterface();
 
     @AllowChipmunkLinkage
     public void name(String name){
@@ -43,33 +45,57 @@ public class ComponentModule implements ChipmunkModule {
 
     @AllowChipmunkLinkage
     public void data(Map<String, String> data){
-        componentInterface.putAll(data);
+        for(var entry : data.entrySet()){
+            var type = switch(entry.getValue()){
+                case "string" -> VarType.STRING;
+                case "boolean" -> VarType.BOOLEAN;
+                case "image" -> VarType.IMAGE;
+                case "color" -> VarType.COLOR;
+                default -> null;
+            };
+
+            if(type != null){
+                componentInterface.defineParameter(entry.getKey(), type);
+            }else{
+                // TODO - log warning
+            }
+        }
+    }
+
+    @AllowChipmunkLinkage
+    public void style(String name, Map<String, Object> style){
+        styles.add(StyleClass.forName(name, toRules(style)));
     }
 
     @AllowChipmunkLinkage
     public void state(String variable, Map<String, Object> style){
-        stateStyles.put(variable, style);
+        styles.add(StyleClass.forState(variable, toRules(style)));
     }
 
     @AllowChipmunkLinkage
     public void layer(String layer, Map<String, Object> style){
-        layers.add(new LayerDef(layer, style));
+        styles.add(StyleClass.forLayer(layer, toRules(style)));
+    }
+
+    @AllowChipmunkLinkage
+    public void layer(String layer, String variable, Map<String, Object> style){
+        styles.add(StyleClass.forLayerState(layer, variable, toRules(style)));
+    }
+
+    protected static List<StyleRule> toRules(Map<String, Object> style){
+        return style.entrySet().stream().map(e -> new StyleRule(e.getKey(), e.getValue())).collect(Collectors.toList());
     }
 
     public String getComponentName(){
         return name;
     }
 
-    public Map<String, String> getComponentInterface(){
+    public ComponentInterface getComponentInterface(){
         return componentInterface;
     }
 
-    public Map<String, Map<String, Object>> getStateStyles(){
-        return stateStyles;
-    }
-
-    public List<LayerDef> getLayers(){
-        return layers;
+    public List<StyleClass> getStyles(){
+        return styles;
     }
 
 }
