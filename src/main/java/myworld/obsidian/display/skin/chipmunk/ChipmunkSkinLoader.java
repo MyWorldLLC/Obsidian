@@ -54,8 +54,10 @@ public class ChipmunkSkinLoader {
 
                 var componentLoader = new ModuleLoader();
                 var componentModule = new ComponentModule();
+                var componentVarModule = new VarModule();
+                varModule.getVars().forEach((k, v) -> componentVarModule.getVars().put(k, v));
                 componentLoader.registerNativeFactory(ComponentModule.MODULE_NAME, () -> componentModule);
-                componentLoader.registerNativeFactory(VarModule.MODULE_NAME, () -> varModule);
+                componentLoader.registerNativeFactory(VarModule.MODULE_NAME, () -> componentVarModule);
                 componentLoader.registerNativeFactory(StyleModule.MODULE_NAME, () -> styleModule);
 
                 var componentUnit = new CompilationUnit();
