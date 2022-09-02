@@ -63,27 +63,18 @@ public class ComponentModule implements ChipmunkModule {
     }
 
     @AllowChipmunkLinkage
-    public void style(String name, Map<String, Object> style){
-        styles.add(StyleClass.forName(name, toRules(style)));
-    }
-
-    @AllowChipmunkLinkage
     public void state(String variable, Map<String, Object> style){
-        styles.add(StyleClass.forState(variable, toRules(style)));
+        styles.add(StyleClass.forState(variable, StyleClass.toRules(style)));
     }
 
     @AllowChipmunkLinkage
     public void layer(String layer, Map<String, Object> style){
-        styles.add(StyleClass.forLayer(layer, toRules(style)));
+        styles.add(StyleClass.forLayer(layer, StyleClass.toRules(style)));
     }
 
     @AllowChipmunkLinkage
     public void layer(String layer, String variable, Map<String, Object> style){
-        styles.add(StyleClass.forLayerState(layer, variable, toRules(style)));
-    }
-
-    protected static List<StyleRule> toRules(Map<String, Object> style){
-        return style.entrySet().stream().map(e -> new StyleRule(e.getKey(), e.getValue())).collect(Collectors.toList());
+        styles.add(StyleClass.forLayerState(layer, variable, StyleClass.toRules(style)));
     }
 
     public String getComponentName(){

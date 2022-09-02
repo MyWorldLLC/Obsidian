@@ -18,22 +18,24 @@ package myworld.obsidian.display.skin.chipmunk;
 
 import chipmunk.runtime.ChipmunkModule;
 import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
+import myworld.obsidian.display.skin.StyleClass;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class StyleModule implements ChipmunkModule {
 
     public static final String MODULE_NAME = "obsidian.style";
 
-    protected final Map<String, Map<String, Object>> styles = new HashMap<>();
+    protected final List<StyleClass> styles = new ArrayList<>();
 
     @AllowChipmunkLinkage
     public void style(String name, Map<String, Object> style){
-        styles.put(name, style);
+        styles.add(StyleClass.forName(name, StyleClass.toRules(style)));
     }
 
-    public Map<String, Map<String, Object>> getStyles(){
+    public List<StyleClass> getStyles(){
         return styles;
     }
 }

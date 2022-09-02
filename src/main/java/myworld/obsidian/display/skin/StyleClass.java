@@ -2,6 +2,7 @@ package myworld.obsidian.display.skin;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,23 +45,27 @@ public record StyleClass(String name, String layer, String stateParam, StyleRule
 
     public static StyleClass merge(Stream<StyleClass> classes){
         return new StyleClass(classes.flatMap(style -> Arrays.stream(style.rules()))
-                .collect(Collectors.toSet()).toArray(new StyleRule[]{}));
+                .collect(Collectors.toSet()).toArray(StyleRule[]::new));
     }
 
-    public static StyleClass forName(String name, Collection<StyleRule> rules){
-        return new StyleClass(name, null, null, rules.toArray(new StyleRule[]{}));
+    public static StyleClass forName(String name, StyleRule[] rules){
+        return new StyleClass(name, null, null, rules);
     }
 
-    public static StyleClass forLayer(String layer, Collection<StyleRule> rules){
-        return new StyleClass(null, layer, null, rules.toArray(new StyleRule[]{}));
+    public static StyleClass forLayer(String layer, StyleRule[] rules){
+        return new StyleClass(null, layer, null, rules);
     }
 
-    public static StyleClass forState(String stateParam, Collection<StyleRule> rules){
-        return new StyleClass(null, null, stateParam, rules.toArray(new StyleRule[]{}));
+    public static StyleClass forState(String stateParam, StyleRule[] rules){
+        return new StyleClass(null, null, stateParam, rules);
     }
 
-    public static StyleClass forLayerState(String layer, String stateParam, Collection<StyleRule> rules){
-        return new StyleClass(null, layer, stateParam, rules.toArray(new StyleRule[]{}));
+    public static StyleClass forLayerState(String layer, String stateParam, StyleRule[] rules){
+        return new StyleClass(null, layer, stateParam, rules);
+    }
+
+    public static StyleRule[] toRules(Map<String, Object> style){
+        return style.entrySet().stream().map(e -> new StyleRule(e.getKey(), e.getValue())).toArray(StyleRule[]::new);
     }
 
 }
