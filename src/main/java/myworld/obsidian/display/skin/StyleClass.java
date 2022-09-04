@@ -11,10 +11,6 @@ public record StyleClass(String name, String layer, String stateParam, Map<Strin
         rules = Map.copyOf(rules);
     }
 
-    public StyleClass(String name){
-        this(name, null, null, Collections.emptyMap());
-    }
-
     public StyleClass(Map<String, Object> rules){
         this(null, null, null, rules);
     }
