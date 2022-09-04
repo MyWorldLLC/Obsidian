@@ -170,4 +170,10 @@ public class ComponentLayout {
         preferredWidth().set(width);
         preferredHeight().set(height);
     }
+
+    public void clampedSize(LayoutDimension width, LayoutDimension height){
+        minSize(width, height);
+        preferredSize(width, height);
+        maxSize(width, height);
+    }
 }

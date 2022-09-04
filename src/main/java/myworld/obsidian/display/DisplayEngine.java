@@ -106,6 +106,9 @@ public class DisplayEngine implements AutoCloseable {
         }
     }
 
+    public void clear(ColorRGBA clearColor){
+        getCanvas().clear(clearColor.toInt());
+    }
 
     public Canvas getCanvas(){
         return surface.getCanvas();
@@ -163,7 +166,7 @@ public class DisplayEngine implements AutoCloseable {
 
             for(var layer : skin.layers()){
                 var activeStates = skin.activeForLayer(layer.layer(), renderVars);
-                var style = StyleClass.merge(activeStates);
+                var style = StyleClass.merge(layer, StyleClass.merge(activeStates));
 
                 // Mix-in style imports - pull from component styles first, then skin styles
                 List<String> styles = style.rule("styles");
@@ -180,7 +183,8 @@ public class DisplayEngine implements AutoCloseable {
                     }
                 }
 
-                Renderer.render(getCanvas(), ui.getLayout().getBounds(component), renderVars, style);
+                System.out.printf("Rendering %s: %s%n", component.styleName().get(), style);
+                Renderer.render(getCanvas(), ui.getLayout().getBounds(component), style);
             }
 
         }else{

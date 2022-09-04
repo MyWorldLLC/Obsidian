@@ -16,6 +16,8 @@
 
 package myworld.obsidian;
 
+import myworld.obsidian.display.ColorRGBA;
+import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.scene.Component;
@@ -27,9 +29,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ObsidianUI {
 
+    public static final String ROOT_COMPONENT_STYLE_NAME = "Root";
+
     protected final Component root;
     protected final ValueProperty<LayoutEngine> layout;
     protected final ValueProperty<DisplayEngine> display;
+    protected final ValueProperty<ColorRGBA> clearColor;
 
     protected final Map<String, UISkin> skins;
     protected final ValueProperty<String> selectedSkin;
@@ -44,6 +49,7 @@ public class ObsidianUI {
 
     public ObsidianUI(DisplayEngine display){
         root = new Component();
+        root.styleName().set(ROOT_COMPONENT_STYLE_NAME);
         layout = new ValueProperty<>(new LayoutEngine(this));
         this.display = new ValueProperty<>(display);
         display.registerRoot(root);
@@ -51,6 +57,8 @@ public class ObsidianUI {
 
         skins = new ConcurrentHashMap<>();
         selectedSkin = new ValueProperty<>();
+
+        clearColor = new ValueProperty<>(Colors.BLACK);
     }
 
     public LayoutEngine getLayout(){
@@ -69,6 +77,10 @@ public class ObsidianUI {
         this.display.set(display);
     }
 
+    public ValueProperty<ColorRGBA> clearColor(){
+        return clearColor;
+    }
+
     public Component getRoot(){
         return root;
     }
@@ -80,6 +92,7 @@ public class ObsidianUI {
 
     public void render(){
         display.ifSet(d -> {
+            d.clear(clearColor.get());
             d.render(this, root, getSkin(selectedSkin.get()));
             d.flush();
         });
@@ -111,4 +124,5 @@ public class ObsidianUI {
     public void useSkin(String name){
         selectedSkin.set(name);
     }
+
 }

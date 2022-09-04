@@ -5,7 +5,6 @@ import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class SkinModule implements ChipmunkModule {
 

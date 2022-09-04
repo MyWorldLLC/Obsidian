@@ -18,15 +18,18 @@ package myworld.obsidian.display;
 
 public class Colors {
 
-    public static String rgb(int r, int g, int b){
+    public static final String COLOR_RGB_HEX_PATTERN = "#RRGGBB";
+    public static final String COLOR_RGBA_HEX_PATTERN = "#RRGGBBAA";
+
+    public static String hex(byte r, byte g, byte b){
         return "#%1$02X%2$02X%3$02X".formatted(r, g, b);
     }
 
-    public static String rgba(int r, int g, int b, int a){
+    public static String hex(byte r, byte g, byte b, byte a){
         return "#%1$02X%2$02X%3$02X%4$02X".formatted(r, g, b, a);
     }
 
-    public static final String WHITE = "#FFFFFF";
+    public static final ColorRGBA WHITE = ColorRGBA.of("#FFFFFF");
 
-    public static final String BLACK = "#000000";
+    public static final ColorRGBA BLACK = ColorRGBA.of("#000000");
 }

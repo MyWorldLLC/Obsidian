@@ -60,6 +60,7 @@ public class ChipmunkSkinLoader {
                 componentLoader.registerNativeFactory(ComponentModule.MODULE_NAME, () -> componentModule);
                 componentLoader.registerNativeFactory(VarModule.MODULE_NAME, () -> componentVarModule);
                 componentLoader.registerNativeFactory(StyleModule.MODULE_NAME, () -> componentStyleModule);
+                componentLoader.registerNativeFactory(GraphicsModule.MODULE_NAME, GraphicsModule::new);
 
                 var componentUnit = new CompilationUnit();
                 componentUnit.setModuleLoader(new ModuleLoader());
@@ -74,6 +75,7 @@ public class ChipmunkSkinLoader {
 
                 var styles = componentModule.getStyles();
                 styles.addAll(componentStyleModule.getStyles());
+                System.out.println("Styles for %s: %s".formatted(componentModule.getComponentName(), styles));
 
                 skin.addComponentSkin(new ComponentSkin(
                         componentModule.getComponentName(),

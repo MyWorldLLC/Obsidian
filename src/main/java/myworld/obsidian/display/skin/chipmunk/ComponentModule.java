@@ -18,16 +18,15 @@ package myworld.obsidian.display.skin.chipmunk;
 
 import chipmunk.runtime.ChipmunkModule;
 import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
+import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.skin.ComponentInterface;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.VarType;
 import myworld.obsidian.geometry.SvgPath;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ComponentModule implements ChipmunkModule {
 
@@ -75,11 +74,6 @@ public class ComponentModule implements ChipmunkModule {
     @AllowChipmunkLinkage
     public void layer(String layer, String variable, Map<String, Object> style){
         styles.add(StyleClass.forLayerState(layer, variable, style));
-    }
-
-    @AllowChipmunkLinkage
-    public SvgPath path(String path){
-        return new SvgPath(path);
     }
 
     public String getComponentName(){

@@ -8,6 +8,7 @@ def skin(){
     description('Default UI skin for Obsidian')
 
     components([
+        '/Root.chp',
         '/Example.chp'
     ])
 }

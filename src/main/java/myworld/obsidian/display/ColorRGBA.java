@@ -25,6 +25,15 @@ public record ColorRGBA(byte r, byte g, byte b, byte a) {
         return (r << 24) | (g << 16) | (b << 8) | a;
     }
 
+    public String toHex(){
+        return Colors.hex(r, g, b, a);
+    }
+
+    @Override
+    public String toString(){
+        return "ColorRGBA[" + toHex() + "]";
+    }
+
     public static byte extractChannel(int color, int shift){
         return (byte) (color >> shift);
     }
@@ -35,5 +44,23 @@ public record ColorRGBA(byte r, byte g, byte b, byte a) {
 
     public static ColorRGBA of(int r, int g, int b, int a){
         return new ColorRGBA((byte)r, (byte)g, (byte) b, (byte)a);
+    }
+
+    public static ColorRGBA of(String hex){
+        if(hex.length() != Colors.COLOR_RGB_HEX_PATTERN.length() && hex.length() != Colors.COLOR_RGBA_HEX_PATTERN.length()){
+            throw new IllegalArgumentException("Invalid hex color string: must match either %s or %s"
+                    .formatted(Colors.COLOR_RGB_HEX_PATTERN, Colors.COLOR_RGBA_HEX_PATTERN));
+        }
+
+        String r = hex.substring(1, 3);
+        String g = hex.substring(3, 5);
+        String b = hex.substring(5, 7);
+        String a = "FF";
+        if(hex.length() == Colors.COLOR_RGBA_HEX_PATTERN.length()){
+            a = hex.substring(7, 9);
+        }
+
+        final int radix = 16;
+        return ColorRGBA.of(Integer.parseInt(r, radix), Integer.parseInt(g, radix), Integer.parseInt(b, radix), Integer.parseInt(a, radix));
     }
 }

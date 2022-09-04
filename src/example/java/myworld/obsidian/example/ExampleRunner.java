@@ -93,7 +93,6 @@ public class ExampleRunner {
     public void createSurface(){
         ui.display().ifSet(DisplayEngine::close);
         ui.setDisplay(DisplayEngine.createForGL(getRenderWidth(), getRenderHeight(), 0));
-        renderUI();
     }
 
     public void run(){
@@ -101,17 +100,10 @@ public class ExampleRunner {
         while(!glfwWindowShouldClose(window)){
             glfwPollEvents();
             ui.update(1.0/64.0); // Assume a constant refresh rate
-            renderUI();
+            ui.render();
+            glfwSwapBuffers(window);
+            sleep(16);
         }
-    }
-
-    public void renderUI(){
-        var canvas = ui.getDisplay().getCanvas();
-        canvas.clear(0x00000000);
-
-        ui.render();
-
-        glfwSwapBuffers(window);
     }
 
     public void cleanup(){
@@ -121,13 +113,13 @@ public class ExampleRunner {
 
     public int getWidth(){
         var width = new int[1];
-        glfwGetFramebufferSize(window, width, null);
+        glfwGetWindowSize(window, width, null);
         return width[0];
     }
 
     public int getHeight(){
         var height = new int[1];
-        glfwGetFramebufferSize(window, null, height);
+        glfwGetWindowSize(window, null, height);
         return height[0];
     }
 
@@ -145,5 +137,14 @@ public class ExampleRunner {
 
     public float getDPI(){
         return getXScale();
+    }
+
+    protected void sleep(long millis){
+        try {
+            Thread.sleep(16);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            e.printStackTrace();
+        }
     }
 }

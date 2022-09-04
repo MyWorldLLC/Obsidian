@@ -18,26 +18,38 @@ package myworld.obsidian.display.skin.chipmunk;
 
 import chipmunk.runtime.ChipmunkModule;
 import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
+import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
+import myworld.obsidian.geometry.SvgPath;
 
-public class UIModule implements ChipmunkModule {
+public class GraphicsModule implements ChipmunkModule {
 
-    public static final String MODULE_NAME = "obsidian.ui";
+    public static final String MODULE_NAME = "obsidian.graphics";
+
+    @AllowChipmunkLinkage
+    public static final ColorRGBA white = Colors.WHITE;
+
+    @AllowChipmunkLinkage
+    public static final ColorRGBA black = Colors.BLACK;
 
     @AllowChipmunkLinkage
     public static String rgb(int r, int g, int b){
-        return Colors.rgb(r, g, b);
+        return Colors.hex((byte)r, (byte)g, (byte)b);
     }
 
     @AllowChipmunkLinkage
     public static String rgba(int r, int g, int b, int a){
-        return Colors.rgba(r, g, b, a);
+        return Colors.hex((byte)r, (byte)g, (byte)b, (byte)a);
     }
 
     @AllowChipmunkLinkage
-    public static final String white = Colors.WHITE;
+    public SvgPath path(String path){
+        return new SvgPath(path);
+    }
 
     @AllowChipmunkLinkage
-    public static final String black = Colors.BLACK;
+    public ColorRGBA color(String hexColor){
+        return ColorRGBA.of(hexColor);
+    }
 
 }

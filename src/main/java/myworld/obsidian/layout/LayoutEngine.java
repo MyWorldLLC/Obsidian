@@ -60,7 +60,7 @@ public class LayoutEngine {
         var fHeight = (float) dimensions.height();
 
         var root = ui.getRoot();
-        root.layout().preferredSize(LayoutDimension.pixels(fWidth), LayoutDimension.pixels(fHeight));
+        root.layout().clampedSize(LayoutDimension.pixels(fWidth), LayoutDimension.pixels(fHeight));
         syncLayoutProperties(root);
 
         var yogaTag = root.getTag(YogaTag.class);
