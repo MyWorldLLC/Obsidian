@@ -23,7 +23,6 @@ import myworld.obsidian.properties.ListChangeListener;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.scene.Component;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static org.lwjgl.util.yoga.Yoga.*;
@@ -61,7 +60,7 @@ public class LayoutEngine {
         var fHeight = (float) dimensions.height();
 
         var root = ui.getRoot();
-        root.layout().size(LayoutDimension.pixels(fWidth), LayoutDimension.pixels(fHeight));
+        root.layout().preferredSize(LayoutDimension.pixels(fWidth), LayoutDimension.pixels(fHeight));
         syncLayoutProperties(root);
 
         var yogaTag = root.getTag(YogaTag.class);
@@ -219,12 +218,12 @@ public class LayoutEngine {
             yogaSetPadding(node, YGEdgeRight, padding.right());
             yogaSetPadding(node, YGEdgeBottom, padding.bottom());
 
-            setDimension(layout.width().get(),
+            setDimension(layout.preferredWidth().get(),
                     () -> YGNodeStyleSetWidthAuto(node),
                     (w) -> YGNodeStyleSetWidth(node, w),
                     (w) -> YGNodeStyleSetWidthPercent(node, w));
 
-            setDimension(layout.height().get(),
+            setDimension(layout.preferredHeight().get(),
                     () -> YGNodeStyleSetHeightAuto(node),
                     (h) -> YGNodeStyleSetHeight(node, h),
                     (h) -> YGNodeStyleSetHeightPercent(node, h));

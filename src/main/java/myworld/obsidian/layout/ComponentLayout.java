@@ -132,11 +132,11 @@ public class ComponentLayout {
         return padding;
     }
 
-    public ValueProperty<LayoutDimension> width() {
+    public ValueProperty<LayoutDimension> preferredWidth() {
         return width;
     }
 
-    public ValueProperty<LayoutDimension> height() {
+    public ValueProperty<LayoutDimension> preferredHeight() {
         return height;
     }
 
@@ -166,8 +166,8 @@ public class ComponentLayout {
         maxHeight.set(height);
     }
 
-    public void size(LayoutDimension width, LayoutDimension height){
-        minSize(width, height);
-        maxSize(width, height);
+    public void preferredSize(LayoutDimension width, LayoutDimension height){
+        preferredWidth().set(width);
+        preferredHeight().set(height);
     }
 }

@@ -20,16 +20,12 @@ import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
 import myworld.obsidian.layout.LayoutDimension;
-import myworld.obsidian.layout.Unit;
 import myworld.obsidian.scene.Component;
 import org.lwjgl.glfw.*;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.*;
-
-import io.github.humbleui.skija.*;
-import io.github.humbleui.skija.impl.*;
 
 public class ExampleRunner {
 
@@ -82,7 +78,7 @@ public class ExampleRunner {
 
         var example = new Component();
         example.styleName().set("Example");
-        example.layout().size(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
+        example.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
         ui.getRoot().addChild(example);
     }
 
