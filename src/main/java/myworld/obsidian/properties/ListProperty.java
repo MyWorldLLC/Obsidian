@@ -85,9 +85,9 @@ public class ListProperty<T> extends Property<ListChangeListener<T>> implements 
 
     @Override
     public boolean add(T t) {
-        values.add(t);
+        var added = values.add(t);
         listeners.forEach(l -> l.onAdd(this, size() - 1, t));
-        return values.add(t);
+        return added;
     }
 
     @Override
