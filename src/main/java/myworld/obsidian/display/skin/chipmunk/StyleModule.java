@@ -32,7 +32,7 @@ public class StyleModule implements ChipmunkModule {
 
     @AllowChipmunkLinkage
     public void style(String name, Map<String, Object> style){
-        styles.add(StyleClass.forName(name, StyleClass.toRules(style)));
+        styles.add(StyleClass.forName(name, style));
     }
 
     public List<StyleClass> getStyles(){

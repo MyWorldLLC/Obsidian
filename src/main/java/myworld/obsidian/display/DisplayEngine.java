@@ -166,10 +166,9 @@ public class DisplayEngine implements AutoCloseable {
                 var style = StyleClass.merge(activeStates);
 
                 // Mix-in style imports - pull from component styles first, then skin styles
-                var styles = style.rule("styles");
+                List<String> styles = style.rule("styles");
                 if(styles != null){
-                    List<String> styleClasses = styles.arg(0);
-                    for(String mixName : styleClasses){
+                    for(String mixName : styles){
                         var mixStyle = skin.findNamed(mixName);
                         if(mixStyle == null){
                             mixStyle = uiSkin.getStyle(mixName);

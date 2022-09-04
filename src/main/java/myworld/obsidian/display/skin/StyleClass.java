@@ -1,18 +1,21 @@
 package myworld.obsidian.display.skin;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public record StyleClass(String name, String layer, String stateParam, StyleRule... rules) {
+public record StyleClass(String name, String layer, String stateParam, Map<String, Object> rules) {
 
-    public StyleClass(String name){
-        this(name, null, null);
+    public StyleClass {
+        Objects.requireNonNull(rules, "Style class rules may not be null");
+        rules = Map.copyOf(rules);
     }
 
-    public StyleClass(StyleRule... rules){
+    public StyleClass(String name){
+        this(name, null, null, Collections.emptyMap());
+    }
+
+    public StyleClass(Map<String, Object> rules){
         this(null, null, null, rules);
     }
 
@@ -24,15 +27,14 @@ public record StyleClass(String name, String layer, String stateParam, StyleRule
         return stateParam != null;
     }
 
-    public StyleRule rule(String name){
-        return rule(name, null);
+    @SuppressWarnings("unchecked")
+    public <T> T rule(String name){
+        return (T) rules.get(name);
     }
 
-    public StyleRule rule(String name, StyleRule defaultRule){
-        return Arrays.stream(rules)
-                .filter(r -> r.name().equals(name))
-                .findFirst()
-                .orElse(defaultRule);
+    public <T> T rule(String name, T defaultValue){
+        T value = rule(name);
+        return value != null ? value : defaultValue;
     }
 
     public static StyleClass merge(Collection<StyleClass> classes){
@@ -44,28 +46,24 @@ public record StyleClass(String name, String layer, String stateParam, StyleRule
     }
 
     public static StyleClass merge(Stream<StyleClass> classes){
-        return new StyleClass(classes.flatMap(style -> Arrays.stream(style.rules()))
-                .collect(Collectors.toSet()).toArray(StyleRule[]::new));
+        return new StyleClass(classes.flatMap(style -> style.rules().entrySet().stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
-    public static StyleClass forName(String name, StyleRule[] rules){
+    public static StyleClass forName(String name, Map<String, Object> rules){
         return new StyleClass(name, null, null, rules);
     }
 
-    public static StyleClass forLayer(String layer, StyleRule[] rules){
+    public static StyleClass forLayer(String layer, Map<String, Object> rules){
         return new StyleClass(null, layer, null, rules);
     }
 
-    public static StyleClass forState(String stateParam, StyleRule[] rules){
+    public static StyleClass forState(String stateParam, Map<String, Object> rules){
         return new StyleClass(null, null, stateParam, rules);
     }
 
-    public static StyleClass forLayerState(String layer, String stateParam, StyleRule[] rules){
+    public static StyleClass forLayerState(String layer, String stateParam, Map<String, Object> rules){
         return new StyleClass(null, layer, stateParam, rules);
-    }
-
-    public static StyleRule[] toRules(Map<String, Object> style){
-        return style.entrySet().stream().map(e -> new StyleRule(e.getKey(), e.getValue())).toArray(StyleRule[]::new);
     }
 
 }

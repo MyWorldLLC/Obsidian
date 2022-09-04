@@ -20,10 +20,7 @@ import chipmunk.runtime.ChipmunkModule;
 import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
 import myworld.obsidian.display.skin.ComponentInterface;
 import myworld.obsidian.display.skin.StyleClass;
-import myworld.obsidian.display.skin.StyleRule;
 import myworld.obsidian.display.skin.VarType;
-import myworld.obsidian.geometry.Dimension2D;
-import myworld.obsidian.geometry.Rectangle;
 import myworld.obsidian.geometry.SvgPath;
 
 import java.util.ArrayList;
@@ -67,17 +64,17 @@ public class ComponentModule implements ChipmunkModule {
 
     @AllowChipmunkLinkage
     public void state(String variable, Map<String, Object> style){
-        styles.add(StyleClass.forState(variable, StyleClass.toRules(style)));
+        styles.add(StyleClass.forState(variable, style));
     }
 
     @AllowChipmunkLinkage
     public void layer(String layer, Map<String, Object> style){
-        styles.add(StyleClass.forLayer(layer, StyleClass.toRules(style)));
+        styles.add(StyleClass.forLayer(layer, style));
     }
 
     @AllowChipmunkLinkage
     public void layer(String layer, String variable, Map<String, Object> style){
-        styles.add(StyleClass.forLayerState(layer, variable, StyleClass.toRules(style)));
+        styles.add(StyleClass.forLayerState(layer, variable, style));
     }
 
     @AllowChipmunkLinkage

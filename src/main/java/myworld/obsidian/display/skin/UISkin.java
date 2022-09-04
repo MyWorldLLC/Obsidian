@@ -1,7 +1,5 @@
 package myworld.obsidian.display.skin;
 
-import myworld.obsidian.styles.ComponentStyles;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
