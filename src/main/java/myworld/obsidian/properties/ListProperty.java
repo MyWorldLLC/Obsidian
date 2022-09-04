@@ -36,7 +36,7 @@ public class ListProperty<T> extends Property<ListChangeListener<T>> implements 
     }
 
     public ListProperty(T[] initialValues){
-        values = Collections.synchronizedList(Arrays.asList(initialValues));
+        values = Collections.synchronizedList(new ArrayList<>(Arrays.asList(initialValues)));
     }
 
     private ListProperty(List<T> backedBy){
@@ -131,7 +131,7 @@ public class ListProperty<T> extends Property<ListChangeListener<T>> implements 
 
     @Override
     public boolean removeIf(Predicate<? super T> filter) {
-        var changed = new ValueProperty<Boolean>();
+        var changed = new ValueProperty<>(false);
         var toRemove = new ArrayList<T>();
         for(int i = 0; i < values.size(); i++){
             T value = values.get(i);

@@ -105,6 +105,7 @@ dependencies {
     exampleCompileClasspath 'org.lwjgl:lwjgl-opengl:3.3.1'
     exampleRuntimeOnly "org.lwjgl:lwjgl:3.3.1:natives-${getLwjglPlatform()}"
     exampleRuntimeOnly "org.lwjgl:lwjgl-glfw:3.3.1:natives-${getLwjglPlatform()}"
+    exampleRuntimeOnly "org.lwjgl:lwjgl-yoga:3.3.1:natives-${getLwjglPlatform()}"
     exampleRuntimeOnly "org.lwjgl:lwjgl-opengl:3.3.1:natives-${getLwjglPlatform()}"
 }
 

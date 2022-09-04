@@ -19,6 +19,8 @@ public class Renderer {
         var paint = new Paint();
         paint.setColor(ColorRGBA.of(255, 255, 255).toInt());
 
+        System.out.println(bounds);
+
         canvas.drawRect(new Rect((float)bounds.left(), (float)bounds.top(), (float)bounds.right(), (float)bounds.bottom()), paint);
     }
 

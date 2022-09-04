@@ -55,14 +55,17 @@ public class LayoutEngine {
     }
 
     public void layout(){
+
+        var dimensions = ui.getDisplay().getDimensions().get();
+        var fWidth = (float) dimensions.width();
+        var fHeight = (float) dimensions.height();
+
         var root = ui.getRoot();
+        root.layout().size(LayoutDimension.pixels(fWidth), LayoutDimension.pixels(fHeight));
         syncLayoutProperties(root);
 
         var yogaTag = root.getTag(YogaTag.class);
         if(yogaTag != null){
-            var dimensions = ui.getDimensions().get();
-            var fWidth = (float) dimensions.width();
-            var fHeight = (float) dimensions.height();
             YGNodeCalculateLayout(yogaTag.node(), fWidth, fHeight, YGDirectionLTR);
         }
     }
@@ -97,27 +100,52 @@ public class LayoutEngine {
         return Bounds2D.ZERO;
     }
 
+    public void registerRoot(Component component){
+        addLayout(component);
+    }
+
     protected void onComponentChange(ListProperty<Component> children, int index, Component oldValue, Component newValue){
-        if(oldValue == null && newValue != null){
-            addLayout(newValue);
-        }else if(oldValue != null && newValue == null){
+        if(oldValue != null && newValue == null){
             removeLayout(oldValue);
+        }else if(oldValue == null && newValue != null){
+            addLayout(newValue);
         }
     }
 
     protected void addLayout(Component component){
         component.children().addListener(listener);
-        component.tag(new YogaTag(YGNodeNew()));
+        var tag = new YogaTag(YGNodeNew());
+        component.tag(tag);
+
+        if(component.hasParent()){
+            var parent = component.getParent().getTag(YogaTag.class);
+            YGNodeInsertChild(parent.node(), tag.node(), YGNodeGetChildCount(parent.node()));
+        }
+
         component.children().forEach(this::addLayout);
     }
 
     protected void removeLayout(Component component){
         component.children().removeListener(listener);
-        var layout = component.getTag(YogaTag.class);
-        if(layout != null){
-            YGNodeFree(layout.node());
-            component.removeTag(YogaTag.class);
-            component.children().forEach(this::removeLayout);
+        component.children().forEach(this::removeLayout);
+
+        var tag = component.getTag(YogaTag.class);
+        if(component.hasParent()){
+            var parent = component.getParent().getTag(YogaTag.class);
+            YGNodeRemoveChild(parent.node(), tag.node());
+        }
+
+        YGNodeFree(tag.node());
+        component.removeTag(YogaTag.class);
+    }
+
+    protected void ensureYogaNode(Component component){
+        if(component.layout().node().get() == null){
+            long node = YGNodeNew();
+            component.layout().node().set(node);
+            component.children().forEach(child -> {
+                YGNodeInsertChild(node, child.layout().node().get(), YGNodeGetChildCount(node));
+            });
         }
     }
 
@@ -194,12 +222,12 @@ public class LayoutEngine {
             setDimension(layout.width().get(),
                     () -> YGNodeStyleSetWidthAuto(node),
                     (w) -> YGNodeStyleSetWidth(node, w),
-                    (w) -> YGNodeStyleSetWidth(node, w));
+                    (w) -> YGNodeStyleSetWidthPercent(node, w));
 
             setDimension(layout.height().get(),
                     () -> YGNodeStyleSetHeightAuto(node),
                     (h) -> YGNodeStyleSetHeight(node, h),
-                    (h) -> YGNodeStyleSetHeight(node, h));
+                    (h) -> YGNodeStyleSetHeightPercent(node, h));
 
             setDimension(layout.minWidth().get(),
                     () -> YGNodeStyleSetMinWidth(node, YGUndefined),

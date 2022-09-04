@@ -8,7 +8,7 @@ def component(){
     name('Example')
 
     layer('background', {
-        'geometry': '', #roundedRectangle('95%', '90%', '5px'),
+        'geometry': path('M 10 10 H 90 V 90 H 10 L 10 10'),
         'color': '#FFFFFFFF'
     })
 }

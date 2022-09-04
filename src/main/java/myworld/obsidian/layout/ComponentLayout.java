@@ -4,6 +4,7 @@ import myworld.obsidian.properties.ValueProperty;
 
 public class ComponentLayout {
 
+    protected final ValueProperty<Long> node;
     protected final ValueProperty<PositionType> positionType;
     protected final ValueProperty<Offsets> offsets;
 
@@ -35,6 +36,7 @@ public class ComponentLayout {
     protected final ValueProperty<LayoutDimension> maxHeight;
 
     public ComponentLayout(){
+        node = new ValueProperty<>();
         positionType = new ValueProperty<>(PositionType.RELATIVE);
         offsets = new ValueProperty<>();
 
@@ -64,6 +66,10 @@ public class ComponentLayout {
 
         minHeight = new ValueProperty<>(LayoutDimension.AUTO);
         maxHeight = new ValueProperty<>(LayoutDimension.AUTO);
+    }
+
+    public ValueProperty<Long> node(){
+        return node;
     }
 
     public ValueProperty<PositionType> positionType() {
@@ -148,5 +154,20 @@ public class ComponentLayout {
 
     public ValueProperty<LayoutDimension> maxHeight(){
         return maxHeight;
+    }
+
+    public void minSize(LayoutDimension width, LayoutDimension height){
+        minWidth.set(width);
+        minHeight.set(height);
+    }
+
+    public void maxSize(LayoutDimension width, LayoutDimension height){
+        maxWidth.set(width);
+        maxHeight.set(height);
+    }
+
+    public void size(LayoutDimension width, LayoutDimension height){
+        minSize(width, height);
+        maxSize(width, height);
     }
 }

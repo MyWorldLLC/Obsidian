@@ -28,6 +28,7 @@ public class Component {
     protected final ListProperty<Component> children;
     protected final ListProperty<Effect> effects;
     protected final ListProperty<Object> tags;
+    protected final ValueProperty<String> styleName;
     protected final Variables data;
 
     protected final ValueProperty<Boolean> needsUpdate;
@@ -39,6 +40,7 @@ public class Component {
         this.children = new ListProperty<>(children);
         effects = new ListProperty<>();
         tags = new ListProperty<>();
+        styleName = new ValueProperty<>(defaultStyleName(this));
         data = new Variables();
 
         needsUpdate = new ValueProperty<>();
@@ -58,9 +60,9 @@ public class Component {
         if(isChild(child)){
             throw new IllegalStateException("Component has already been added as a child");
         }
-        children.add(child);
         child.parent().set(this);
         child.onAttach();
+        children.add(child);
     }
 
     public boolean removeChild(Component child){
@@ -108,6 +110,10 @@ public class Component {
         return tags;
     }
 
+    public ValueProperty<String> styleName(){
+        return styleName;
+    }
+
     public Variables data(){
         return data;
     }
@@ -129,12 +135,17 @@ public class Component {
     public <T> T getTag(Class<T> type){
         return (T) tags
                 .stream()
-                .filter(t -> type.isAssignableFrom(t.getClass())).findFirst()
+                .filter(t -> type.isAssignableFrom(t.getClass()))
+                .findFirst()
                 .orElse(null);
     }
 
     public void onAttach(){}
 
     public void onDetach(){}
+
+    public static String defaultStyleName(Component component){
+        return component.getClass().getSimpleName();
+    }
 
 }

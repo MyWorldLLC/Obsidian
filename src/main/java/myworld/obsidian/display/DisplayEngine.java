@@ -19,9 +19,9 @@ package myworld.obsidian.display;
 import io.github.humbleui.types.IRect;
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.display.skin.StyleClass;
-import myworld.obsidian.display.skin.StyleRule;
 import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.geometry.Bounds2D;
+import myworld.obsidian.geometry.Dimension2D;
 import myworld.obsidian.properties.ListChangeListener;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.properties.ValueProperty;
@@ -31,7 +31,6 @@ import io.github.humbleui.skija.impl.Library;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class DisplayEngine implements AutoCloseable {
 
@@ -41,11 +40,11 @@ public class DisplayEngine implements AutoCloseable {
         }
     }
 
+    protected final ValueProperty<Dimension2D> dimensions;
+
     protected final DirectContext context;
     protected final BackendRenderTarget renderTarget;
     protected final Surface surface;
-    protected final Map<String, UISkin> skins;
-    protected final ValueProperty<String> selectedSkin;
 
     protected final ListChangeListener<Component> sceneListener;
 
@@ -68,23 +67,27 @@ public class DisplayEngine implements AutoCloseable {
                 new SurfaceProps(PixelGeometry.RGB_H)
         );
 
-        return new DisplayEngine(context, renderTarget, surface);
+        return new DisplayEngine(width, height, context, renderTarget, surface);
     }
 
     public static DisplayEngine createForCpu(int width, int height){
         var surface = Surface.makeRaster(getImageInfo(width, height));
 
-        return new DisplayEngine(null, null, surface);
+        return new DisplayEngine(width, height, null, null, surface);
     }
 
-    protected DisplayEngine(DirectContext context, BackendRenderTarget renderTarget, Surface surface){
+    protected DisplayEngine(int width, int height, DirectContext context, BackendRenderTarget renderTarget, Surface surface){
         this.context = context;
         this.renderTarget = renderTarget;
         this.surface = surface;
-        skins = new ConcurrentHashMap<>();
-        selectedSkin = new ValueProperty<>();
+
+        dimensions = new ValueProperty<>(new Dimension2D(width, height));
 
         sceneListener = this::onSceneChange;
+    }
+
+    public ValueProperty<Dimension2D> getDimensions(){
+        return dimensions;
     }
 
     public void registerRoot(Component root){
@@ -103,17 +106,6 @@ public class DisplayEngine implements AutoCloseable {
         }
     }
 
-    public void registerSkin(UISkin skin){
-        skins.put(skin.getName(), skin);
-    }
-
-    public UISkin getSkin(String name){
-        return skins.get(name);
-    }
-
-    public void useSkin(String name){
-        selectedSkin.set(name);
-    }
 
     public Canvas getCanvas(){
         return surface.getCanvas();
@@ -161,13 +153,11 @@ public class DisplayEngine implements AutoCloseable {
         return getImageInfo(surface.getWidth(), surface.getHeight());
     }
 
-    public void render(ObsidianUI ui, Component component){
-        render(ui, component, getSkin(selectedSkin.get()));
-    }
-
     public void render(ObsidianUI ui, Component component, UISkin uiSkin){
 
-        var skin = uiSkin.getComponentSkin(component.getClass().getSimpleName());
+        var skin = uiSkin.getComponentSkin(component.styleName().get());
+        // TODO - if skin is undefined for this component, render a box wireframe
+
         if(skin != null){
             var renderVars = component.data();
 

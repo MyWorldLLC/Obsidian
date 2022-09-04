@@ -22,6 +22,9 @@ import myworld.obsidian.display.skin.ComponentInterface;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.StyleRule;
 import myworld.obsidian.display.skin.VarType;
+import myworld.obsidian.geometry.Dimension2D;
+import myworld.obsidian.geometry.Rectangle;
+import myworld.obsidian.geometry.SvgPath;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,6 +78,11 @@ public class ComponentModule implements ChipmunkModule {
     @AllowChipmunkLinkage
     public void layer(String layer, String variable, Map<String, Object> style){
         styles.add(StyleClass.forLayerState(layer, variable, StyleClass.toRules(style)));
+    }
+
+    @AllowChipmunkLinkage
+    public SvgPath path(String path){
+        return new SvgPath(path);
     }
 
     public String getComponentName(){

@@ -17,17 +17,22 @@
 package myworld.obsidian;
 
 import myworld.obsidian.display.DisplayEngine;
+import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.scene.Component;
-import myworld.obsidian.geometry.Dimension2D;
 import myworld.obsidian.layout.LayoutEngine;
 import myworld.obsidian.properties.ValueProperty;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class ObsidianUI {
 
-    protected final ValueProperty<Dimension2D> dimensions;
     protected final Component root;
     protected final ValueProperty<LayoutEngine> layout;
     protected final ValueProperty<DisplayEngine> display;
+
+    protected final Map<String, UISkin> skins;
+    protected final ValueProperty<String> selectedSkin;
 
     public static ObsidianUI createForGL(int width, int height, int framebufferHandle){
         return new ObsidianUI(DisplayEngine.createForGL(width, height, framebufferHandle));
@@ -39,10 +44,13 @@ public class ObsidianUI {
 
     public ObsidianUI(DisplayEngine display){
         root = new Component();
-        dimensions = new ValueProperty<>(new Dimension2D(100, 100));
         layout = new ValueProperty<>(new LayoutEngine(this));
         this.display = new ValueProperty<>(display);
         display.registerRoot(root);
+        layout.get().registerRoot(root);
+
+        skins = new ConcurrentHashMap<>();
+        selectedSkin = new ValueProperty<>();
     }
 
     public LayoutEngine getLayout(){
@@ -65,10 +73,6 @@ public class ObsidianUI {
         return root;
     }
 
-    public ValueProperty<Dimension2D> getDimensions(){
-        return dimensions;
-    }
-
     public void update(double tpf){
         layout.get().layout();
         updateEffects(root, tpf);
@@ -76,7 +80,7 @@ public class ObsidianUI {
 
     public void render(){
         display.ifSet(d -> {
-            d.render(this, root);
+            d.render(this, root, getSkin(selectedSkin.get()));
             d.flush();
         });
     }
@@ -95,4 +99,16 @@ public class ObsidianUI {
         display.ifSet(DisplayEngine::close);
     }
 
+
+    public void registerSkin(UISkin skin){
+        skins.put(skin.getName(), skin);
+    }
+
+    public UISkin getSkin(String name){
+        return skins.get(name);
+    }
+
+    public void useSkin(String name){
+        selectedSkin.set(name);
+    }
 }
