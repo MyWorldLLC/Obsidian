@@ -20,7 +20,6 @@ import myworld.obsidian.display.skin.Variables;
 import myworld.obsidian.layout.ComponentLayout;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.properties.ValueProperty;
-import myworld.obsidian.styles.ComponentStyles;
 
 public class Component {
 
@@ -33,7 +32,6 @@ public class Component {
 
     protected final ValueProperty<Boolean> needsUpdate;
     protected final ComponentLayout layout;
-    protected final ComponentStyles styles;
 
     public Component(Component... children){
         parent = new ValueProperty<>();
@@ -46,7 +44,6 @@ public class Component {
         needsUpdate = new ValueProperty<>();
 
         layout = new ComponentLayout();
-        styles = new ComponentStyles();
     }
 
     protected void requestVisualUpdate(){
@@ -96,10 +93,6 @@ public class Component {
 
     public ComponentLayout layout(){
         return layout;
-    }
-
-    public ComponentStyles styles(){
-        return styles;
     }
 
     public ListProperty<Effect> effects(){
