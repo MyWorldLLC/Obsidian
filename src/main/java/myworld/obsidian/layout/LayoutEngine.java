@@ -103,6 +103,10 @@ public class LayoutEngine {
         addLayout(component);
     }
 
+    public void unregisterRoot(Component root){
+        removeLayout(root);
+    }
+
     protected void onComponentChange(ListProperty<Component> children, int index, Component oldValue, Component newValue){
         if(oldValue != null && newValue == null){
             removeLayout(oldValue);

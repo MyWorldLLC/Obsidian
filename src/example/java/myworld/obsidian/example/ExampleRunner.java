@@ -99,14 +99,14 @@ public class ExampleRunner {
         glfwShowWindow(window);
         while(!glfwWindowShouldClose(window)){
             glfwPollEvents();
-            ui.update(1.0/64.0); // Assume a constant refresh rate
-            ui.render();
+            ui.updateAndRender(1.0/64.0); // Assume a constant refresh rate
             glfwSwapBuffers(window);
             sleep(16);
         }
     }
 
     public void cleanup(){
+        ui.cleanup();
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
     }

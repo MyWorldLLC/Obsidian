@@ -50,10 +50,14 @@ public class ObsidianUI {
     public ObsidianUI(DisplayEngine display){
         root = new Component();
         root.styleName().set(ROOT_COMPONENT_STYLE_NAME);
-        layout = new ValueProperty<>(new LayoutEngine(this));
+        layout = new ValueProperty<>();
+        layout.addListener((prop, oldValue, newValue) -> {
+            if(newValue != null){
+                newValue.registerRoot(root);
+            }
+        });
+        layout.set(new LayoutEngine(this));
         this.display = new ValueProperty<>(display);
-        display.registerRoot(root);
-        layout.get().registerRoot(root);
 
         skins = new ConcurrentHashMap<>();
         selectedSkin = new ValueProperty<>();
@@ -110,6 +114,7 @@ public class ObsidianUI {
 
     public void cleanup(){
         display.ifSet(DisplayEngine::close);
+        layout.ifSet(engine -> engine.unregisterRoot(root));
     }
 
 

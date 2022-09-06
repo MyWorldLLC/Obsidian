@@ -30,7 +30,6 @@ import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.impl.Library;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DisplayEngine implements AutoCloseable {
 
@@ -183,7 +182,7 @@ public class DisplayEngine implements AutoCloseable {
                     }
                 }
 
-                System.out.printf("Rendering %s: %s%n", component.styleName().get(), style);
+                System.out.printf("Rendering %s: (%s) %s%n", component.styleName().get(), ui.getLayout().getBounds(component), style);
                 Renderer.render(getCanvas(), ui.getLayout().getBounds(component), style);
             }
 
@@ -196,7 +195,11 @@ public class DisplayEngine implements AutoCloseable {
 
     public void flush(){
         if(context != null){
-            context.flush();
+            context.submit(true);
+        }
+
+        if(surface != null){
+            surface.flushAndSubmit(true);
         }
     }
 
