@@ -22,7 +22,11 @@ public record ColorRGBA(byte r, byte g, byte b, byte a) {
         this(extractChannel(color, 24), extractChannel(color, 16), extractChannel(color, 8), extractChannel(color, 0));
     }
     public int toInt(){
-        return (r << 24) | (g << 16) | (b << 8) | a;
+        return channel(r, 3) | channel(g, 2) | channel(b, 1) | channel(a, 0);
+    }
+
+    private int channel(byte b, int channel){
+        return ((((int) b) & 0xFF) << 8 * channel);
     }
 
     public String toHex(){
