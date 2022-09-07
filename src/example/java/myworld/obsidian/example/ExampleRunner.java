@@ -63,6 +63,10 @@ public class ExampleRunner {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_STENCIL_BITS, 0);
         glfwWindowHint(GLFW_DEPTH_BITS, 0);
+        // This is crucial - without this, antialiasing will be disabled on the framebuffer
+        // and any Skia operations involving clipping will result in major flickering and image
+        // corruption across the entire drawing canvas.
+        glfwWindowHint(GLFW_SAMPLES, 4);
 
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
@@ -109,10 +113,10 @@ public class ExampleRunner {
     public void run(){
         glfwShowWindow(window);
         while(!glfwWindowShouldClose(window)){
-            glfwMakeContextCurrent(window);
             glfwPollEvents();
             glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             ui.updateAndRender(1.0/64.0); // Assume a constant refresh rate
+            glFinish();
             glfwSwapBuffers(window);
             sleep(16);
         }
