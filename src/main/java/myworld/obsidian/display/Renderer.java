@@ -18,7 +18,7 @@ public class Renderer {
         canvas.clipRegion(clip);
 
         var paint = new Paint();
-        paint.setColor(style.rule(StyleRules.COLOR, Colors.WHITE).toInt());
+        paint.setColor(style.rule(StyleRules.COLOR, Colors.WHITE).toARGB());
 
         canvas.drawRect(new Rect((float)bounds.left(), (float)bounds.top(), (float)bounds.right(), (float)bounds.bottom()), paint);
 

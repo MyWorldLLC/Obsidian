@@ -10,6 +10,6 @@ def component(){
 
     layer('background', {
         'geometry': path('M 10 10 H 90 V 90 H 10 L 10 10'),
-        'color': color('#FFAAAA')
+        'color': color('#FFFFFF')
     })
 }

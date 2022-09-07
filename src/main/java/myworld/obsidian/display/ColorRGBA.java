@@ -21,8 +21,13 @@ public record ColorRGBA(byte r, byte g, byte b, byte a) {
     public ColorRGBA(int color){
         this(extractChannel(color, 24), extractChannel(color, 16), extractChannel(color, 8), extractChannel(color, 0));
     }
-    public int toInt(){
+
+    public int toRGBA(){
         return channel(r, 3) | channel(g, 2) | channel(b, 1) | channel(a, 0);
+    }
+
+    public int toARGB(){
+        return channel(a, 3) | channel(r, 2) | channel(g, 1) | channel(b, 0);
     }
 
     private int channel(byte b, int channel){

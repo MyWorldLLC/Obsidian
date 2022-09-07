@@ -106,7 +106,7 @@ public class DisplayEngine implements AutoCloseable {
     }
 
     public void clear(ColorRGBA clearColor){
-        getCanvas().clear(clearColor.toInt());
+        getCanvas().clear(clearColor.toARGB());
     }
 
     public Canvas getCanvas(){
