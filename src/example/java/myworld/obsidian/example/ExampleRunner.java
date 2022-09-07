@@ -22,9 +22,12 @@ import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
 import myworld.obsidian.layout.LayoutDimension;
 import myworld.obsidian.scene.Component;
 import org.lwjgl.glfw.*;
+import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class ExampleRunner {
@@ -70,9 +73,10 @@ public class ExampleRunner {
 
         // TODO - user input
 
+        GL.createCapabilities();
         glfwSwapInterval(1); // Use VSync
 
-        ui = ObsidianUI.createForGL(getWidth(), getHeight(), 0);
+        ui = ObsidianUI.createForGL(getRenderWidth(), getRenderHeight(), 0);
         ui.registerSkin(ChipmunkSkinLoader.loadFromClasspath(ChipmunkSkinLoader.DEFAULT_SKIN));
         ui.useSkin("Obsidian");
 
@@ -80,6 +84,7 @@ public class ExampleRunner {
         example.styleName().set("Example");
         example.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
         ui.getRoot().addChild(example);
+
     }
 
     public int getRenderWidth(){
@@ -99,6 +104,7 @@ public class ExampleRunner {
         glfwShowWindow(window);
         while(!glfwWindowShouldClose(window)){
             glfwPollEvents();
+            glClear(GL_COLOR_BUFFER_BIT);
             ui.updateAndRender(1.0/64.0); // Assume a constant refresh rate
             glfwSwapBuffers(window);
             sleep(16);
