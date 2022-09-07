@@ -4,18 +4,22 @@ import io.github.humbleui.skija.*;
 import io.github.humbleui.types.Rect;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.StyleRules;
+import myworld.obsidian.display.skin.Variables;
 import myworld.obsidian.geometry.Bounds2D;
 import myworld.obsidian.geometry.Rectangle;
 import myworld.obsidian.geometry.SvgPath;
 
 public class Renderer {
 
-    public static void render(Canvas canvas, Bounds2D componentBounds, StyleClass style){
+    public static void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars){
 
             var boundingRect = new Rect(componentBounds.left(), componentBounds.top(), componentBounds.right(), componentBounds.bottom());
 
-            var fill = new Paint();
-            fill.setColor(style.rule(StyleRules.COLOR, Colors.WHITE).toARGB());
+            Paint fill = null;
+            if(style.hasRule(StyleRules.COLOR)){
+                fill = new Paint();
+                fill.setColor(style.rule(StyleRules.COLOR, Colors.WHITE).toARGB());
+            }
 
             Paint stroke = null;
             if(style.hasAny(StyleRules.BORDER_CAP, StyleRules.BORDER_COLOR, StyleRules.BORDER_JOIN,
@@ -23,7 +27,7 @@ public class Renderer {
                 stroke = new Paint()
                         .setStroke(true)
                         .setColor(style.rule(StyleRules.BORDER_COLOR, Colors.TRANSPARENT).toARGB())
-                        .setStrokeWidth(style.rule(StyleRules.BORDER_WIDTH, 0f))
+                        .setStrokeWidth(style.rule(StyleRules.BORDER_WIDTH, 1f))
                         .setStrokeCap(skiaCap(style.rule(StyleRules.BORDER_CAP, Borders.CAP_SQUARE)))
                         .setStrokeJoin(skiaJoin(style.rule(StyleRules.BORDER_JOIN, Borders.JOIN_BEVEL)))
                         .setStrokeMiter(style.rule(StyleRules.BORDER_MITER, 0f));
@@ -31,22 +35,10 @@ public class Renderer {
 
             Path renderPath = new Path();
 
-            Object geometry = style.rule(StyleRules.GEOMETRY);
-            if(geometry instanceof Rectangle r){
-                renderPath.addRect(new Rect(componentBounds.left(), (float)(componentBounds.top() + r.dimensions().height()), (float)(componentBounds.left() + r.dimensions().width()), componentBounds.bottom()));
-            }else if(geometry instanceof SvgPath svg){
-                var path = Path.makeFromSVGString(svg.path())
-                        .transform(Matrix33.makeTranslate(componentBounds.left(), componentBounds.top()));
-                if(path.isValid()) {
-                    renderPath.addPath(path);
-                }else{
-                    renderPath.addRect(boundingRect);
-                }
-            }else{
-                // Default to filling in the componentBounds as a rectangle
-                renderPath.addRect(boundingRect);
-            }
+            renderPath.addPath(createSkiaGeometry(boundingRect, style, renderVars));
+
             var visualBounds = renderPath.getBounds();
+            // TODO - move this to rendering - some content should be scaled, some should be clipped
             if(visualBounds.getWidth() > componentBounds.width() || visualBounds.getHeight() > componentBounds.height()){
                 // Scale content to fit its laid-out componentBounds rather than clipping it off
                 renderPath.transform(Matrix33.makeTranslate(-componentBounds.left(), -componentBounds.top()))
@@ -56,10 +48,36 @@ public class Renderer {
                         .transform(Matrix33.makeTranslate(componentBounds.left(), componentBounds.top()));
             }
 
-            canvas.drawPath(renderPath, fill);
+            if(fill != null){
+                canvas.drawPath(renderPath, fill);
+            }
+
             if(stroke != null){
                 canvas.drawPath(renderPath, stroke);
             }
+    }
+
+    public static Path createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars){
+        Object geometry = style.rule(StyleRules.GEOMETRY);
+        var path = new Path();
+        if(geometry instanceof Rectangle r){
+           path.addRect(new Rect(boundingRect.getLeft(), (float)(boundingRect.getTop() + r.dimensions().height()), (float)(boundingRect.getLeft() + r.dimensions().width()), boundingRect.getBottom()));
+        }else if(geometry instanceof SvgPath svg){
+            var svgPath = Path.makeFromSVGString(svg.path())
+                    .transform(Matrix33.makeTranslate(boundingRect.getLeft(), boundingRect.getTop()));
+            if(svgPath.isValid()) {
+                path.addPath(svgPath);
+            }else{
+                path.addRect(boundingRect);
+            }
+        }else if(geometry instanceof String varName){
+            String text = renderVars.get(varName, String.class);
+            // TODO - text rendering
+        }else{
+            // Default to filling in the componentBounds as a rectangle
+            path.addRect(boundingRect);
+        }
+        return path;
     }
 
     public static PaintStrokeCap skiaCap(String cap){

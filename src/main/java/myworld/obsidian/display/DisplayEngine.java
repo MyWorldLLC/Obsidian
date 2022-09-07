@@ -53,7 +53,7 @@ public class DisplayEngine implements AutoCloseable {
                 width,
                 height,
                 0,
-                8,
+                0,
                 framebufferHandle,
                 FramebufferFormat.GR_GL_RGBA8);
 
@@ -182,7 +182,7 @@ public class DisplayEngine implements AutoCloseable {
                     }
                 }
 
-                Renderer.render(getCanvas(), ui.getLayout().getBounds(component), style);
+                Renderer.render(getCanvas(), ui.getLayout().getBounds(component), style, component.data());
             }
 
         }else{
@@ -193,13 +193,11 @@ public class DisplayEngine implements AutoCloseable {
     }
 
     public void flush(){
-        if(context != null){
-            context.submit(true);
-        }
 
         if(surface != null){
             surface.flushAndSubmit(true);
         }
+
     }
 
     @Override
