@@ -16,9 +16,9 @@
 
 package myworld.obsidian.geometry;
 
-public record Ellipse(double a, double b) {
+public record Ellipse(float a, float b) {
 
-    public static Ellipse circle(double radius){
+    public static Ellipse circle(float radius){
         return new Ellipse(radius, radius);
     }
 

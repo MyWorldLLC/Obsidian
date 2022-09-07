@@ -16,4 +16,4 @@
 
 package myworld.obsidian.geometry;
 
-public record Dimension2D(double width, double height) {}
+public record Dimension2D(float width, float height) {}
