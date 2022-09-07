@@ -16,7 +16,10 @@
 
 package myworld.obsidian.geometry;
 
-public record Rectangle(Dimension2D dimensions) {
+public record Rectangle(float width, float height) {
 
-    public static final Rectangle SQUARE = new Rectangle(new Dimension2D(100, 100));
+    public static Rectangle square(float s){
+        return new Rectangle(s, s);
+    }
+
 }

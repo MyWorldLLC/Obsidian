@@ -74,7 +74,7 @@ public class Renderer {
         Object geometry = style.rule(StyleRules.GEOMETRY);
         var path = new Path();
         if(geometry instanceof Rectangle r){
-           path.addRect(new Rect(boundingRect.getLeft(), (float)(boundingRect.getTop() + r.dimensions().height()), (float)(boundingRect.getLeft() + r.dimensions().width()), boundingRect.getBottom()));
+           path.addRect(new Rect(boundingRect.getLeft(), boundingRect.getTop() + r.height(), boundingRect.getLeft() + r.width(), boundingRect.getBottom()));
         }else if(geometry instanceof SvgPath svg){
             var svgPath = Path.makeFromSVGString(svg.path())
                     .transform(Matrix33.makeTranslate(boundingRect.getLeft(), boundingRect.getTop()));
