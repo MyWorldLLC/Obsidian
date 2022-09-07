@@ -32,4 +32,6 @@ public class Colors {
     public static final ColorRGBA WHITE = ColorRGBA.of("#FFFFFF");
 
     public static final ColorRGBA BLACK = ColorRGBA.of("#000000");
+
+    public static final ColorRGBA TRANSPARENT = ColorRGBA.of("#FFFFFF00");
 }

@@ -14,25 +14,16 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian.geometry;
+package myworld.obsidian.display;
 
-public record Bounds2D(Point2D origin, float width, float height) {
+public class Borders {
 
-    public static final Bounds2D ZERO = new Bounds2D(new Point2D(0, 0), 0, 0);
+    public static final String CAP_ROUND = "round";
+    public static final String CAP_BUTT = "butt";
+    public static final String CAP_SQUARE = "square";
 
-    public float left(){
-        return origin.x();
-    }
+    public static final String JOIN_MITER = "miter";
+    public static final String JOIN_BEVEL = "bevel";
+    public static final String JOIN_ROUND = "round";
 
-    public float top(){
-        return origin.y();
-    }
-
-    public float right(){
-        return left() + width;
-    }
-
-    public float bottom(){
-        return top() + height;
-    }
 }

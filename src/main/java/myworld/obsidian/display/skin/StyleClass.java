@@ -33,6 +33,19 @@ public record StyleClass(String name, String layer, String stateParam, Map<Strin
         return value != null ? value : defaultValue;
     }
 
+    public boolean hasRule(String name){
+        return rule(name) != null;
+    }
+
+    public boolean hasAny(String... names){
+        for(var name : names){
+            if(hasRule(name)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static StyleClass merge(Collection<StyleClass> classes){
         return merge(classes.stream());
     }

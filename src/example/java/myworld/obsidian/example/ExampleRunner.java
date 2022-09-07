@@ -26,8 +26,7 @@ import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class ExampleRunner {
@@ -103,8 +102,9 @@ public class ExampleRunner {
     public void run(){
         glfwShowWindow(window);
         while(!glfwWindowShouldClose(window)){
+            glfwMakeContextCurrent(window);
             glfwPollEvents();
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             ui.updateAndRender(1.0/64.0); // Assume a constant refresh rate
             glfwSwapBuffers(window);
             sleep(16);

@@ -16,5 +16,5 @@
 
 package myworld.obsidian.geometry;
 
-public record Point2D(double x, double y) {
+public record Point2D(float x, float y) {
 }

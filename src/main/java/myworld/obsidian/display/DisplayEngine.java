@@ -182,7 +182,6 @@ public class DisplayEngine implements AutoCloseable {
                     }
                 }
 
-                System.out.printf("Rendering %s: (%s) %s%n", component.styleName().get(), ui.getLayout().getBounds(component), style);
                 Renderer.render(getCanvas(), ui.getLayout().getBounds(component), style);
             }
 

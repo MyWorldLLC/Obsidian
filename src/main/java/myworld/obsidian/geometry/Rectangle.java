@@ -17,4 +17,6 @@
 package myworld.obsidian.geometry;
 
 public record Rectangle(Dimension2D dimensions) {
+
+    public static final Rectangle SQUARE = new Rectangle(new Dimension2D(100, 100));
 }
