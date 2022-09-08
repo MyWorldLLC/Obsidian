@@ -11,8 +11,8 @@ def component(){
     layer('background', {
         'geometry': path('M 10 10 H 90 V 90 H 10 L 10 10'),
         'color': color('#FFFFFF'),
-        'border-color': color('#00000077'),
-        'border-width': 1.0,
+        'border-color': color('#666666FF'),
+        'border-width': 5.0,
         'border-join': 'round',
         'border-cap': 'round'
     })

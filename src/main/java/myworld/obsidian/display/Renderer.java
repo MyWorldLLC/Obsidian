@@ -1,13 +1,12 @@
 package myworld.obsidian.display;
 
 import io.github.humbleui.skija.*;
+import io.github.humbleui.types.Point;
 import io.github.humbleui.types.Rect;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.StyleRules;
 import myworld.obsidian.display.skin.Variables;
-import myworld.obsidian.geometry.Bounds2D;
-import myworld.obsidian.geometry.Rectangle;
-import myworld.obsidian.geometry.SvgPath;
+import myworld.obsidian.geometry.*;
 
 public class Renderer {
 
@@ -36,6 +35,25 @@ public class Renderer {
         Path renderPath = new Path();
 
         renderPath.addPath(createSkiaGeometry(boundingRect, style, renderVars));
+        Move position = style.rule(StyleRules.POSITION);
+        Rotate rotation = style.rule(StyleRules.ROTATION);
+
+        Matrix33 transform = Matrix33.IDENTITY;
+        if(rotation != null) {
+            transform = Matrix33.makeRotate(rotation.angle(),
+                            new Point(componentBounds.left() + componentBounds.width() / 2f,
+                                    componentBounds.top() + componentBounds.height() / 2f))
+                    .makeConcat(transform);
+        }
+
+        if(position != null){
+            transform = Matrix33.makeTranslate(
+                            toPixels(position.x(), componentBounds.width()),
+                            toPixels(position.y(), componentBounds.height()))
+                    .makeConcat(transform);
+        }
+
+        renderPath.transform(transform);
 
         var visualBounds = renderPath.getBounds();
         if (visualBounds.getWidth() > boundingRect.getWidth() || visualBounds.getHeight() > boundingRect.getHeight()) {
@@ -109,6 +127,13 @@ public class Renderer {
             case Borders.JOIN_ROUND -> PaintStrokeJoin.ROUND;
             case Borders.JOIN_MITER -> PaintStrokeJoin.MITER;
             default -> PaintStrokeJoin.BEVEL;
+        };
+    }
+
+    protected static float toPixels(Distance distance, float size){
+        return switch (distance.unit()){
+            case PIXELS -> distance.asInt();
+            case PERCENTAGE -> distance.asFloat() / 100f * size;
         };
     }
 

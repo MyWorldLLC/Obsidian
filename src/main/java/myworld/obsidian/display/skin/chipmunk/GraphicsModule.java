@@ -20,6 +20,9 @@ import chipmunk.runtime.ChipmunkModule;
 import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
 import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
+import myworld.obsidian.geometry.Distance;
+import myworld.obsidian.geometry.Move;
+import myworld.obsidian.geometry.Rotate;
 import myworld.obsidian.geometry.SvgPath;
 
 public class GraphicsModule implements ChipmunkModule {
@@ -50,6 +53,31 @@ public class GraphicsModule implements ChipmunkModule {
     @AllowChipmunkLinkage
     public ColorRGBA color(String hexColor){
         return ColorRGBA.of(hexColor);
+    }
+
+    @AllowChipmunkLinkage
+    public Move move(String x, String y){
+        var distX = Distance.fromString(x);
+        if(distX == null){
+            throw new IllegalArgumentException(x + " is not a valid distance string");
+        }
+
+        var distY = Distance.fromString(y);
+        if(distY == null){
+            throw new IllegalArgumentException(y + " is not a valid distance string");
+        }
+
+        return new Move(distX, distY);
+    }
+
+    @AllowChipmunkLinkage
+    public Rotate rotate(Float degrees){
+        return new Rotate(degrees);
+    }
+
+    @AllowChipmunkLinkage
+    public Rotate rotate(Integer degrees){
+        return new Rotate(degrees);
     }
 
 }

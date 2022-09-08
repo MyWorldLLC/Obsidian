@@ -4,6 +4,8 @@ public class StyleRules {
 
     public static final String GEOMETRY = "geometry";
     public static final String COLOR = "color";
+    public static final String POSITION = "position";
+    public static final String ROTATION = "rotation";
 
     public static final String OVERFLOW_MODE = "overflow-mode";
 
