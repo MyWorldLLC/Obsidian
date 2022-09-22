@@ -12,6 +12,7 @@ public class SkinModule implements ChipmunkModule {
 
     protected final List<String> helpers = new ArrayList<>();
     protected final List<String> components = new ArrayList<>();
+    protected final List<String> fonts = new ArrayList<>();
 
     protected String name;
     protected String description;
@@ -36,6 +37,11 @@ public class SkinModule implements ChipmunkModule {
         components.addAll(scriptPaths);
     }
 
+    @AllowChipmunkLinkage
+    public void fonts(List<String> fontPaths){
+        fonts.addAll(fontPaths);
+    }
+
     public String getSkinName() {
         return name;
     }
@@ -50,6 +56,10 @@ public class SkinModule implements ChipmunkModule {
 
     public List<String> getComponents(){
         return components;
+    }
+
+    public List<String> getFonts(){
+        return fonts;
     }
 
 }

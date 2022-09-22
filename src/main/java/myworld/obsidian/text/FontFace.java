@@ -18,7 +18,7 @@ package myworld.obsidian.text;
 
 public record FontFace(String name, int size, FontStyle... styles) {
 
-    public static final String DEFAULT_FONT = "INHERIT";
+    public static final String DEFAULT_FONT = "DEFAULT";
 
     FontFace(int size, FontStyle... styles){
         this(DEFAULT_FONT, size, styles);

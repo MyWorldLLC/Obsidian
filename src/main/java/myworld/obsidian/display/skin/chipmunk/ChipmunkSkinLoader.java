@@ -42,6 +42,7 @@ public class ChipmunkSkinLoader {
 
             var skin = new UISkin(skinModule.getSkinName());
             skin.variables().set(varModule.getVars());
+            skin.addFonts(skinModule.getFonts());
 
             var helpers = new ArrayList<ChipmunkSource>();
             for(var helper : skinModule.getHelpers()){

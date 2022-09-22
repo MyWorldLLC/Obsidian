@@ -11,4 +11,15 @@ def skin(){
         '/Root.chp',
         '/Example.chp'
     ])
+
+    fonts([
+        '/fonts/clear-sans/ClearSans-Bold.ttf',
+        '/fonts/clear-sans/ClearSans-BoldItalic.ttf',
+        '/fonts/clear-sans/ClearSans-Italic.ttf',
+        '/fonts/clear-sans/ClearSans-Light.ttf',
+        '/fonts/clear-sans/ClearSans-Medium.ttf',
+        '/fonts/clear-sans/ClearSans-MediumItalic.ttf',
+        '/fonts/clear-sans/ClearSans-Regular.ttf',
+        '/fonts/clear-sans/ClearSans-Thin.ttf'
+    ])
 }
