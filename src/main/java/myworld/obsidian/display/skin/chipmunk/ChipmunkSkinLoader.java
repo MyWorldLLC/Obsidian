@@ -7,10 +7,10 @@ import chipmunk.compiler.Compilation;
 import chipmunk.vm.ChipmunkVM;
 import chipmunk.vm.ModuleLoader;
 import chipmunk.vm.jvm.CompilationUnit;
-import chipmunk.vm.jvm.JvmCompilerConfig;
 import myworld.obsidian.display.skin.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ChipmunkSkinLoader {
 
@@ -40,9 +40,12 @@ public class ChipmunkSkinLoader {
             script.getModuleLoader().setDelegate(loader);
             script.run();
 
-            var skin = new UISkin(skinModule.getSkinName());
+            var skin = new UISkin(skinModule.getSkinName(), resolver);
             skin.variables().set(varModule.getVars());
-            skin.addFonts(skinModule.getFonts());
+            skin.addFonts(skinModule.getFonts()
+                    .stream()
+                    .map(p -> resolvePath(path, p))
+                    .collect(Collectors.toList()));
 
             var helpers = new ArrayList<ChipmunkSource>();
             for(var helper : skinModule.getHelpers()){

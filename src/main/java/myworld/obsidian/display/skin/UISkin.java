@@ -14,9 +14,11 @@ public class UISkin {
     protected final Map<String, ComponentSkin> componentSkins;
     protected final Map<String, StyleClass> styles;
     protected final List<String> fonts;
+    protected final PathResolver resolver;
 
-    public UISkin(String name){
+    public UISkin(String name, PathResolver resolver){
         this.name = name;
+        this.resolver = resolver;
         variables = new Variables();
         componentSkins = new ConcurrentHashMap<>();
         styles = new ConcurrentHashMap<>();
@@ -25,6 +27,10 @@ public class UISkin {
 
     public String getName(){
         return name;
+    }
+
+    public PathResolver getResolver(){
+        return resolver;
     }
 
     public void addComponentSkin(ComponentSkin skin){

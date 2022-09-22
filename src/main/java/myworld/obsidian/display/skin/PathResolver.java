@@ -1,4 +1,4 @@
-package myworld.obsidian.display.skin.chipmunk;
+package myworld.obsidian.display.skin;
 
 import java.io.IOException;
 import java.io.InputStream;
