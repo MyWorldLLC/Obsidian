@@ -76,7 +76,6 @@ public class ChipmunkSkinLoader {
 
                 var styles = componentModule.getStyles();
                 styles.addAll(componentStyleModule.getStyles());
-                System.out.println("Styles for %s: %s".formatted(componentModule.getComponentName(), styles));
 
                 skin.addComponentSkin(new ComponentSkin(
                         componentModule.getComponentName(),
