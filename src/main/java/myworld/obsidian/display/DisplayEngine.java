@@ -28,10 +28,14 @@ import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.impl.Library;
+import myworld.obsidian.text.Typeset;
 
 import java.util.*;
+import java.lang.System.Logger.Level;
 
 public class DisplayEngine implements AutoCloseable {
+
+    private static final System.Logger log = System.getLogger(DisplayEngine.class.getName());
 
     static {
         if("false".equals(System.getProperty("skija.staticLoad"))){
@@ -44,6 +48,8 @@ public class DisplayEngine implements AutoCloseable {
     protected final DirectContext context;
     protected final BackendRenderTarget renderTarget;
     protected final Surface surface;
+
+    protected final Typeset fonts;
 
     protected final ListChangeListener<Component> sceneListener;
 
@@ -83,6 +89,8 @@ public class DisplayEngine implements AutoCloseable {
         dimensions = new ValueProperty<>(new Dimension2D(width, height));
 
         sceneListener = this::onSceneChange;
+
+        fonts = new Typeset();
     }
 
     public ValueProperty<Dimension2D> getDimensions(){
@@ -158,7 +166,6 @@ public class DisplayEngine implements AutoCloseable {
     public void render(ObsidianUI ui, Component component, UISkin uiSkin){
 
         var skin = uiSkin.getComponentSkin(component.styleName().get());
-        // TODO - if skin is undefined for this component, render a box wireframe
 
         if(skin != null){
             var renderVars = component.data();
@@ -186,10 +193,30 @@ public class DisplayEngine implements AutoCloseable {
             }
 
         }else{
-            // TODO - log a warning
+            log.log(Level.WARNING, "Cannot render component {0} because no skin is present", component.styleName().get());
         }
 
         component.children().forEach((c) -> render(ui, c, uiSkin));
+    }
+
+    public void loadFonts(UISkin skin){
+        for(var path : skin.fonts()){
+            try(var is = skin.getResolver().resolve(path)){
+                var fontData = Data.makeFromBytes(is.readAllBytes());
+                var typeface = Typeface.makeFromData(fontData);
+                fonts.add(typeface);
+            }catch(Exception e){
+                log.log(Level.WARNING, "Failed to load font {0} for skin {1}: {2}", path, skin.getName(), e);
+            }
+        }
+    }
+
+    public void clearFonts(){
+        fonts.clear();
+    }
+
+    public Typeset availableFonts(){
+        return fonts;
     }
 
     public void flush(){

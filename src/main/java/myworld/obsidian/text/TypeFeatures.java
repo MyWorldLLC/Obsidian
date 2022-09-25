@@ -16,11 +16,12 @@
 
 package myworld.obsidian.text;
 
-import java.io.IOException;
-import java.io.InputStream;
+import io.github.humbleui.skija.Typeface;
 
-public interface FontLoader {
+public record TypeFeatures(String familyName, boolean isBold, boolean isItalic, boolean isMonospace) {
 
-    InputStream openFont(String font) throws IOException;
+    public static TypeFeatures forTypeface(Typeface face){
+        return new TypeFeatures(face.getFamilyName(), face.isBold(), face.isItalic(), face.isFixedPitch());
+    }
 
 }

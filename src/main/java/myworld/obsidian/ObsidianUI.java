@@ -120,6 +120,7 @@ public class ObsidianUI {
 
     public void registerSkin(UISkin skin){
         skins.put(skin.getName(), skin);
+        display.ifSet(d -> d.loadFonts(skin));
     }
 
     public UISkin getSkin(String name){
