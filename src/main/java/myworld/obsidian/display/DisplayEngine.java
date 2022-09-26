@@ -50,6 +50,7 @@ public class DisplayEngine implements AutoCloseable {
     protected final Surface surface;
 
     protected final Typeset fonts;
+    protected final Renderer renderer;
 
     protected final ListChangeListener<Component> sceneListener;
 
@@ -91,6 +92,7 @@ public class DisplayEngine implements AutoCloseable {
         sceneListener = this::onSceneChange;
 
         fonts = new Typeset();
+        renderer = new Renderer();
     }
 
     public ValueProperty<Dimension2D> getDimensions(){
@@ -189,7 +191,7 @@ public class DisplayEngine implements AutoCloseable {
                     }
                 }
 
-                Renderer.render(getCanvas(), ui.getLayout().getBounds(component), style, component.data());
+                renderer.render(getCanvas(), ui.getLayout().getBounds(component), style, component.data());
             }
 
         }else{

@@ -1,6 +1,7 @@
 package myworld.obsidian.display;
 
 import io.github.humbleui.skija.*;
+import io.github.humbleui.skija.paragraph.Paragraph;
 import io.github.humbleui.types.Point;
 import io.github.humbleui.types.Rect;
 import myworld.obsidian.display.skin.StyleClass;
@@ -10,7 +11,7 @@ import myworld.obsidian.geometry.*;
 
 public class Renderer {
 
-    public static void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars){
+    public void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars){
 
         var boundingRect = new Rect(componentBounds.left(), componentBounds.top(), componentBounds.right(), componentBounds.bottom());
 
@@ -88,7 +89,7 @@ public class Renderer {
         }
     }
 
-    public static Path createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars){
+    public Path createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars){
         Object geometry = style.rule(StyleRules.GEOMETRY);
         var path = new Path();
         if(geometry instanceof Rectangle r){
@@ -104,6 +105,7 @@ public class Renderer {
         }else if(geometry instanceof String varName){
             String text = renderVars.get(varName, String.class);
             // TODO - text rendering
+
         }else{
             // Default to filling in the componentBounds as a rectangle
             path.addRect(boundingRect);
