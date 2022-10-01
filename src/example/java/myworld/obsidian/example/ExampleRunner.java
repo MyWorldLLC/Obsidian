@@ -21,6 +21,7 @@ import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
 import myworld.obsidian.layout.LayoutDimension;
 import myworld.obsidian.scene.Component;
+import myworld.obsidian.text.Text;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 
@@ -94,6 +95,9 @@ public class ExampleRunner {
         example.styleName().set("Example");
         example.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
         ui.getRoot().addChild(example);
+
+        var text = Text.create("Hello, World!", "ExampleText");
+        example.data().set("text", text);
 
     }
 

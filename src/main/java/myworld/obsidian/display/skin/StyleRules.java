@@ -14,4 +14,10 @@ public class StyleRules {
     public static final String BORDER_JOIN = "border-join";
     public static final String BORDER_CAP = "border-cap";
     public static final String BORDER_MITER = "border-miter";
+
+    public static final String FONT_FAMILY = "font-family";
+    public static final String FONT_SIZE = "font-size";
+    public static final String FONT_STYLE = "font-style";
+    public static final String FONT_DECORATION = "font-decoration";
+
 }

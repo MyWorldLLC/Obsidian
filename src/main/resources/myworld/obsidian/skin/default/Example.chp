@@ -8,6 +8,10 @@ def component(){
 
     name('Example')
 
+    data({
+        'text': 'string'
+    })
+
     layer('background', {
         'geometry': path('M 10 10 H 90 V 90 H 10 L 10 10'),
         'color': color('#FFFFFF'),
@@ -15,5 +19,12 @@ def component(){
         'border-width': 5.0,
         'border-join': 'round',
         'border-cap': 'round'
+    })
+
+    layer('text', {
+        'geometry': 'text',
+        'color': color('#000000'),
+        'font-family': 'Clear Sans',
+        'font-size': 14
     })
 }
