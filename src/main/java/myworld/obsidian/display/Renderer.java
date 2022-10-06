@@ -10,6 +10,9 @@ import myworld.obsidian.display.skin.Variables;
 import myworld.obsidian.geometry.*;
 import myworld.obsidian.text.Text;
 import myworld.obsidian.text.TextDecoration;
+import myworld.obsidian.text.TextShadow;
+
+import java.util.List;
 
 public class Renderer implements AutoCloseable{
 
@@ -138,8 +141,15 @@ public class Renderer implements AutoCloseable{
                 ts.setFontStyle(getFontStyle(style));
                 ts.setDecorationStyle(getTextDecoration(style));
 
+                var backgroundPaint = new Paint();
+                backgroundPaint.setColor(style.rule(StyleRules.TEXT_BACKGROUND_COLOR, Colors.TRANSPARENT).toARGB());
+                ts.setBackground(backgroundPaint);
+
+                applyShadows(ts, style, boundingRect);
+
                 pb.pushStyle(ts);
                 pb.addText(text.text());
+
                 return pb.build();
             }
 
@@ -210,14 +220,14 @@ public class Renderer implements AutoCloseable{
     }
 
     protected static DecorationStyle getTextDecoration(StyleClass style){
-        if(style.hasRule(StyleRules.FONT_DECORATION)){
-            TextDecoration textStyle = style.rule(StyleRules.FONT_DECORATION);
+        if(style.hasRule(StyleRules.TEXT_DECORATION)){
+            TextDecoration textStyle = style.rule(StyleRules.TEXT_DECORATION);
             return new DecorationStyle(
                     textStyle.underline(),
                     false,
                     textStyle.strikethrough(),
                     false,
-                    textStyle.color().toARGB(),
+                    textStyle.color() != null ? textStyle.color().toARGB() : style.rule(StyleRules.COLOR, Colors.BLACK).toARGB(),
                     switch (textStyle.style()){
                         case SOLID -> DecorationLineStyle.SOLID;
                         case DASHED -> DecorationLineStyle.DASHED;
@@ -229,6 +239,27 @@ public class Renderer implements AutoCloseable{
             );
         }
         return DecorationStyle.NONE;
+    }
+
+    protected static void applyShadows(TextStyle ts, StyleClass style, Rect boundingRect){
+        if(style.hasRule(StyleRules.TEXT_SHADOW)){
+            var shadows = style.rule(StyleRules.TEXT_SHADOW);
+            if(shadows instanceof List shadowList){
+                for(var textShadow : shadowList){
+                    ts.addShadow(getTextShadow((TextShadow) textShadow, boundingRect));
+                }
+            }else if(shadows instanceof TextShadow shadow){
+                ts.addShadow(getTextShadow(shadow, boundingRect));
+            }
+        }
+    }
+
+    protected static Shadow getTextShadow(TextShadow shadow, Rect boundingRect){
+        return new Shadow(
+                shadow.color().toARGB(),
+                toPixels(shadow.offset().x(), boundingRect.getWidth()),
+                toPixels(shadow.offset().y(), boundingRect.getHeight()),
+                shadow.blurSigma());
     }
 
     @Override

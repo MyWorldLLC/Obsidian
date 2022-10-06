@@ -18,6 +18,8 @@ public class StyleRules {
     public static final String FONT_FAMILY = "font-family";
     public static final String FONT_SIZE = "font-size";
     public static final String FONT_STYLE = "font-style";
-    public static final String FONT_DECORATION = "font-decoration";
+    public static final String TEXT_DECORATION = "text-decoration";
+    public static final String TEXT_SHADOW = "text-shadow";
+    public static final String TEXT_BACKGROUND_COLOR = "text-background-color";
 
 }

@@ -24,6 +24,8 @@ import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.geometry.Move;
 import myworld.obsidian.geometry.Rotate;
 import myworld.obsidian.geometry.SvgPath;
+import myworld.obsidian.text.TextDecoration;
+import myworld.obsidian.text.TextShadow;
 
 public class GraphicsModule implements ChipmunkModule {
 
@@ -71,6 +73,11 @@ public class GraphicsModule implements ChipmunkModule {
     }
 
     @AllowChipmunkLinkage
+    public Move offset(String x, String y){
+        return move(x, y);
+    }
+
+    @AllowChipmunkLinkage
     public Rotate rotate(Float degrees){
         return new Rotate(degrees);
     }
@@ -78,6 +85,96 @@ public class GraphicsModule implements ChipmunkModule {
     @AllowChipmunkLinkage
     public Rotate rotate(Integer degrees){
         return new Rotate(degrees);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration underline(){
+        return underline((ColorRGBA) null, TextDecoration.DEFAULT_THICKNESS);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration underline(String lineStyle){
+        return underline(null, lineStyle, TextDecoration.DEFAULT_THICKNESS);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration underline(Float thickness){
+        return underline(null, TextDecoration.LineStyle.SOLID.name(), thickness);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration underline(String lineStyle, Float thickness){
+        return underline(null, lineStyle, thickness);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration underline(ColorRGBA color){
+        return underline(color, TextDecoration.DEFAULT_THICKNESS);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration underline(ColorRGBA color, String lineStyle){
+        return underline(color, lineStyle, TextDecoration.DEFAULT_THICKNESS);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration underline(ColorRGBA color, Float thickness){
+        return underline(color, TextDecoration.LineStyle.SOLID.name(), thickness);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration underline(ColorRGBA color, String lineStyle, Float thickness){
+        return TextDecoration.underline(color, TextDecoration.LineStyle.valueOf(lineStyle.trim().toUpperCase()), thickness);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration strikeThrough(){
+        return strikeThrough((ColorRGBA) null, TextDecoration.DEFAULT_THICKNESS);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration strikeThrough(String lineStyle){
+        return strikeThrough(null, lineStyle, TextDecoration.DEFAULT_THICKNESS);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration strikeThrough(Float thickness){
+        return strikeThrough(null, TextDecoration.LineStyle.SOLID.name(), thickness);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration strikeThrough(String lineStyle, Float thickness){
+        return strikeThrough(null, lineStyle, thickness);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration strikeThrough(ColorRGBA color){
+        return strikeThrough(color, TextDecoration.DEFAULT_THICKNESS);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration strikeThrough(ColorRGBA color, String lineStyle){
+        return strikeThrough(color, lineStyle, TextDecoration.DEFAULT_THICKNESS);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration strikeThrough(ColorRGBA color, Float thickness){
+        return TextDecoration.strikeThrough(color, thickness);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration strikeThrough(ColorRGBA color, String lineStyle, Float thickness){
+        return TextDecoration.strikeThrough(color, TextDecoration.LineStyle.valueOf(lineStyle.trim().toUpperCase()), thickness);
+    }
+
+    @AllowChipmunkLinkage
+    public TextDecoration decoration(Boolean underline, Boolean strikeThrough, ColorRGBA color, String lineStyle, Float thickness){
+        return new TextDecoration(underline, strikeThrough, color, TextDecoration.LineStyle.valueOf(lineStyle.trim().toUpperCase()), thickness);
+    }
+
+    @AllowChipmunkLinkage
+    public TextShadow textShadow(Move offset, ColorRGBA color, Float blurSigma){
+        return new TextShadow(offset, color, blurSigma);
     }
 
 }
