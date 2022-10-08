@@ -26,6 +26,22 @@ public record Distance(Number quantity, Unit unit) {
         return quantity.floatValue();
     }
 
+    public Distance multiply(float value){
+        return new Distance(quantity.floatValue() * value, unit);
+    }
+
+    public Distance add(float value){
+        return new Distance(quantity.floatValue() + value, unit);
+    }
+
+    public Distance subtract(float value){
+        return new Distance(quantity.floatValue() - value, unit);
+    }
+
+    public Distance divide(float value){
+        return new Distance(quantity.floatValue() / value, unit);
+    }
+
     @Override
     public String toString(){
         return quantity.toString() + unit.toString();

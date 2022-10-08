@@ -16,10 +16,10 @@
 
 package myworld.obsidian.geometry;
 
-public record Ellipse(float a, float b) {
+public record Ellipse(Distance width, Distance height) {
 
-    public static Ellipse circle(float radius){
-        return new Ellipse(radius, radius);
+    public static Ellipse circle(Distance radius){
+        return new Ellipse(radius.multiply(2), radius.multiply(2));
     }
 
 }

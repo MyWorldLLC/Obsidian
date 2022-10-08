@@ -20,16 +20,21 @@ import chipmunk.runtime.ChipmunkModule;
 import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
 import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
-import myworld.obsidian.geometry.Distance;
-import myworld.obsidian.geometry.Move;
-import myworld.obsidian.geometry.Rotate;
-import myworld.obsidian.geometry.SvgPath;
+import myworld.obsidian.geometry.*;
 import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextShadow;
 
 public class GraphicsModule implements ChipmunkModule {
 
     public static final String MODULE_NAME = "obsidian.graphics";
+
+    protected static Distance parseDistance(String d){
+        var dist = Distance.fromString(d);
+        if(dist == null){
+            throw new IllegalArgumentException(d + " is not a valid distance string");
+        }
+        return dist;
+    }
 
     @AllowChipmunkLinkage
     public static final ColorRGBA white = Colors.WHITE;
@@ -48,28 +53,38 @@ public class GraphicsModule implements ChipmunkModule {
     }
 
     @AllowChipmunkLinkage
-    public SvgPath path(String path){
-        return new SvgPath(path);
-    }
-
-    @AllowChipmunkLinkage
     public ColorRGBA color(String hexColor){
         return ColorRGBA.of(hexColor);
     }
 
     @AllowChipmunkLinkage
+    public SvgPath path(String path){
+        return new SvgPath(path);
+    }
+
+    @AllowChipmunkLinkage
+    public Ellipse circle(String radius){
+        return Ellipse.circle(parseDistance(radius));
+    }
+
+    @AllowChipmunkLinkage
+    public Ellipse oval(String width, String height){
+        return new Ellipse(parseDistance(width), parseDistance(height));
+    }
+
+    @AllowChipmunkLinkage
+    public Rectangle rectangle(String width, String height){
+        return new Rectangle(parseDistance(width), parseDistance(height));
+    }
+
+    @AllowChipmunkLinkage
+    public Rectangle square(String s){
+        return Rectangle.square(parseDistance(s));
+    }
+
+    @AllowChipmunkLinkage
     public Move move(String x, String y){
-        var distX = Distance.fromString(x);
-        if(distX == null){
-            throw new IllegalArgumentException(x + " is not a valid distance string");
-        }
-
-        var distY = Distance.fromString(y);
-        if(distY == null){
-            throw new IllegalArgumentException(y + " is not a valid distance string");
-        }
-
-        return new Move(distX, distY);
+        return new Move(parseDistance(x), parseDistance(y));
     }
 
     @AllowChipmunkLinkage

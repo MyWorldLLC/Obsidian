@@ -16,9 +16,9 @@
 
 package myworld.obsidian.geometry;
 
-public record Rectangle(float width, float height) {
+public record Rectangle(Distance width, Distance height) {
 
-    public static Rectangle square(float s){
+    public static Rectangle square(Distance s){
         return new Rectangle(s, s);
     }
 

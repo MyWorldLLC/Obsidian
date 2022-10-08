@@ -73,29 +73,24 @@ public class Renderer implements AutoCloseable{
                 case OverflowModes.CLIP ->
                     canvas.clipRect(boundingRect, true);
                 case OverflowModes.SCALE_UNIFORM ->
-                        /*{
-                            final var factor = Math.min(
-                                    boundingRect.getWidth() / visualBounds.getWidth(),
-                                    boundingRect.getHeight() / visualBounds.getHeight()
-                            );
-                            canvas.scale(factor, factor);
-                        }*/
-                    renderPath.transform(Matrix33.makeTranslate(-boundingRect.getLeft(), -boundingRect.getTop()))
-                            .transform(Matrix33.makeScale(
-                                    Math.min(
-                                            boundingRect.getWidth() / visualBounds.getWidth(),
-                                            boundingRect.getHeight() / visualBounds.getHeight()
-                                    )))
-                            .transform(Matrix33.makeTranslate(boundingRect.getLeft(), boundingRect.getTop()));
+                        transform = Matrix33.IDENTITY
+                        .makeConcat(Matrix33.makeTranslate(visualBounds.getLeft(), visualBounds.getTop()))
+                        .makeConcat(Matrix33.makeScale(
+                                Math.min(
+                                        boundingRect.getWidth() / visualBounds.getWidth(),
+                                        boundingRect.getHeight() / visualBounds.getHeight()
+                                )))
+                        .makeConcat(Matrix33.makeTranslate(-visualBounds.getLeft(), -visualBounds.getTop()));
                 case OverflowModes.SCALE ->
-                        //canvas.scale(boundingRect.getWidth() / visualBounds.getWidth(), boundingRect.getHeight() / visualBounds.getHeight());
-                    renderPath.transform(Matrix33.makeTranslate(-boundingRect.getLeft(), -boundingRect.getTop()))
-                            .transform(Matrix33.makeScale(
-                                    boundingRect.getWidth() / visualBounds.getWidth(),
-                                    boundingRect.getHeight() / visualBounds.getHeight()))
-                            .transform(Matrix33.makeTranslate(boundingRect.getLeft(), boundingRect.getTop()));
+                        transform = Matrix33.IDENTITY
+                        .makeConcat(Matrix33.makeTranslate(visualBounds.getLeft(), visualBounds.getTop()))
+                        .makeConcat(Matrix33.makeScale(
+                                boundingRect.getWidth() / visualBounds.getWidth(),
+                                boundingRect.getHeight() / visualBounds.getHeight()))
+                        .makeConcat(Matrix33.makeTranslate(-visualBounds.getLeft(), -visualBounds.getTop()));
             }
 
+            renderPath.transform(transform);
         }
 
         if(geometry instanceof Paragraph p){
@@ -119,7 +114,21 @@ public class Renderer implements AutoCloseable{
         Object geometry = style.rule(StyleRules.GEOMETRY);
         var path = new Path();
         if(geometry instanceof Rectangle r){
-           path.addRect(new Rect(boundingRect.getLeft(), boundingRect.getTop() + r.height(), boundingRect.getLeft() + r.width(), boundingRect.getBottom()));
+           path.addRect(
+                   new Rect(
+                           boundingRect.getLeft(),
+                           boundingRect.getTop(),
+                           boundingRect.getLeft() + pixelWidth(r.width(), boundingRect),
+                           boundingRect.getTop() + pixelHeight(r.height(), boundingRect)
+                   ));
+        }else if(geometry instanceof Ellipse ellipse){
+            path.addOval(
+                    new Rect(
+                            boundingRect.getLeft(),
+                            boundingRect.getTop(),
+                            boundingRect.getLeft() + pixelWidth(ellipse.width(), boundingRect),
+                            boundingRect.getTop() + pixelHeight(ellipse.height(), boundingRect)
+                    ));
         }else if(geometry instanceof SvgPath svg){
             var svgPath = Path.makeFromSVGString(svg.path())
                     .transform(Matrix33.makeTranslate(boundingRect.getLeft(), boundingRect.getTop()));
@@ -177,6 +186,14 @@ public class Renderer implements AutoCloseable{
             case Borders.JOIN_MITER -> PaintStrokeJoin.MITER;
             default -> PaintStrokeJoin.BEVEL;
         };
+    }
+
+    protected static float pixelWidth(Distance distance, Rect bounds){
+        return toPixels(distance, bounds.getWidth());
+    }
+
+    protected static float pixelHeight(Distance distance, Rect bounds){
+        return toPixels(distance, bounds.getHeight());
     }
 
     protected static float toPixels(Distance distance, float size){
