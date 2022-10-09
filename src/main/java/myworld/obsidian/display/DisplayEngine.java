@@ -220,6 +220,18 @@ public class DisplayEngine implements AutoCloseable {
         return fonts;
     }
 
+    public void enableRenderDebug(ColorRGBA debugColor){
+        renderer.debugBoundsColor().set(debugColor);
+    }
+
+    public void disableRenderDebug(){
+        renderer.debugBoundsColor().set(null);
+    }
+
+    public boolean isRenderDebugEnabled(){
+        return renderer.debugBoundsColor().get() != null;
+    }
+
     public void flush(){
 
         if(surface != null){

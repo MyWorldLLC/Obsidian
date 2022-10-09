@@ -17,6 +17,8 @@
 package myworld.obsidian.example;
 
 import myworld.obsidian.ObsidianUI;
+import myworld.obsidian.display.ColorRGBA;
+import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
 import myworld.obsidian.layout.LayoutDimension;
@@ -90,6 +92,7 @@ public class ExampleRunner {
         ui = ObsidianUI.createForGL(getRenderWidth(), getRenderHeight(), 0);
         ui.registerSkin(ChipmunkSkinLoader.loadFromClasspath(ChipmunkSkinLoader.DEFAULT_SKIN));
         ui.useSkin("Obsidian");
+        ui.getDisplay().enableRenderDebug(Colors.RED);
 
         var example = new Component();
         example.styleName().set("Example");
@@ -112,6 +115,7 @@ public class ExampleRunner {
     public void createSurface(){
         ui.display().ifSet(DisplayEngine::close);
         ui.setDisplay(DisplayEngine.createForGL(getRenderWidth(), getRenderHeight(), 0));
+        ui.getDisplay().enableRenderDebug(Colors.RED);
     }
 
     public void run(){

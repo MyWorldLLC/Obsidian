@@ -20,7 +20,6 @@ public class Renderer implements AutoCloseable{
     protected final FontCollection fontCollection;
     protected final TypefaceFontProvider typeProvider;
 
-    protected final ValueProperty<Boolean> debugBounds;
     protected final ValueProperty<ColorRGBA> debugColor;
 
     public Renderer(){
@@ -31,8 +30,11 @@ public class Renderer implements AutoCloseable{
         fontCollection.setAssetFontManager(typeProvider);
         fontCollection.setEnableFallback(true);
 
-        debugBounds = new ValueProperty<>(true);
-        debugColor = new ValueProperty<>(Colors.RED);
+        debugColor = new ValueProperty<>();
+    }
+
+    public ValueProperty<ColorRGBA> debugBoundsColor(){
+        return debugColor;
     }
 
     public void registerFont(Typeface typeface){
@@ -43,7 +45,7 @@ public class Renderer implements AutoCloseable{
         canvas.save();
 
         var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
-        if(debugBounds.get()){
+        if(debugColor.get() != null){
             var debugPaint = new Paint();
             debugPaint.setColor(debugColor.get().toARGB());
             debugPaint.setStroke(true);
