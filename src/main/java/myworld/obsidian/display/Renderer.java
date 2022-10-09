@@ -8,6 +8,7 @@ import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.StyleRules;
 import myworld.obsidian.display.skin.Variables;
 import myworld.obsidian.geometry.*;
+import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.text.Text;
 import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextShadow;
@@ -19,6 +20,9 @@ public class Renderer implements AutoCloseable{
     protected final FontCollection fontCollection;
     protected final TypefaceFontProvider typeProvider;
 
+    protected final ValueProperty<Boolean> debugBounds;
+    protected final ValueProperty<ColorRGBA> debugColor;
+
     public Renderer(){
         fontCollection = new FontCollection();
         fontCollection.setDefaultFontManager(FontMgr.getDefault());
@@ -26,6 +30,9 @@ public class Renderer implements AutoCloseable{
         typeProvider = new TypefaceFontProvider();
         fontCollection.setAssetFontManager(typeProvider);
         fontCollection.setEnableFallback(true);
+
+        debugBounds = new ValueProperty<>(true);
+        debugColor = new ValueProperty<>(Colors.RED);
     }
 
     public void registerFont(Typeface typeface){
@@ -33,19 +40,22 @@ public class Renderer implements AutoCloseable{
     }
 
     public void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars){
+        canvas.save();
 
-        var boundingRect = new Rect(componentBounds.left(), componentBounds.top(), componentBounds.right(), componentBounds.bottom());
+        var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
+        if(debugBounds.get()){
+            var debugPaint = new Paint();
+            debugPaint.setColor(debugColor.get().toARGB());
+            debugPaint.setStroke(true);
+            debugPaint.setStrokeWidth(1f);
+            canvas.drawRect(boundingRect, debugPaint);
+        }
 
         var geometry = (Object) createSkiaGeometry(boundingRect, style, renderVars);
 
         Paint fill = getFill(style);
         Paint stroke = getStroke(style);
 
-        Path renderPath = new Path();
-
-        if(geometry instanceof Path p){
-            renderPath.addPath(p);
-        }
         Move position = style.rule(StyleRules.POSITION);
         Rotate rotation = style.rule(StyleRules.ROTATION);
 
@@ -64,50 +74,56 @@ public class Renderer implements AutoCloseable{
                     .makeConcat(transform);
         }
 
-        renderPath.transform(transform);
+        if(geometry instanceof Path p){
+            Path renderPath = new Path();
 
-        var visualBounds = renderPath.getBounds();
-        if (visualBounds.getWidth() > boundingRect.getWidth() || visualBounds.getHeight() > boundingRect.getHeight()) {
-
-            switch (style.rule(StyleRules.OVERFLOW_MODE, OverflowModes.SCALE)){
-                case OverflowModes.CLIP ->
-                    canvas.clipRect(boundingRect, true);
-                case OverflowModes.SCALE_UNIFORM ->
-                        transform = Matrix33.IDENTITY
-                        .makeConcat(Matrix33.makeTranslate(visualBounds.getLeft(), visualBounds.getTop()))
-                        .makeConcat(Matrix33.makeScale(
-                                Math.min(
-                                        boundingRect.getWidth() / visualBounds.getWidth(),
-                                        boundingRect.getHeight() / visualBounds.getHeight()
-                                )))
-                        .makeConcat(Matrix33.makeTranslate(-visualBounds.getLeft(), -visualBounds.getTop()));
-                case OverflowModes.SCALE ->
-                        transform = Matrix33.IDENTITY
-                        .makeConcat(Matrix33.makeTranslate(visualBounds.getLeft(), visualBounds.getTop()))
-                        .makeConcat(Matrix33.makeScale(
-                                boundingRect.getWidth() / visualBounds.getWidth(),
-                                boundingRect.getHeight() / visualBounds.getHeight()))
-                        .makeConcat(Matrix33.makeTranslate(-visualBounds.getLeft(), -visualBounds.getTop()));
-            }
+            renderPath.addPath(p);
 
             renderPath.transform(transform);
-        }
 
-        if(geometry instanceof Paragraph p){
+            var visualBounds = renderPath.getBounds();
+            if (visualBounds.getWidth() > boundingRect.getWidth() || visualBounds.getHeight() > boundingRect.getHeight()) {
+
+                switch (style.rule(StyleRules.OVERFLOW_MODE, OverflowModes.SCALE)){
+                    case OverflowModes.CLIP ->
+                            canvas.clipRect(boundingRect, true);
+                    case OverflowModes.SCALE_UNIFORM ->
+                            transform = Matrix33.IDENTITY
+                                    .makeConcat(Matrix33.makeTranslate(visualBounds.getLeft(), visualBounds.getTop()))
+                                    .makeConcat(Matrix33.makeScale(
+                                            Math.min(
+                                                    boundingRect.getWidth() / visualBounds.getWidth(),
+                                                    boundingRect.getHeight() / visualBounds.getHeight()
+                                            )))
+                                    .makeConcat(Matrix33.makeTranslate(-visualBounds.getLeft(), -visualBounds.getTop()));
+                    case OverflowModes.SCALE ->
+                            transform = Matrix33.IDENTITY
+                                    .makeConcat(Matrix33.makeTranslate(visualBounds.getLeft(), visualBounds.getTop()))
+                                    .makeConcat(Matrix33.makeScale(
+                                            boundingRect.getWidth() / visualBounds.getWidth(),
+                                            boundingRect.getHeight() / visualBounds.getHeight()))
+                                    .makeConcat(Matrix33.makeTranslate(-visualBounds.getLeft(), -visualBounds.getTop()));
+                }
+
+                renderPath.transform(transform);
+            }
+
+            if (fill != null) {
+                canvas.drawPath(renderPath, fill);
+            }
+
+            if (stroke != null) {
+                canvas.drawPath(renderPath, stroke);
+            }
+
+        }else if(geometry instanceof Paragraph p){
             canvas.setMatrix(transform);
             p.layout(boundingRect.getWidth());
+            canvas.clipRect(boundingRect, true); // Always clip overflowing text (but good text layout should never let this happen)
             p.paint(canvas, boundingRect.getLeft(), boundingRect.getTop());
         }
 
-        if (fill != null) {
-            canvas.drawPath(renderPath, fill);
-        }
-
-        if (stroke != null) {
-            canvas.drawPath(renderPath, stroke);
-        }
-
-        canvas.resetMatrix();
+        canvas.restore();
     }
 
     public Object createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars){
@@ -139,6 +155,10 @@ public class Renderer implements AutoCloseable{
             }
         }else if(geometry instanceof String varName){
             Text text = renderVars.get(varName, Text.class);
+
+            // TODO - using the builder methods doesn't allow us to control
+            // font AA, hinting, or other important render features and the
+            // text renders a bit rough.
             try (TextStyle ts = new TextStyle();
                  ParagraphStyle ps = new ParagraphStyle();
                  ParagraphBuilder pb = new ParagraphBuilder(ps, fontCollection)) {
