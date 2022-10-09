@@ -34,4 +34,10 @@ public class Colors {
     public static final ColorRGBA BLACK = ColorRGBA.of("#000000");
 
     public static final ColorRGBA TRANSPARENT = ColorRGBA.of("#FFFFFF00");
+
+    public static final ColorRGBA RED = ColorRGBA.of("#FF0000");
+
+    public static final ColorRGBA GREEN = ColorRGBA.of("#00FF00");
+
+    public static final ColorRGBA BLUE = ColorRGBA.of("#0000FF");
 }
