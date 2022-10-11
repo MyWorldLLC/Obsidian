@@ -49,4 +49,9 @@ public class ValueProperty<T> extends Property<ValueChangeListener<T>> {
         return value.get();
     }
 
+    public T get(T ifNull){
+        var v = value.get();
+        return v != null ? v : ifNull;
+    }
+
 }
