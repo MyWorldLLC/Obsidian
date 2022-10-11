@@ -130,6 +130,19 @@ public class Renderer implements AutoCloseable{
                 fill.setColor(Colors.BLACK.toARGB());
             }
 
+            if(style.hasRule(StyleRules.TEXT_BACKGROUND_COLOR)){
+                var backgroundPaint = new Paint();
+                backgroundPaint.setColor(style.rule(StyleRules.TEXT_BACKGROUND_COLOR, Colors.WHITE).toARGB());
+                var background = new Rect(
+                        boundingRect.getLeft(),
+                        boundingRect.getTop(),
+                        boundingRect.getLeft() + text.text().getBlockBounds().getWidth(),
+                        boundingRect.getTop() + text.text().getBlockBounds().getHeight()
+                );
+
+                canvas.drawRect(background, backgroundPaint);
+            }
+
             if(text.shadows() != null){
                 var shadowPaint = new Paint();
                 for(var shadow : text.shadows()){
@@ -205,7 +218,7 @@ public class Renderer implements AutoCloseable{
 
             TextBlob blob = shaper.shape(text.text(), font, boundingRect.getWidth());
 
-            return new RenderableText(blob, font, boundingRect, getTextDecoration(style), getShadows(style, boundingRect));
+            return new RenderableText(blob, font, boundingRect, getTextDecoration(style), getShadows(style));
 
         }else{
             // Default to filling in the componentBounds as a rectangle
@@ -286,7 +299,7 @@ public class Renderer implements AutoCloseable{
     }
 
     @SuppressWarnings("unchecked")
-    protected static TextShadow[] getShadows(StyleClass style, Rect boundingRect){
+    protected static TextShadow[] getShadows(StyleClass style){
         if(style.hasRule(StyleRules.TEXT_SHADOW)){
             var shadows = style.rule(StyleRules.TEXT_SHADOW);
             if(shadows instanceof List shadowList){
@@ -296,14 +309,6 @@ public class Renderer implements AutoCloseable{
             }
         }
         return null;
-    }
-
-    protected static Shadow getTextShadow(TextShadow shadow, Rect boundingRect){
-        return new Shadow(
-                shadow.color().toARGB(),
-                toPixels(shadow.offset().x(), boundingRect.getWidth()),
-                toPixels(shadow.offset().y(), boundingRect.getHeight()),
-                shadow.blurSigma());
     }
 
     @Override
