@@ -204,6 +204,7 @@ public class DisplayEngine implements AutoCloseable {
     public void loadFonts(UISkin skin){
         for(var path : skin.fonts()){
             try(var is = skin.getResolver().resolve(path)){
+
                 var fontData = Data.makeFromBytes(is.readAllBytes());
                 var typeface = Typeface.makeFromData(fontData);
                 if(!fonts.contains(typeface)){

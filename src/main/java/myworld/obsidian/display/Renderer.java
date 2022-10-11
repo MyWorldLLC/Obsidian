@@ -2,6 +2,7 @@ package myworld.obsidian.display;
 
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.paragraph.*;
+import io.github.humbleui.skija.shaper.Shaper;
 import io.github.humbleui.types.Point;
 import io.github.humbleui.types.Rect;
 import myworld.obsidian.display.skin.StyleClass;
@@ -19,6 +20,7 @@ public class Renderer implements AutoCloseable{
 
     protected final FontCollection fontCollection;
     protected final TypefaceFontProvider typeProvider;
+    protected final Shaper shaper;
 
     protected final ValueProperty<ColorRGBA> debugColor;
 
@@ -29,6 +31,8 @@ public class Renderer implements AutoCloseable{
         typeProvider = new TypefaceFontProvider();
         fontCollection.setAssetFontManager(typeProvider);
         fontCollection.setEnableFallback(true);
+
+        shaper = Shaper.make(FontMgr.getDefault());
 
         debugColor = new ValueProperty<>();
     }
@@ -118,14 +122,47 @@ public class Renderer implements AutoCloseable{
                 canvas.drawPath(renderPath, stroke);
             }
 
-        }else if(geometry instanceof Paragraph p){
+        }if(geometry instanceof RenderableText text){
             canvas.setMatrix(transform);
-            p.layout(boundingRect.getWidth());
-            canvas.clipRect(boundingRect, true); // Always clip overflowing text (but good text layout should never let this happen)
-            p.paint(canvas, boundingRect.getLeft(), boundingRect.getTop());
+            canvas.clipRect(boundingRect, true);
+            if(fill == null){
+                fill = new Paint();
+                fill.setColor(Colors.BLACK.toARGB());
+            }
+
+            if(text.shadows() != null){
+                var shadowPaint = new Paint();
+                for(var shadow : text.shadows()){
+                    shadowPaint.setColor(shadow.color().toARGB());
+                    shadowPaint.setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, shadow.blurSigma(), false));
+                    renderDecoratedText(canvas, text.text(), text.decorations(),
+                            toPixels(shadow.offset().x(), boundingRect.getWidth()) + boundingRect.getLeft(),
+                            toPixels(shadow.offset().y(), boundingRect.getHeight()) + boundingRect.getTop(),
+                            shadowPaint);
+                }
+            }
+
+            renderDecoratedText(canvas, text.text(), text.decorations(), text.bounds().getLeft(), text.bounds().getTop(), fill);
         }
 
         canvas.restore();
+    }
+
+    protected void renderDecoratedText(Canvas canvas, TextBlob text, TextDecoration decor, float x, float y, Paint fill){
+        canvas.drawTextBlob(text, x, y, fill);
+
+        if(decor != null){
+            if(decor.underline()){
+                float underlineY = Math.round(y + text.getTightBounds().getBottom()) - 0.5f;
+                canvas.drawLine(x, underlineY, x + text.getBlockBounds().getWidth(), underlineY, fill);
+            }
+            if(decor.strikethrough()){
+                float strikeY = Math.round(y + (text.getTightBounds().getTop() + text.getTightBounds().getBottom()) / 2.0f) - 0.5f;
+                canvas.drawLine(x, strikeY, x + text.getBlockBounds().getWidth(), strikeY, fill);
+            }
+        }
+
+
     }
 
     public Object createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars){
@@ -158,31 +195,17 @@ public class Renderer implements AutoCloseable{
         }else if(geometry instanceof String varName){
             Text text = renderVars.get(varName, Text.class);
 
-            // TODO - using the builder methods doesn't allow us to control
-            // font AA, hinting, or other important render features and the
-            // text renders a bit rough.
-            try (TextStyle ts = new TextStyle();
-                 ParagraphStyle ps = new ParagraphStyle();
-                 ParagraphBuilder pb = new ParagraphBuilder(ps, fontCollection)) {
+            Typeface[] typefaces = fontCollection.findTypefaces(new String[]{style.rule(StyleRules.FONT_FAMILY)}, getFontStyle(style));
+            Typeface typeface = typefaces != null && typefaces.length > 0 ? typefaces[0] : fontCollection.defaultFallback();
 
-                // TODO - different styling for different spans
-                ts.setColor(style.rule(StyleRules.COLOR, Colors.BLACK).toARGB());
-                ts.setFontFamily(style.rule(StyleRules.FONT_FAMILY));
-                ts.setFontSize(style.rule(StyleRules.FONT_SIZE, 12));
-                ts.setFontStyle(getFontStyle(style));
-                ts.setDecorationStyle(getTextDecoration(style));
+            var font = new Font(typeface);
+            font.setHinting(FontHinting.NORMAL);
+            font.setSize(style.rule(StyleRules.FONT_SIZE, 12));
+            font.setSubpixel(true);
 
-                var backgroundPaint = new Paint();
-                backgroundPaint.setColor(style.rule(StyleRules.TEXT_BACKGROUND_COLOR, Colors.TRANSPARENT).toARGB());
-                ts.setBackground(backgroundPaint);
+            TextBlob blob = shaper.shape(text.text(), font, boundingRect.getWidth());
 
-                applyShadows(ts, style, boundingRect);
-
-                pb.pushStyle(ts);
-                pb.addText(text.text());
-
-                return pb.build();
-            }
+            return new RenderableText(blob, font, boundingRect, getTextDecoration(style), getShadows(style, boundingRect));
 
         }else{
             // Default to filling in the componentBounds as a rectangle
@@ -258,39 +281,21 @@ public class Renderer implements AutoCloseable{
         };
     }
 
-    protected static DecorationStyle getTextDecoration(StyleClass style){
-        if(style.hasRule(StyleRules.TEXT_DECORATION)){
-            TextDecoration textStyle = style.rule(StyleRules.TEXT_DECORATION);
-            return new DecorationStyle(
-                    textStyle.underline(),
-                    false,
-                    textStyle.strikethrough(),
-                    false,
-                    textStyle.color() != null ? textStyle.color().toARGB() : style.rule(StyleRules.COLOR, Colors.BLACK).toARGB(),
-                    switch (textStyle.style()){
-                        case SOLID -> DecorationLineStyle.SOLID;
-                        case DASHED -> DecorationLineStyle.DASHED;
-                        case DOTTED -> DecorationLineStyle.DOTTED;
-                        case DOUBLE -> DecorationLineStyle.DOUBLE;
-                        case WAVY -> DecorationLineStyle.WAVY;
-                    },
-                    textStyle.thickness()
-            );
-        }
-        return DecorationStyle.NONE;
+    protected static TextDecoration getTextDecoration(StyleClass style){
+        return style.rule(StyleRules.TEXT_DECORATION, null);
     }
 
-    protected static void applyShadows(TextStyle ts, StyleClass style, Rect boundingRect){
+    @SuppressWarnings("unchecked")
+    protected static TextShadow[] getShadows(StyleClass style, Rect boundingRect){
         if(style.hasRule(StyleRules.TEXT_SHADOW)){
             var shadows = style.rule(StyleRules.TEXT_SHADOW);
             if(shadows instanceof List shadowList){
-                for(var textShadow : shadowList){
-                    ts.addShadow(getTextShadow((TextShadow) textShadow, boundingRect));
-                }
+                return ((List<TextShadow>) shadowList).toArray(new TextShadow[]{});
             }else if(shadows instanceof TextShadow shadow){
-                ts.addShadow(getTextShadow(shadow, boundingRect));
+                return new TextShadow[]{shadow};
             }
         }
+        return null;
     }
 
     protected static Shadow getTextShadow(TextShadow shadow, Rect boundingRect){
@@ -305,5 +310,6 @@ public class Renderer implements AutoCloseable{
     public void close() {
         fontCollection.close();
         typeProvider.close();
+        shaper.close();
     }
 }

@@ -99,7 +99,7 @@ public class ExampleRunner {
         example.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
         ui.getRoot().addChild(example);
 
-        var text = Text.create("Hello, World!", "ExampleText");
+        var text = new Text("Hello, World!", "ExampleText");
         example.data().set("text", text);
 
     }
