@@ -41,6 +41,6 @@ public record ComponentSkin(String name, ComponentInterface parameters, StyleCla
     }
 
     public StyleClass findNamed(String name){
-        return Arrays.stream(styleClasses).filter(s -> s.name().equals(name)).findFirst().orElse(null);
+        return Arrays.stream(styleClasses).filter(s -> s.name() != null && s.name().equals(name)).findFirst().orElse(null);
     }
 }

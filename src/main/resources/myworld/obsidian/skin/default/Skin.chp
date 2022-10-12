@@ -2,6 +2,8 @@ module skin
 
 from obsidian.vars import *
 from obsidian.skin import *
+from obsidian.graphics import *
+from obsidian.style import *
 
 def skin(){
     name('Obsidian')
@@ -22,4 +24,8 @@ def skin(){
         '/fonts/clear-sans/ClearSans-Regular.ttf',
         '/fonts/clear-sans/ClearSans-Thin.ttf'
     ])
+
+    style('ExampleText', {
+        'color': color('#00FF00')
+    })
 }

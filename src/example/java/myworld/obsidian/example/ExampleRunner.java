@@ -100,8 +100,7 @@ public class ExampleRunner {
         ui.getRoot().addChild(example);
         ui.focusNext();
 
-        var text = new Text("Hello, World!", "ExampleText");
-        example.data().set("text", text);
+        example.data().set("text", new Text("Hello, World!", "ExampleText"));
 
     }
 

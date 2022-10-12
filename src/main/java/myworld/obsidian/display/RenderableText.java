@@ -6,4 +6,4 @@ import io.github.humbleui.types.Rect;
 import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextShadow;
 
-public record RenderableText(TextBlob text, Font font, Rect bounds, TextDecoration decorations, TextShadow[] shadows) {}
+public record RenderableText(TextBlob text, Font font, Rect bounds, ColorRGBA color, ColorRGBA backgroundColor, TextDecoration decorations, TextShadow[] shadows) {}

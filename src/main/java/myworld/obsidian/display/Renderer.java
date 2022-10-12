@@ -6,6 +6,7 @@ import io.github.humbleui.skija.shaper.Shaper;
 import io.github.humbleui.types.Point;
 import io.github.humbleui.types.Rect;
 import myworld.obsidian.display.skin.StyleClass;
+import myworld.obsidian.display.skin.StyleLookup;
 import myworld.obsidian.display.skin.StyleRules;
 import myworld.obsidian.display.skin.Variables;
 import myworld.obsidian.geometry.*;
@@ -45,7 +46,7 @@ public class Renderer implements AutoCloseable{
         typeProvider.registerTypeface(typeface);
     }
 
-    public void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars){
+    public void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars, StyleLookup styles){
         canvas.save();
 
         var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
@@ -57,7 +58,7 @@ public class Renderer implements AutoCloseable{
             canvas.drawRect(boundingRect, debugPaint);
         }
 
-        var geometry = (Object) createSkiaGeometry(boundingRect, style, renderVars);
+        var geometry = (Object) createSkiaGeometry(boundingRect, style, renderVars, styles);
 
         Paint fill = getFill(style);
         Paint stroke = getStroke(style);
@@ -123,16 +124,21 @@ public class Renderer implements AutoCloseable{
             }
 
         }if(geometry instanceof RenderableText text){
+            // Note: Because text can specify its own style class,
+            // conversion of the high-level Text object to RenderableText
+            // performs style class merging. This means that all styleable
+            // properties used here must be assigned to the RenderableText
+            // during creation, and none of the style variables (such as fill color)
+            // available from the outer scopes here may be used.
             canvas.setMatrix(transform);
             canvas.clipRect(boundingRect, true);
-            if(fill == null){
-                fill = new Paint();
-                fill.setColor(Colors.BLACK.toARGB());
-            }
 
-            if(style.hasRule(StyleRules.TEXT_BACKGROUND_COLOR)){
+            var textColor = new Paint();
+            textColor.setColor(text.color().toARGB());
+
+            if(text.backgroundColor() != null){
                 var backgroundPaint = new Paint();
-                backgroundPaint.setColor(style.rule(StyleRules.TEXT_BACKGROUND_COLOR, Colors.WHITE).toARGB());
+                backgroundPaint.setColor(text.backgroundColor().toARGB());
                 var background = new Rect(
                         boundingRect.getLeft(),
                         boundingRect.getTop(),
@@ -155,7 +161,7 @@ public class Renderer implements AutoCloseable{
                 }
             }
 
-            renderDecoratedText(canvas, text.text(), text.decorations(), text.bounds().getLeft(), text.bounds().getTop(), fill);
+            renderDecoratedText(canvas, text.text(), text.decorations(), text.bounds().getLeft(), text.bounds().getTop(), textColor);
         }
 
         canvas.restore();
@@ -178,7 +184,7 @@ public class Renderer implements AutoCloseable{
 
     }
 
-    public Object createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars){
+    public Object createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars, StyleLookup styles){
         Object geometry = style.rule(StyleRules.GEOMETRY);
         var path = new Path();
         if(geometry instanceof Rectangle r){
@@ -208,6 +214,13 @@ public class Renderer implements AutoCloseable{
         }else if(geometry instanceof String varName){
             Text text = renderVars.get(varName, Text.class);
 
+            if(text.hasStyle()){
+                var textStyle = styles.getStyle(text.styleClass());
+                if(textStyle != null){
+                    style = StyleClass.merge(style, textStyle);
+                }
+            }
+
             Typeface[] typefaces = fontCollection.findTypefaces(new String[]{style.rule(StyleRules.FONT_FAMILY)}, getFontStyle(style));
             Typeface typeface = typefaces != null && typefaces.length > 0 ? typefaces[0] : fontCollection.defaultFallback();
 
@@ -218,7 +231,13 @@ public class Renderer implements AutoCloseable{
 
             TextBlob blob = shaper.shape(text.text(), font, boundingRect.getWidth());
 
-            return new RenderableText(blob, font, boundingRect, getTextDecoration(style), getShadows(style));
+            var color = style.rule(StyleRules.COLOR, Colors.BLACK);
+            ColorRGBA backgroundColor = null;
+            if(style.hasRule(StyleRules.TEXT_BACKGROUND_COLOR)){
+                backgroundColor = style.rule(StyleRules.TEXT_BACKGROUND_COLOR);
+            }
+
+            return new RenderableText(blob, font, boundingRect, color, backgroundColor, getTextDecoration(style), getShadows(style));
 
         }else{
             // Default to filling in the componentBounds as a rectangle
