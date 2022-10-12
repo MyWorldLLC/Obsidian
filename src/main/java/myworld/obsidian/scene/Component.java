@@ -28,6 +28,7 @@ public class Component {
     protected final ListProperty<Effect> effects;
     protected final ListProperty<Object> tags;
     protected final ValueProperty<String> styleName;
+    protected final ValueProperty<Boolean> focusable;
     protected final Variables data;
 
     protected final ValueProperty<Boolean> needsUpdate;
@@ -39,6 +40,7 @@ public class Component {
         effects = new ListProperty<>();
         tags = new ListProperty<>();
         styleName = new ValueProperty<>(defaultStyleName(this));
+        focusable = new ValueProperty<>(true);
         data = new Variables();
 
         needsUpdate = new ValueProperty<>();
@@ -105,6 +107,14 @@ public class Component {
 
     public ValueProperty<String> styleName(){
         return styleName;
+    }
+
+    public ValueProperty<Boolean> focusable(){
+        return focusable;
+    }
+
+    public boolean isFocusable(){
+        return focusable().get(false);
     }
 
     public Variables data(){

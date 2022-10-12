@@ -98,6 +98,7 @@ public class ExampleRunner {
         example.styleName().set("Example");
         example.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
         ui.getRoot().addChild(example);
+        ui.focusNext();
 
         var text = new Text("Hello, World!", "ExampleText");
         example.data().set("text", text);

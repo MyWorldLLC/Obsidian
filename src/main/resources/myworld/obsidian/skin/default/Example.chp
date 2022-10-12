@@ -9,7 +9,8 @@ def component(){
     name('Example')
 
     data({
-        'text': 'string'
+        'text': 'string',
+        'focused': 'boolean'
     })
 
     layer('background', {
@@ -23,12 +24,20 @@ def component(){
         'border-cap': 'round'
     })
 
+    layer('background', 'focused', {
+        'color': black
+    })
+
     layer('text', {
         'geometry': 'text',
-        'color': color('#000000'),
+        'color': black,
         'font-family': 'Clear Sans',
         'font-size': 14,
         'text-decoration': decoration(true, true, color('#000000'), 'solid', 1.0),
         'text-shadow': textShadow(offset('-1px', '1px'), color('#000000'), 1.0)
+    })
+
+    layer('text', 'focused', {
+        'color': white
     })
 }
