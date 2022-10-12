@@ -22,14 +22,17 @@ import java.util.List;
 public record ComponentSkin(String name, ComponentInterface parameters, StyleClass... styleClasses) {
 
     public List<StyleClass> layers(){
-        return Arrays.stream(styleClasses).filter(StyleClass::isLayer).toList();
+        return Arrays.stream(styleClasses)
+                .filter(StyleClass::isLayer)
+                .filter(s -> !s.isStateLimited())
+                .toList();
     }
 
     public List<StyleClass> activeForLayer(String layer, Variables params){
         return Arrays.stream(styleClasses)
                 .filter(StyleClass::isLayer)
                 .filter(s -> s.layer().equals(layer))
-                .filter(s -> s.isStateLimited() && parameters.isDefined(s.stateParam(), params))
+                .filter(s -> s.isStateLimited() && parameters.isActive(s.stateParam(), params))
                 .toList();
     }
 

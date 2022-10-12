@@ -56,7 +56,10 @@ public record StyleClass(String name, String layer, String stateParam, Map<Strin
 
     public static StyleClass merge(Stream<StyleClass> classes){
         return new StyleClass(classes.flatMap(style -> style.rules().entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (existing, next) -> next)));
     }
 
     public static StyleClass forName(String name, Map<String, Object> rules){

@@ -39,4 +39,18 @@ public class ComponentInterface {
     public boolean isDefined(String name, Variables params){
         return parameters.containsKey(name) && params.isDefined(name);
     }
+
+    public boolean isActive(String name, Variables params){
+        if(isDefined(name, params)){
+            var value = params.get(name);
+            if(value instanceof Boolean b){
+                return b;
+            }else if(value instanceof String s){
+                return s.length() > 0;
+            }else{
+                return value != null;
+            }
+        }
+        return false;
+    }
 }
