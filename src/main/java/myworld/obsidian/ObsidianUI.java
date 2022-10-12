@@ -208,13 +208,11 @@ public class ObsidianUI {
     }
 
     protected void focusedComponentChanged(ValueProperty<Component> property, Component previous, Component next){
-        System.out.println("Focus changed");
         if(previous != null){
             previous.data().set(FOCUSED_DATA_NAME, false);
         }
         if(next != null){
             next.data().set(FOCUSED_DATA_NAME, true);
-            System.out.println("Focusing: " + next.styleName().get());
         }
     }
 
