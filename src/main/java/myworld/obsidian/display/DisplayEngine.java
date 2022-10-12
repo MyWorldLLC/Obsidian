@@ -20,6 +20,7 @@ import io.github.humbleui.types.IRect;
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.StyleLookup;
+import myworld.obsidian.display.skin.StyleRules;
 import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.geometry.Bounds2D;
 import myworld.obsidian.geometry.Dimension2D;
@@ -179,7 +180,7 @@ public class DisplayEngine implements AutoCloseable {
                 var style = StyleClass.merge(layer, StyleClass.merge(activeStates));
 
                 // Mix-in style imports - pull from component styles first, then skin styles
-                List<String> styles = style.rule("styles");
+                List<String> styles = style.rule(StyleRules.STYLES);
                 if(styles != null){
                     for(String mixName : styles){
                         var mixStyle = styleLookup.getStyle(mixName);
