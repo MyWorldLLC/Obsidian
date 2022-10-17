@@ -96,7 +96,12 @@ public class LayoutEngine {
                     YGNodeLayoutGetHeight(tag.node())
             );
         }
-        return Bounds2D.ZERO;
+        return Bounds2D.UNDEFINED;
+    }
+
+    public boolean testBounds(Component component, int x, int y){
+        var bounds = getBounds(component);
+        return bounds.left() <= x && bounds.right() >= x && bounds.bottom() >= y && bounds.top() <= y;
     }
 
     public void registerRoot(Component component){

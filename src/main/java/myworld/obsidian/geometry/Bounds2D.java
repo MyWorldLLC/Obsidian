@@ -18,7 +18,7 @@ package myworld.obsidian.geometry;
 
 public record Bounds2D(Point2D origin, float width, float height) {
 
-    public static final Bounds2D ZERO = new Bounds2D(new Point2D(0, 0), 0, 0);
+    public static final Bounds2D UNDEFINED = new Bounds2D(new Point2D(-1, -1), -1, -1);
 
     public float left(){
         return origin.x();

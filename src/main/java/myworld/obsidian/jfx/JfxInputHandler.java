@@ -18,21 +18,20 @@ package myworld.obsidian.jfx;
 
 import com.sun.javafx.embed.AbstractEvents;
 import javafx.scene.input.KeyCode;
-import myworld.obsidian.InputHandler;
 import myworld.obsidian.jfx.input.KeyChars;
 import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.input.MouseWheelAxis;
-import myworld.obsidian.input.InputStates;
+import myworld.obsidian.input.KeyStates;
 import myworld.obsidian.jfx.input.MouseAxisMapper;
 import myworld.obsidian.jfx.input.MouseButtonMapper;
 
-public class JfxInputHandler implements InputHandler {
+public class JfxInputHandler {
 
     public static final int DEFAULT_MOUSE_POPUP_TRIGGER = MouseButtonMapper.map(MouseButton.SECONDARY);
 
     protected final JfxHost host;
-    protected final InputStates keyStates;
-    protected final InputStates mouseButtonStates;
+    protected final KeyStates keyStates;
+    protected final KeyStates mouseButtonStates;
     protected final KeyChars keyChars;
 
     protected int mousePopupTrigger;
@@ -44,9 +43,9 @@ public class JfxInputHandler implements InputHandler {
     public JfxInputHandler(JfxHost host){
         this.host = host;
 
-        keyStates = new InputStates();
+        keyStates = new KeyStates();
 
-        mouseButtonStates = new InputStates();
+        mouseButtonStates = new KeyStates();
 
         keyChars = new KeyChars();
 

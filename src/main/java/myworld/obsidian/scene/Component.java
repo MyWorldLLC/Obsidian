@@ -17,6 +17,7 @@
 package myworld.obsidian.scene;
 
 import myworld.obsidian.display.skin.Variables;
+import myworld.obsidian.events.dispatch.EventDispatcher;
 import myworld.obsidian.layout.ComponentLayout;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.properties.ValueProperty;
@@ -30,6 +31,7 @@ public class Component {
     protected final ValueProperty<String> styleName;
     protected final ValueProperty<Boolean> focusable;
     protected final Variables data;
+    protected final EventDispatcher dispatcher;
 
     protected final ValueProperty<Boolean> needsUpdate;
     protected final ComponentLayout layout;
@@ -42,6 +44,7 @@ public class Component {
         styleName = new ValueProperty<>(defaultStyleName(this));
         focusable = new ValueProperty<>(true);
         data = new Variables();
+        dispatcher = new EventDispatcher();
 
         needsUpdate = new ValueProperty<>();
 
@@ -146,6 +149,10 @@ public class Component {
     public void onAttach(){}
 
     public void onDetach(){}
+
+    public EventDispatcher dispatcher(){
+        return dispatcher;
+    }
 
     public static String defaultStyleName(Component component){
         return component.getClass().getSimpleName();

@@ -14,18 +14,29 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian;
+package myworld.obsidian.input;
 
-import myworld.obsidian.input.MouseButton;
-import myworld.obsidian.input.MouseWheelAxis;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface InputHandler {
+public class KeyStates {
 
-    void keyEvent(int keyCode, char keyChar, boolean isDown, boolean repeating);
+    protected final Map<Integer, Boolean> states;
 
-    void mouseWheelEvent(MouseWheelAxis axis, double wheelDelta, double wheelTotal, int x, int y);
+    public KeyStates(){
+        states = new HashMap<>();
+    }
 
-    void mouseButtonEvent(MouseButton button, boolean isDown, int x, int y);
+    public boolean get(int key, boolean defaultState){
+        return states.getOrDefault(key, defaultState);
+    }
 
-    void mouseMoveEvent(int x, int y);
+    public boolean get(int key){
+        return get(key, false);
+    }
+
+    public boolean set(int key, boolean state){
+        var former = states.put(key, state);
+        return former != null && former;
+    }
 }

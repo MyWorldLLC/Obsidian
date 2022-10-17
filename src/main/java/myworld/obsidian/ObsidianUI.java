@@ -20,6 +20,8 @@ import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.UISkin;
+import myworld.obsidian.events.*;
+import myworld.obsidian.input.InputManager;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.layout.LayoutEngine;
 import myworld.obsidian.properties.ValueProperty;
@@ -29,6 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ObsidianUI {
 
+    public static final CursorHandler DISCARDING_CURSOR_HANDLER = (c) -> {};
+
     public static final String ROOT_COMPONENT_STYLE_NAME = "Root";
 
     public static final String FOCUSED_DATA_NAME = "focused";
@@ -36,6 +40,9 @@ public class ObsidianUI {
     protected final Component root;
     protected final ValueProperty<LayoutEngine> layout;
     protected final ValueProperty<DisplayEngine> display;
+    protected final ValueProperty<InputManager> input;
+    protected final ValueProperty<CursorHandler> cursor;
+
     protected final ValueProperty<ColorRGBA> clearColor;
 
     protected final ValueProperty<Component> focusedComponent;
@@ -62,6 +69,8 @@ public class ObsidianUI {
         });
         layout.set(new LayoutEngine(this));
         this.display = new ValueProperty<>(display);
+        input = new ValueProperty<>(new InputManager(this));
+        cursor = new ValueProperty<>(DISCARDING_CURSOR_HANDLER);
 
         focusedComponent = new ValueProperty<>();
         focusedComponent.addListener(this::focusedComponentChanged);
@@ -76,6 +85,10 @@ public class ObsidianUI {
         return layout.get();
     }
 
+    public InputManager getInput(){
+        return input.get();
+    }
+
     public ValueProperty<DisplayEngine> display(){
         return display;
     }
@@ -86,6 +99,18 @@ public class ObsidianUI {
 
     public void setDisplay(DisplayEngine display){
         this.display.set(display);
+    }
+
+    public ValueProperty<CursorHandler> cursorHandler(){
+        return cursor;
+    }
+
+    public CursorHandler getCursorHandler(){
+        return cursor.get();
+    }
+
+    public void setCursorHandler(CursorHandler handler){
+        cursor.set(handler);
     }
 
     public ValueProperty<ColorRGBA> clearColor(){
@@ -139,6 +164,8 @@ public class ObsidianUI {
 
     public boolean requestFocus(Component component){
         if(component.isFocusable()){
+            var oldFocus = focusedComponent.get();
+            fireEvent(new FocusEvent(oldFocus, component));
             focusedComponent.set(component);
             return true;
         }
@@ -213,6 +240,109 @@ public class ObsidianUI {
         }
         if(next != null){
             next.data().set(FOCUSED_DATA_NAME, true);
+        }
+    }
+
+    public Component pick(int x, int y){
+        return pick(getRoot(), x, y);
+    }
+
+    public Component pick(Component component, int x, int y){
+        if(getLayout().testBounds(component, x, y)){
+            for(var child : component.children()){
+                var candidate = pick(child, x, y);
+                if(candidate != null){
+                    return candidate;
+                }
+            }
+            // We didn't find a child with a tighter bound, so return this
+            return component;
+        }
+
+        return null;
+    }
+
+    public void fireEvent(BaseEvent evt){
+        fireEvent(evt, getRoot());
+    }
+
+    public void fireEvent(BaseEvent evt, Component eventRoot){
+
+        /* Event dispatch happens in two distinct phases:
+           (1) Target selection
+           (2) Filter down & bubble up
+
+           Target selection depends on the type of event:
+           (1) Mouse events traverse the component hierarchy down and select the deepest component in the hierarchy
+               that overlaps the mouse coordinates
+           (2) Key events target the focused component if there is one, otherwise they are discarded
+           (3) Focus/hover events events are dispatched at most twice - first targeting the component that has lost focus/hover
+               (if there was one), then targeting the component that has gained focus/hover (if there is one)
+
+           Filtering/bubbling happens identically regardless of the event type. First, a chain from the eventRoot to the
+           target is constructed, and the chain is traversed from the root to the target, running any event filters registered
+           for that event type. If any filter blocks the event, the event is discarded and is not dispatched to the target.
+           If the event reaches the target, any event handlers registered for that event are run. The event is then dispatched
+           at each component from the bottom of the chain to the top until consume() is called, at which point dispatch halts.
+        */
+
+        if(evt instanceof KeyEvent keyEvent){
+            var focused = getFocusedComponent();
+            if(focused != null){
+                dispatch(keyEvent, eventRoot, focused);
+            }
+        }else if(evt instanceof FocusEvent focusEvent){
+            if(focusEvent.getOldFocus() != null){
+                dispatch(evt, eventRoot, focusEvent.getOldFocus());
+            }
+
+            if(focusEvent.getNewFocus() != null){
+                dispatch(evt, eventRoot, focusEvent.getNewFocus());
+            }
+        }else if(evt instanceof MouseHoverEvent hoverEvent){
+            if(hoverEvent.getOldHover() != null){
+                dispatch(evt, eventRoot, hoverEvent.getOldHover());
+            }
+
+            if(hoverEvent.getNewHover() != null){
+                dispatch(evt, eventRoot, hoverEvent.getNewHover());
+            }
+        }
+    }
+
+    protected void dispatch(BaseEvent evt, Component root, Component target){
+        if(filter(evt, root, target)){
+            bubble(evt, root, target);
+        }
+    }
+
+    protected boolean filter(BaseEvent evt, Component root, Component component){
+
+        if(component == null){
+            return true;
+        }
+
+        var passed = true;
+        if(component != root){
+            // If we're not at the root yet, consider the parent's filter value and
+            // only invoke our own filters if the parent (& ancestors') filters passed
+            passed = filter(evt, root, component.getParent());
+        }
+
+        if(passed){
+            passed = component.dispatcher().filter(evt);
+        }
+
+        return passed;
+    }
+
+    protected void bubble(BaseEvent evt, Component root, Component component){
+        if(component != null){
+            component.dispatcher().dispatch(evt);
+
+            if(!evt.isConsumed() && component != root && component.hasParent()){
+                bubble(evt, root, component.getParent());
+            }
         }
     }
 
