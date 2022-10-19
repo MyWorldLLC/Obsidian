@@ -360,6 +360,10 @@ public class ObsidianUI {
             return true;
         }
 
+        if(evt.isConsumed()){
+            return false; // Filter stage blocks the event as soon as it's consumed by a filter
+        }
+
         var passed = true;
         if(component != root){
             // If we're not at the root yet, consider the parent's filter value and
@@ -368,6 +372,7 @@ public class ObsidianUI {
         }
 
         if(passed){
+            // If all filters higher up in the chain passed, test this component's filters
             passed = component.dispatcher().filter(evt);
         }
 
@@ -375,10 +380,11 @@ public class ObsidianUI {
     }
 
     protected void bubble(BaseEvent evt, Component root, Component component){
-        if(component != null){
+        if(component != null && !evt.isConsumed()){
+
             component.dispatcher().dispatch(evt);
 
-            if(!evt.isConsumed() && component != root && component.hasParent()){
+            if(component != root && component.hasParent()){
                 bubble(evt, root, component.getParent());
             }
         }
