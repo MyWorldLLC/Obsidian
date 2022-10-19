@@ -266,7 +266,7 @@ public class ObsidianUI {
             hoveredComponent.set(current);
         }
 
-        fireEvent(new MouseHoverEvent(input.get(), evt.getX(), evt.getY(), former, current));
+        fireEvent(new MouseOverEvent(input.get(), evt.getX(), evt.getY(), former, current));
     }
 
     public Component pick(int x, int y){
@@ -325,14 +325,19 @@ public class ObsidianUI {
             if(focusEvent.getNewFocus() != null){
                 dispatch(evt, eventRoot, focusEvent.getNewFocus());
             }
-        }else if(evt instanceof MouseHoverEvent hoverEvent){
-            if(hoverEvent.getPrior() != null){
-                dispatch(evt, eventRoot, hoverEvent.getPrior());
+        }else if(evt instanceof MouseOverEvent hoverEvent){
+            if(hoverEvent.getPrior() == hoverEvent.getCurrent()){
+                dispatch(evt, eventRoot, hoverEvent.getCurrent());
+            }else{
+                if(hoverEvent.getPrior() != null){
+                    dispatch(evt, eventRoot, hoverEvent.getPrior());
+                }
+
+                if(hoverEvent.getCurrent() != null){
+                    dispatch(evt, eventRoot, hoverEvent.getCurrent());
+                }
             }
 
-            if(hoverEvent.getCurrent() != null){
-                dispatch(evt, eventRoot, hoverEvent.getCurrent());
-            }
         }else{
             var mousePos = input.get().getMousePosition();
             var target = mousePos != null ? pick(mousePos.x(), mousePos.y()) : eventRoot;

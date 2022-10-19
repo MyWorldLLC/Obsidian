@@ -51,7 +51,9 @@ public class InputManager {
         int dx = 0;
         int dy = 0;
         var oldPos = getMousePosition();
-        if(oldPos != null){
+        if(oldPos != null && oldPos.x() == x && oldPos.y() == y){
+            return; // De-duplicate events at the same pixel coordinates
+        }else if(oldPos != null){
             dx = x - oldPos.x();
             dy = y - oldPos.y();
         }

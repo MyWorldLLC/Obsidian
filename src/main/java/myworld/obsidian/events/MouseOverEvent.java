@@ -3,12 +3,12 @@ package myworld.obsidian.events;
 import myworld.obsidian.input.InputManager;
 import myworld.obsidian.scene.Component;
 
-public class MouseHoverEvent extends BaseMouseEvent {
+public class MouseOverEvent extends BaseMouseEvent {
 
     protected final Component prior;
     protected final Component current;
 
-    public MouseHoverEvent(InputManager manager, int x, int y, Component prior, Component current){
+    public MouseOverEvent(InputManager manager, int x, int y, Component prior, Component current){
         super(manager, x, y);
         this.prior = prior;
         this.current = current;
