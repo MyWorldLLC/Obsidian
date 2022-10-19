@@ -43,6 +43,18 @@ public class GraphicsModule implements ChipmunkModule {
     public static final ColorRGBA black = Colors.BLACK;
 
     @AllowChipmunkLinkage
+    public static final ColorRGBA red = Colors.RED;
+
+    @AllowChipmunkLinkage
+    public static final ColorRGBA green = Colors.GREEN;
+
+    @AllowChipmunkLinkage
+    public static final ColorRGBA blue = Colors.BLUE;
+
+    @AllowChipmunkLinkage
+    public static final ColorRGBA transparent = Colors.TRANSPARENT;
+
+    @AllowChipmunkLinkage
     public static String rgb(int r, int g, int b){
         return Colors.hex((byte)r, (byte)g, (byte)b);
     }
