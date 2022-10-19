@@ -5,29 +5,37 @@ import myworld.obsidian.scene.Component;
 
 public class MouseHoverEvent extends BaseMouseEvent {
 
-    protected final Component oldHover;
-    protected final Component newHover;
+    protected final Component prior;
+    protected final Component current;
 
-    public MouseHoverEvent(InputManager manager, int x, int y, Component oldHover, Component newHover){
+    public MouseHoverEvent(InputManager manager, int x, int y, Component prior, Component current){
         super(manager, x, y);
-        this.oldHover = oldHover;
-        this.newHover = newHover;
+        this.prior = prior;
+        this.current = current;
     }
 
-    public Component getOldHover(){
-        return oldHover;
+    public Component getPrior(){
+        return prior;
     }
 
-    public Component getNewHover(){
-        return newHover;
+    public Component getCurrent(){
+        return current;
     }
 
     public boolean entered(Component component){
-        return newHover == component;
+        return component == current && component != prior;
     }
 
     public boolean exited(Component component){
-        return oldHover == component;
+        return component == prior && component != current;
+    }
+
+    public boolean isOver(Component component){
+        return component == current;
+    }
+
+    public boolean isHovering(Component component){
+        return component == current && component == prior;
     }
 
 }

@@ -36,6 +36,7 @@ public class ObsidianUI {
     public static final String ROOT_COMPONENT_STYLE_NAME = "Root";
 
     public static final String FOCUSED_DATA_NAME = "focused";
+    public static final String HOVERED_DATA_NAME = "hovered";
 
     protected final Component root;
     protected final ValueProperty<LayoutEngine> layout;
@@ -46,6 +47,7 @@ public class ObsidianUI {
     protected final ValueProperty<ColorRGBA> clearColor;
 
     protected final ValueProperty<Component> focusedComponent;
+    protected final ValueProperty<Component> hoveredComponent;
 
     protected final Map<String, UISkin> skins;
     protected final ValueProperty<String> selectedSkin;
@@ -74,11 +76,16 @@ public class ObsidianUI {
 
         focusedComponent = new ValueProperty<>();
         focusedComponent.addListener(this::focusedComponentChanged);
+        hoveredComponent = new ValueProperty<>();
+        hoveredComponent.addListener(this::hoveredComponentChanged);
 
         skins = new ConcurrentHashMap<>();
         selectedSkin = new ValueProperty<>();
 
         clearColor = new ValueProperty<>(Colors.BLACK);
+
+        // Register event handlers/filters that are useful for base UI functionality
+        input.get().getDispatcher().subscribe(MouseMoveEvent.class, this::mouseHoverWatcher);
     }
 
     public LayoutEngine getLayout(){
@@ -165,8 +172,8 @@ public class ObsidianUI {
     public boolean requestFocus(Component component){
         if(component.isFocusable()){
             var oldFocus = focusedComponent.get();
-            fireEvent(new FocusEvent(oldFocus, component));
             focusedComponent.set(component);
+            fireEvent(new FocusEvent(oldFocus, component));
             return true;
         }
         return false;
@@ -243,6 +250,25 @@ public class ObsidianUI {
         }
     }
 
+    protected void hoveredComponentChanged(ValueProperty<Component> property, Component previous, Component next){
+        if(previous != null){
+            previous.data().set(HOVERED_DATA_NAME, false);
+        }
+        if(next != null){
+            next.data().set(HOVERED_DATA_NAME, true);
+        }
+    }
+
+    protected void mouseHoverWatcher(MouseMoveEvent evt){
+        var current = pick(evt.getX(), evt.getY());
+        var former = hoveredComponent.get();
+        if(current != former){
+            hoveredComponent.set(current);
+        }
+
+        fireEvent(new MouseHoverEvent(input.get(), evt.getX(), evt.getY(), former, current));
+    }
+
     public Component pick(int x, int y){
         return pick(getRoot(), x, y);
     }
@@ -300,12 +326,12 @@ public class ObsidianUI {
                 dispatch(evt, eventRoot, focusEvent.getNewFocus());
             }
         }else if(evt instanceof MouseHoverEvent hoverEvent){
-            if(hoverEvent.getOldHover() != null){
-                dispatch(evt, eventRoot, hoverEvent.getOldHover());
+            if(hoverEvent.getPrior() != null){
+                dispatch(evt, eventRoot, hoverEvent.getPrior());
             }
 
-            if(hoverEvent.getNewHover() != null){
-                dispatch(evt, eventRoot, hoverEvent.getNewHover());
+            if(hoverEvent.getCurrent() != null){
+                dispatch(evt, eventRoot, hoverEvent.getCurrent());
             }
         }
     }
