@@ -20,4 +20,16 @@ public class FocusEvent extends BaseEvent {
         return newFocus;
     }
 
+    public boolean gainedFocus(Component component){
+        return component == newFocus && component != oldFocus;
+    }
+
+    public boolean isFocused(Component component){
+        return component == newFocus;
+    }
+
+    public boolean lostFocus(Component component){
+        return component != newFocus && component == oldFocus;
+    }
+
 }
