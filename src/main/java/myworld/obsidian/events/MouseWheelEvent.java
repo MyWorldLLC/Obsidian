@@ -1,11 +1,13 @@
 package myworld.obsidian.events;
 
+import myworld.obsidian.input.InputManager;
+
 public class MouseWheelEvent extends BaseMouseEvent {
 
     protected final float scrollDelta;
 
-    public MouseWheelEvent(int x, int y, float scrollDelta){
-        super(x, y);
+    public MouseWheelEvent(InputManager manager, int x, int y, float scrollDelta){
+        super(manager, x, y);
         this.scrollDelta = scrollDelta;
     }
 

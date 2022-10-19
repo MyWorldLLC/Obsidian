@@ -1,5 +1,6 @@
 package myworld.obsidian.events;
 
+import myworld.obsidian.input.InputManager;
 import myworld.obsidian.input.MouseButton;
 
 public class MouseButtonEvent extends BaseMouseEvent {
@@ -7,8 +8,8 @@ public class MouseButtonEvent extends BaseMouseEvent {
     protected final MouseButton button;
     protected final boolean down;
 
-    public MouseButtonEvent(int x, int y, MouseButton button, boolean down){
-        super(x, y);
+    public MouseButtonEvent(InputManager manager, int x, int y, MouseButton button, boolean down){
+        super(manager, x, y);
         this.button = button;
         this.down = down;
     }

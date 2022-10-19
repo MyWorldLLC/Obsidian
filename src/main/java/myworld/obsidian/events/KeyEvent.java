@@ -1,17 +1,20 @@
 package myworld.obsidian.events;
 
-public class KeyEvent extends BaseEvent {
+import myworld.obsidian.input.InputManager;
+
+public class KeyEvent extends InputEvent {
 
     protected final int keyCode;
     protected final char character;
     protected final boolean isDown;
     protected final boolean isRepeating;
 
-    public KeyEvent(int keyCode, boolean isDown, boolean isRepeating){
-        this(keyCode, Character.MIN_VALUE, isDown, isRepeating);
+    public KeyEvent(InputManager manager, int keyCode, boolean isDown, boolean isRepeating){
+        this(manager, keyCode, Character.MIN_VALUE, isDown, isRepeating);
     }
 
-    public KeyEvent(int keyCode, char character, boolean isDown, boolean isRepeating){
+    public KeyEvent(InputManager manager, int keyCode, char character, boolean isDown, boolean isRepeating){
+        super(manager);
         this.keyCode = keyCode;
         this.character = character;
         this.isDown = isDown;

@@ -1,11 +1,14 @@
 package myworld.obsidian.events;
 
-public abstract class BaseMouseEvent extends BaseEvent {
+import myworld.obsidian.input.InputManager;
+
+public abstract class BaseMouseEvent extends InputEvent {
 
     protected final int x;
     protected final int y;
 
-    public BaseMouseEvent(int x, int y){
+    public BaseMouseEvent(InputManager manager, int x, int y){
+        super(manager);
         this.x = x;
         this.y = y;
     }
