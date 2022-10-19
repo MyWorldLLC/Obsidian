@@ -10,7 +10,8 @@ def component(){
 
     data({
         'text': 'string',
-        'focused': 'boolean'
+        'focused': 'boolean',
+        'hovered': 'boolean'
     })
 
     layer('background', {
@@ -37,7 +38,7 @@ def component(){
         'text-shadow': textShadow(offset('-1px', '1px'), color('#000000'), 1.0)
     })
 
-    layer('text', 'focused', {
+    layer('text', 'hovered', {
         'color': white
     })
 }

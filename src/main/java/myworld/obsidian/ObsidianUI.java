@@ -301,7 +301,7 @@ public class ObsidianUI {
            Target selection depends on the type of event:
            (1) Mouse events traverse the component hierarchy down and select the deepest component in the hierarchy
                that overlaps the mouse coordinates
-           (2) Key events target the focused component if there is one, otherwise they are discarded
+           (2) Character events target the focused component if there is one, otherwise they are discarded
            (3) Focus/hover events events are dispatched at most twice - first targeting the component that has lost focus/hover
                (if there was one), then targeting the component that has gained focus/hover (if there is one)
 
@@ -312,10 +312,10 @@ public class ObsidianUI {
            at each component from the bottom of the chain to the top until consume() is called, at which point dispatch halts.
         */
 
-        if(evt instanceof KeyEvent keyEvent){
+        if(evt instanceof CharacterEvent characterEvent){
             var focused = getFocusedComponent();
             if(focused != null){
-                dispatch(keyEvent, eventRoot, focused);
+                dispatch(characterEvent, eventRoot, focused);
             }
         }else if(evt instanceof FocusEvent focusEvent){
             if(focusEvent.getOldFocus() != null){
@@ -333,6 +333,13 @@ public class ObsidianUI {
             if(hoverEvent.getCurrent() != null){
                 dispatch(evt, eventRoot, hoverEvent.getCurrent());
             }
+        }else{
+            var mousePos = input.get().getMousePosition();
+            var target = mousePos != null ? pick(mousePos.x(), mousePos.y()) : eventRoot;
+            if(target == null){
+                target = eventRoot;
+            }
+            dispatch(evt, eventRoot, target);
         }
     }
 

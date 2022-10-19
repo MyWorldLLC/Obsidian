@@ -27,16 +27,16 @@ public class InputManager {
         return dispatcher;
     }
 
-    public void fireKeyEvent(Key key, boolean isDown){
-        fireKeyEvent(key, Character.MIN_VALUE, isDown);
+    public void fireCharacterEvent(char[] characters){
+        handleEvent(new CharacterEvent(this, characters));
     }
 
-    public void fireKeyEvent(Key key, char keyChar, boolean isDown) {
+    public void fireKeyEvent(Key key, boolean isDown) {
 
         var repeating = state.get(key.ordinal());
         state.set(key.ordinal(), isDown);
 
-        handleEvent(new KeyEvent(this, key, keyChar, isDown, repeating));
+        handleEvent(new KeyEvent(this, key, isDown, repeating));
     }
 
     public void fireMouseWheelEvent(MouseWheelAxis axis, int x, int y, float wheelDelta) {
