@@ -18,7 +18,6 @@ def component(){
         #'geometry': path('M 10 10 H 90 V 90 H 10 L 10 10'),
         'geometry': rectangle('100%', '100%'),
         'color': color('#FFFFFF'),
-        'position': move('10px', '10px'),
         'border-color': color('#666666FF'),
         'border-width': 5.0,
         'border-join': 'round',
@@ -26,19 +25,18 @@ def component(){
     })
 
     layer('background', 'focused', {
-        'color': black
+        'color': color('#AAAAAA')
     })
 
     layer('text', {
         'geometry': 'text',
-        'color': black,
+        'color': white,
         'font-family': 'Clear Sans',
         'font-size': 14,
-        'text-decoration': decoration(true, true, color('#000000'), 'solid', 1.0),
         'text-shadow': textShadow(offset('-1px', '1px'), color('#000000'), 1.0)
     })
 
     layer('text', 'hovered', {
-        'color': white
+        'color': green
     })
 }

@@ -9,6 +9,6 @@ def component(){
     name('Root')
 
     layer('background', {
-        'color': color('#AAAAAA')
+        'color': color('#EEEEEE')
     })
 }

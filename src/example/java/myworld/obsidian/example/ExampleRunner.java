@@ -17,11 +17,13 @@
 package myworld.obsidian.example;
 
 import myworld.obsidian.ObsidianUI;
-import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
-import myworld.obsidian.events.MouseHoverEvent;
+import myworld.obsidian.events.CharacterEvent;
+import myworld.obsidian.events.FocusEvent;
+import myworld.obsidian.events.KeyEvent;
+import myworld.obsidian.events.MouseOverEvent;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.input.MouseWheelAxis;
@@ -94,7 +96,7 @@ public class ExampleRunner {
         ui = ObsidianUI.createForGL(getRenderWidth(), getRenderHeight(), 0);
         ui.registerSkin(ChipmunkSkinLoader.loadFromClasspath(ChipmunkSkinLoader.DEFAULT_SKIN));
         ui.useSkin("Obsidian");
-        ui.getDisplay().enableRenderDebug(Colors.RED);
+        //ui.getDisplay().enableRenderDebug(Colors.RED);
 
         registerInputListeners(window);
 
@@ -102,12 +104,34 @@ public class ExampleRunner {
         example.styleName().set("Example");
         example.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
         ui.getRoot().addChild(example);
-        //ui.focusNext();
 
         example.data().set("text", new Text("Hello, World!", "ExampleText"));
-        example.dispatcher().subscribe(MouseHoverEvent.class, evt -> {
-            System.out.println("Hovering: " + evt.isHovering(example));
+
+        example.dispatcher().subscribe(MouseOverEvent.class, evt -> evt.entered(example), evt -> {
+            System.out.println("Mouse entered");
         });
+
+        example.dispatcher().subscribe(MouseOverEvent.class, evt -> evt.exited(example), evt -> {
+            System.out.println("Mouse exited");
+        });
+
+        example.dispatcher().subscribe(MouseOverEvent.class, evt -> evt.isHovering(example), evt -> {
+            System.out.println("(%d, %d)".formatted(evt.getX(), evt.getY()));
+        });
+
+        example.dispatcher().subscribe(FocusEvent.class, evt -> {
+            System.out.println("Focused: " + evt.isFocused(example));
+        });
+
+        example.dispatcher().subscribe(CharacterEvent.class, evt -> {
+            System.out.println("Received characters: " + String.copyValueOf(evt.getCharacters()));
+        });
+
+        example.dispatcher().subscribe(KeyEvent.class, KeyEvent::isDown, evt -> {
+            System.out.println("Key: " + evt.getKey());
+        });
+
+        ui.focusNext();
 
     }
 
