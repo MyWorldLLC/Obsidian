@@ -217,7 +217,7 @@ public class Renderer implements AutoCloseable{
             if(text.hasStyle()){
                 var textStyle = styles.getStyle(text.styleClass());
                 if(textStyle != null){
-                    style = StyleClass.merge(style, textStyle);
+                    style = StyleClass.merge(textStyle, style);
                 }
             }
 
