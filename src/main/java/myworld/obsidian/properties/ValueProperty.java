@@ -37,7 +37,7 @@ public class ValueProperty<T> extends Property<ValueChangeListener<T>> {
         listeners.forEach(l -> l.onChange(this, oldValue, value));
     }
 
-    public void set(Function<T, T> provider){
+    public void setWith(Function<T, T> provider){
         set(provider.apply(get()));
     }
 
