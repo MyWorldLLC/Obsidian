@@ -8,9 +8,29 @@ def component(){
 
     name('EditableText')
 
+    data({
+        'focused': 'boolean',
+        'lineHeight': 'float',
+        'cursorOffset': 'float',
+        'cursorVisible': 'boolean'
+    })
+
     layer('background', {
         'geometry': rectangle('100%', '100%'),
         'color': white
+    })
+
+    layer('background', 'focused', {
+        'border-color': color('#4CCAF4'),
+        'border-width': 1.5,
+        'border-join': 'round',
+        'border-cap': 'round'
+    })
+
+    layer('cursor', {
+        'geometry': rectangle('1px', '15px'), # TODO - dynamic line height
+        'position': move('0.5px', '0px'), # TODO - dynamic horizontal offset
+        'color': black
     })
 
 }

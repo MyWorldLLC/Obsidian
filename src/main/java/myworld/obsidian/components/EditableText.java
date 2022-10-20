@@ -12,6 +12,9 @@ import static myworld.obsidian.events.dispatch.EventFilters.*;
 public class EditableText extends Component {
 
     public static final String COMPONENT_STYLE_NAME = "EditableText";
+    public static final String LINE_HEIGHT_VAR_NAME = "lineHeight";
+    public static final String CURSOR_OFFSET_VAR_NAME = "cursorOffset";
+    public static final String CURSOR_VISIBLE_VAR_NAME = "cursorVisible";
 
     protected final Label label;
     protected final StringBuilder builder;
@@ -40,6 +43,12 @@ public class EditableText extends Component {
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.LEFT), evt -> cursorBackward());
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.RIGHT), evt -> cursorForward());
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.BACKSPACE), evt -> deletePrevious());
+
+        cursorPos.addListener((p, o, n) -> {
+            // TODO - measure cursor offset based on current text
+            data.set(CURSOR_OFFSET_VAR_NAME, n * 5);
+        });
+        data.set(CURSOR_VISIBLE_VAR_NAME, true);
     }
 
     public Label getLabel(){
