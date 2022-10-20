@@ -1,10 +1,13 @@
 package myworld.obsidian.components;
 
 import myworld.obsidian.events.CharacterEvent;
-import myworld.obsidian.geometry.Distance;
+import myworld.obsidian.events.KeyEvent;
+import myworld.obsidian.input.Key;
 import myworld.obsidian.layout.LayoutDimension;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
+
+import static myworld.obsidian.events.dispatch.EventFilters.*;
 
 public class EditableText extends Component {
 
@@ -13,6 +16,7 @@ public class EditableText extends Component {
     protected final Label label;
     protected final StringBuilder builder;
     protected final ValueProperty<Boolean> editable;
+    protected final ValueProperty<Integer> cursorPos;
 
     public EditableText(){
         this(null);
@@ -30,8 +34,12 @@ public class EditableText extends Component {
 
         builder = new StringBuilder();
         editable = new ValueProperty<>(true);
+        cursorPos = new ValueProperty<>(0);
 
-        dispatcher.subscribe(CharacterEvent.class, e -> editable.get(), evt -> append(evt.getCharacters()));
+        dispatcher.subscribe(CharacterEvent.class, e -> editable.get(), evt -> insert(evt.getCharacters()));
+        dispatcher.subscribe(KeyEvent.class, keyPressed(Key.LEFT), evt -> cursorBackward());
+        dispatcher.subscribe(KeyEvent.class, keyPressed(Key.RIGHT), evt -> cursorForward());
+        dispatcher.subscribe(KeyEvent.class, keyPressed(Key.BACKSPACE), evt -> deletePrevious());
     }
 
     public Label getLabel(){
@@ -46,13 +54,56 @@ public class EditableText extends Component {
         return editable;
     }
 
-    public void append(String s){
-        builder.append(s);
-        label.text().set(builder.toString());
+    public ValueProperty<Integer> cursorPos(){
+        return cursorPos;
     }
 
-    public void append(char[] characters){
-        builder.append(characters);
+    public void insert(String s){
+        builder.insert(cursorPos.get(), s);
+        cursorPos.setWith(c -> c + s.length());
+        refreshView();
+    }
+
+    public void insert(char[] characters){
+        builder.insert(cursorPos.get(), characters);
+        cursorPos.setWith(c -> c + characters.length);
+        refreshView();
+    }
+
+    public void deletePrevious(){
+        if(cursorPos.get() > 0){
+            builder.deleteCharAt(cursorPos.get() - 1);
+            cursorBackward();
+            refreshView();
+        }
+    }
+
+    public void deleteCurrent(){
+        if(cursorPos.get() < builder.length()){
+            builder.deleteCharAt(cursorPos.get());
+        }
+    }
+
+    public void cursorForward(){
+        int limit = builder.length();
+        if(cursorPos.get() < limit){
+            cursorPos.setWith(c -> c + 1);
+        }
+    }
+
+    public void cursorBackward(){
+        if(cursorPos.get() > 0){
+            cursorPos.setWith(c -> c - 1);
+        }
+    }
+
+    public void moveCursor(int pos){
+        pos = Math.max(0, pos);
+        pos = Math.min(pos, builder.length());
+        cursorPos.set(pos);
+    }
+
+    protected void refreshView(){
         label.text().set(builder.toString());
     }
 }
