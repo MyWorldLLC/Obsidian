@@ -17,6 +17,8 @@
 package myworld.obsidian.example;
 
 import myworld.obsidian.ObsidianUI;
+import myworld.obsidian.components.EditableText;
+import myworld.obsidian.components.Label;
 import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
@@ -131,6 +133,18 @@ public class ExampleRunner {
             System.out.println("Key: " + evt.getKey());
         });
 
+        var editableText = new EditableText("ExampleText");
+        editableText.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
+        editableText.append("Foo");
+        ui.getRoot().addChild(editableText);
+        editableText.dispatcher().subscribe(MouseOverEvent.class, evt -> System.out.println(ui.getLayout().getLocalBounds(editableText.getLabel())));
+
+        var label = new Label();
+        label.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
+        label.text().set("Hello, World!");
+        ui.getRoot().addChild(label);
+
+        ui.focusNext();
         ui.focusNext();
 
     }

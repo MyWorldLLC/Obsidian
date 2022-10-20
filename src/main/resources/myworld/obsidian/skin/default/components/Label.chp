@@ -1,0 +1,22 @@
+module component
+
+from obsidian.component import *
+from obsidian.graphics import *
+from obsidian.style import *
+
+def component(){
+
+    name('Label')
+
+    data({
+        'text': 'string'
+    })
+
+    layer('text', {
+        'geometry': 'text',
+        'color': black,
+        'font-family': 'Clear Sans',
+        'font-size': 14
+    })
+
+}
