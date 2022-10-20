@@ -49,9 +49,9 @@ public record Distance(Number quantity, Unit unit) {
 
     public static Distance fromString(String s){
         if(s.endsWith(Unit.PIXELS.symbol())){
-            return new Distance(Integer.parseInt(s.substring(0, s.indexOf(Unit.PIXELS.symbol()))), Unit.PIXELS);
+            return new Distance(Float.parseFloat(s.substring(0, s.indexOf(Unit.PIXELS.symbol()))), Unit.PIXELS);
         }else if(s.endsWith(Unit.PERCENTAGE.symbol())){
-            return new Distance(Integer.parseInt(s.substring(0, s.indexOf(Unit.PERCENTAGE.symbol()))), Unit.PERCENTAGE);
+            return new Distance(Float.parseFloat(s.substring(0, s.indexOf(Unit.PERCENTAGE.symbol()))), Unit.PERCENTAGE);
         }
         return null;
     }
