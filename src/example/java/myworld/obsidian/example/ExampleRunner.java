@@ -135,7 +135,7 @@ public class ExampleRunner {
 
         var editableText = new EditableText("ExampleText");
         editableText.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
-        editableText.append("Foo");
+        editableText.insert("Foo");
         ui.getRoot().addChild(editableText);
         editableText.dispatcher().subscribe(MouseOverEvent.class, evt -> System.out.println(ui.getLayout().getLocalBounds(editableText.getLabel())));
 
