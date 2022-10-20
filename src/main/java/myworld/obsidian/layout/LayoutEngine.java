@@ -85,7 +85,7 @@ public class LayoutEngine {
         return LAYOUT_UNDEFINED;
     }
 
-    public Bounds2D getBounds(Component component){
+    public Bounds2D getLocalBounds(Component component){
         var tag = component.getTag(YogaTag.class);
         if(tag != null){
             return new Bounds2D(
@@ -99,8 +99,22 @@ public class LayoutEngine {
         return Bounds2D.UNDEFINED;
     }
 
+    public Bounds2D getSceneBounds(Component component){
+        var bounds = getLocalBounds(component);
+        float x = bounds.origin().x();
+        float y = bounds.origin().y();
+        component = component.getParent();
+        while(component != null){
+            var localBounds = getLocalBounds(component);
+            x += localBounds.origin().x();
+            y += localBounds.origin().y();
+            component = component.getParent();
+        }
+        return new Bounds2D(new Point2D(x, y), bounds.width(), bounds.height());
+    }
+
     public boolean testBounds(Component component, int x, int y){
-        var bounds = getBounds(component);
+        var bounds = getLocalBounds(component);
         return bounds.left() <= x && bounds.right() >= x && bounds.bottom() >= y && bounds.top() <= y;
     }
 
