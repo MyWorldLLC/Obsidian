@@ -182,7 +182,6 @@ public class ObsidianUI {
             var oldFocus = focusedComponent.get();
             focusedComponent.set(component);
             fireEvent(new FocusEvent(oldFocus, component));
-            System.out.println("Focused: " + component);
             return true;
         }
         return false;

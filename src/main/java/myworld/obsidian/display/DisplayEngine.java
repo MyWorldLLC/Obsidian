@@ -177,22 +177,33 @@ public class DisplayEngine implements AutoCloseable {
             var styleLookup = new StyleLookup(skin, uiSkin);
 
             for(var layer : skin.layers()){
-                var activeStates = skin.activeForLayer(layer.layer(), renderVars);
-                var style = StyleClass.merge(layer, StyleClass.merge(activeStates));
+
+                if(!skin.isActive(layer, renderVars)){
+                    continue;
+                }
 
                 // Mix-in style imports - pull from component styles first, then skin styles
-                List<String> styles = style.rule(StyleRules.STYLES);
+                // Note that layer rules override mixed-in style rules
+                List<String> styles = layer.rule(StyleRules.STYLES);
                 if(styles != null){
                     for(String mixName : styles){
                         var mixStyle = styleLookup.getStyle(mixName);
 
                         if(mixStyle != null){
-                            style = StyleClass.merge(mixStyle, style);
+                            layer = StyleClass.merge(mixStyle, layer);
                         }
                     }
                 }
 
-                renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), style, renderVars, styleLookup);
+                // Merge active states for the given state variables
+                var activeStates = skin.activeForLayer(layer.layer(), renderVars);
+                layer = StyleClass.merge(layer, StyleClass.merge(activeStates));
+
+                if(layer.name() != null && layer.name().equals("cursor")){
+                    System.out.println(layer);
+                }
+
+                renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), layer, renderVars, styleLookup);
             }
 
         }else{

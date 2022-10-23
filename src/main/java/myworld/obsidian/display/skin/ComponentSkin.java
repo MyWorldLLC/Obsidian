@@ -24,7 +24,6 @@ public record ComponentSkin(String name, ComponentInterface parameters, StyleCla
     public List<StyleClass> layers(){
         return Arrays.stream(styleClasses)
                 .filter(StyleClass::isLayer)
-                .filter(s -> !s.isStateLimited())
                 .toList();
     }
 
@@ -32,8 +31,13 @@ public record ComponentSkin(String name, ComponentInterface parameters, StyleCla
         return Arrays.stream(styleClasses)
                 .filter(StyleClass::isLayer)
                 .filter(s -> s.layer().equals(layer))
-                .filter(s -> s.isStateLimited() && parameters.isActive(s.stateParam(), params))
+                .filter(StyleClass::isStateLimited)
+                .filter(s -> isActive(s, params))
                 .toList();
+    }
+
+    public boolean isActive(StyleClass style, Variables params){
+        return !style.isStateLimited() || parameters.isActive(style.stateParam(), params);
     }
 
     public StyleClass componentClass(){
