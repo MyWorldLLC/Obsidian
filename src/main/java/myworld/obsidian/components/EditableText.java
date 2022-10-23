@@ -4,7 +4,6 @@ import myworld.obsidian.events.CharacterEvent;
 import myworld.obsidian.events.KeyEvent;
 import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
-import myworld.obsidian.layout.LayoutDimension;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 
@@ -45,11 +44,10 @@ public class EditableText extends Component {
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.RIGHT), evt -> cursorForward());
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.BACKSPACE), evt -> deletePrevious());
 
-        cursorPos.addListener((p, o, n) -> {
-            // TODO - measure cursor offset based on current text
-            data.set(CURSOR_OFFSET_VAR_NAME, n * 5);
-        });
-        data.set(CURSOR_VISIBLE_VAR_NAME, true);
+        renderVars.put(CURSOR_VISIBLE_VAR_NAME, () -> true);
+        renderVars.put(CURSOR_OFFSET_VAR_NAME, () -> cursorPos().get() * 5); // TODO - measure cursor offset based on current text
+
+        preRender(() -> label.text().set(builder.toString()));
     }
 
     public Label getLabel(){
@@ -71,20 +69,17 @@ public class EditableText extends Component {
     public void insert(String s){
         builder.insert(cursorPos.get(), s);
         cursorPos.setWith(c -> c + s.length());
-        refreshView();
     }
 
     public void insert(char[] characters){
         builder.insert(cursorPos.get(), characters);
         cursorPos.setWith(c -> c + characters.length);
-        refreshView();
     }
 
     public void deletePrevious(){
         if(cursorPos.get() > 0){
             builder.deleteCharAt(cursorPos.get() - 1);
             cursorBackward();
-            refreshView();
         }
     }
 
@@ -113,7 +108,4 @@ public class EditableText extends Component {
         cursorPos.set(pos);
     }
 
-    protected void refreshView(){
-        label.text().set(builder.toString());
-    }
 }

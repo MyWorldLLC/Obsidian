@@ -20,7 +20,10 @@ import myworld.obsidian.display.skin.Variables;
 import myworld.obsidian.events.dispatch.EventDispatcher;
 import myworld.obsidian.layout.ComponentLayout;
 import myworld.obsidian.properties.ListProperty;
+import myworld.obsidian.properties.MapProperty;
 import myworld.obsidian.properties.ValueProperty;
+
+import java.util.function.Supplier;
 
 public class Component {
 
@@ -30,7 +33,8 @@ public class Component {
     protected final ListProperty<Object> tags;
     protected final ValueProperty<String> styleName;
     protected final ValueProperty<Boolean> focusable;
-    protected final Variables data;
+    protected final MapProperty<String, Supplier<?>> renderVars;
+    protected final ListProperty<Runnable> preRenderers;
     protected final EventDispatcher dispatcher;
 
     protected final ValueProperty<Boolean> needsUpdate;
@@ -43,7 +47,8 @@ public class Component {
         tags = new ListProperty<>();
         styleName = new ValueProperty<>(defaultStyleName(this));
         focusable = new ValueProperty<>(true);
-        data = new Variables();
+        renderVars = new MapProperty<>();
+        preRenderers = new ListProperty<>();
         dispatcher = new EventDispatcher();
 
         needsUpdate = new ValueProperty<>();
@@ -120,8 +125,16 @@ public class Component {
         return focusable().get(false);
     }
 
-    public Variables data(){
-        return data;
+    public MapProperty<String, Supplier<?>> renderVars(){
+        return renderVars;
+    }
+
+    public ListProperty<Runnable> preRenderers(){
+        return preRenderers;
+    }
+
+    public void preRender(Runnable r){
+        preRenderers.add(r);
     }
 
     public void tag(Object tag){

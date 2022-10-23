@@ -18,10 +18,7 @@ package myworld.obsidian.display;
 
 import io.github.humbleui.types.IRect;
 import myworld.obsidian.ObsidianUI;
-import myworld.obsidian.display.skin.StyleClass;
-import myworld.obsidian.display.skin.StyleLookup;
-import myworld.obsidian.display.skin.StyleRules;
-import myworld.obsidian.display.skin.UISkin;
+import myworld.obsidian.display.skin.*;
 import myworld.obsidian.geometry.Bounds2D;
 import myworld.obsidian.geometry.Dimension2D;
 import myworld.obsidian.properties.ListChangeListener;
@@ -171,8 +168,12 @@ public class DisplayEngine implements AutoCloseable {
 
         var skin = uiSkin.getComponentSkin(component.styleName().get());
 
+        component.preRenderers().forEach(Runnable::run);
+
         if(skin != null){
-            var renderVars = component.data();
+
+            var renderVars = new Variables();
+            component.renderVars().forEach((k, s) -> renderVars.set(k, s.get()));
             var styleLookup = new StyleLookup(skin, uiSkin);
 
             for(var layer : skin.layers()){
@@ -191,7 +192,7 @@ public class DisplayEngine implements AutoCloseable {
                     }
                 }
 
-                renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), style, component.data(), styleLookup);
+                renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), style, renderVars, styleLookup);
             }
 
         }else{

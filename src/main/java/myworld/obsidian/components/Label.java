@@ -27,11 +27,10 @@ public class Label extends Component {
         this.text = new ValueProperty<>();
         this.style = new ValueProperty<>();
 
-        this.text.addListener((p, o, n) -> updateForRender());
-        this.style.addListener((p, o, n) -> updateForRender());
-
         this.text.set(text);
         this.style.set(style);
+
+        renderVars.put(TEXT_DATA_NAME, () -> Text.styled(this.text.get(), this.style.get()));
     }
 
     public ValueProperty<String> text(){
@@ -40,11 +39,6 @@ public class Label extends Component {
 
     public ValueProperty<String> style(){
         return style;
-    }
-
-    protected void updateForRender(){
-        data.set(TEXT_DATA_NAME, Text.styled(text.get(), style.get()));
-        // TODO - request layout width based on result of measured text
     }
 
 }

@@ -30,7 +30,6 @@ import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.input.MouseWheelAxis;
-import myworld.obsidian.layout.LayoutDimension;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
 import org.lwjgl.glfw.*;
@@ -108,7 +107,7 @@ public class ExampleRunner {
         example.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         ui.getRoot().addChild(example);
 
-        example.data().set("text", new Text("Hello, World!", "ExampleText"));
+        example.renderVars().put("text", () -> new Text("Hello, World!", "ExampleText"));
 
         example.dispatcher().subscribe(MouseOverEvent.class, evt -> evt.entered(example), evt -> {
             System.out.println("Mouse entered");

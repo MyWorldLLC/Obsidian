@@ -243,19 +243,19 @@ public class ObsidianUI {
 
     protected void focusedComponentChanged(ValueProperty<Component> property, Component previous, Component next){
         if(previous != null){
-            previous.data().set(FOCUSED_DATA_NAME, false);
+            previous.renderVars().put(FOCUSED_DATA_NAME, () -> false);
         }
         if(next != null){
-            next.data().set(FOCUSED_DATA_NAME, true);
+            next.renderVars().put(FOCUSED_DATA_NAME, () -> true);
         }
     }
 
     protected void hoveredComponentChanged(ValueProperty<Component> property, Component previous, Component next){
         if(previous != null){
-            previous.data().set(HOVERED_DATA_NAME, false);
+            previous.renderVars().put(HOVERED_DATA_NAME, () -> false);
         }
         if(next != null){
-            next.data().set(HOVERED_DATA_NAME, true);
+            next.renderVars().put(HOVERED_DATA_NAME, () -> true);
         }
     }
 
