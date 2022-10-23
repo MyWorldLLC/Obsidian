@@ -176,30 +176,37 @@ public class DisplayEngine implements AutoCloseable {
 
             var styleLookup = new StyleLookup(skin, uiSkin);
 
-            for(var layer : skin.layers()){
+            // For each named layer, merge all style classes applicable for the given renderVars
+            // (including state-independent classes)
+            for(var layer : skin.layerNames()){
 
-                if(!skin.isActive(layer, renderVars)){
-                    continue;
-                }
+                var styleClasses = skin.activeForLayer(layer, renderVars, s -> {
 
-                // Mix-in style imports - pull from component styles first, then skin styles
-                // Note that layer rules override mixed-in style rules
-                List<String> styles = layer.rule(StyleRules.STYLES);
-                if(styles != null){
-                    for(String mixName : styles){
-                        var mixStyle = styleLookup.getStyle(mixName);
+                    List<String> mixStyles = s.rule(StyleRules.STYLES);
+                    var result = s;
 
-                        if(mixStyle != null){
-                            layer = StyleClass.merge(mixStyle, layer);
+                    if(mixStyles != null){
+                        var combined = new StyleClass();
+
+                        // Iteratively merge together the imported styles, with conflicting rules from later
+                        // referenced ones overriding rules from previously referenced ones
+                        for(String mixName : mixStyles){
+                            var mixStyle = styleLookup.getStyle(mixName);
+
+                            if(mixStyle != null){
+                                combined = StyleClass.merge(combined, mixStyle);
+                            }
                         }
+
+                        // Note that local class rules override mixed-in style rules
+                        result = StyleClass.merge(combined, s);
                     }
-                }
 
-                // Merge active states for the given state variables
-                var activeStates = skin.activeForLayer(layer.layer(), renderVars);
-                layer = StyleClass.merge(layer, StyleClass.merge(activeStates));
+                    return result;
+                });
 
-                renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), layer, renderVars, styleLookup);
+                var style = StyleClass.merge(styleClasses);
+                renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), style, renderVars, styleLookup);
             }
 
         }else{

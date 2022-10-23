@@ -18,8 +18,17 @@ package myworld.obsidian.display.skin;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 public record ComponentSkin(String name, ComponentInterface parameters, StyleClass... styleClasses) {
+
+    public List<String> layerNames(){
+        return Arrays.stream(styleClasses)
+                .filter(StyleClass::isLayer)
+                .map(StyleClass::layer)
+                .distinct()
+                .toList();
+    }
 
     public List<StyleClass> layers(){
         return Arrays.stream(styleClasses)
@@ -28,11 +37,15 @@ public record ComponentSkin(String name, ComponentInterface parameters, StyleCla
     }
 
     public List<StyleClass> activeForLayer(String layer, Variables params){
+        return activeForLayer(layer, params, s -> s);
+    }
+
+    public List<StyleClass> activeForLayer(String layer, Variables params, Function<StyleClass, StyleClass> mapper){
         return Arrays.stream(styleClasses)
                 .filter(StyleClass::isLayer)
                 .filter(s -> s.layer().equals(layer))
-                .filter(StyleClass::isStateLimited)
                 .filter(s -> isActive(s, params))
+                .map(mapper)
                 .toList();
     }
 

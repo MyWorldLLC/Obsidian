@@ -15,6 +15,10 @@ public record StyleClass(String name, String layer, String stateParam, Map<Strin
         this(null, null, null, rules);
     }
 
+    public StyleClass(){
+        this(null, null, null, Collections.emptyMap());
+    }
+
     public boolean isLayer(){
         return layer != null;
     }
