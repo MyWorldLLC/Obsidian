@@ -22,6 +22,7 @@ import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.events.*;
 import myworld.obsidian.input.InputManager;
+import myworld.obsidian.input.Key;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.layout.LayoutEngine;
 import myworld.obsidian.properties.ValueProperty;
@@ -29,14 +30,13 @@ import myworld.obsidian.properties.ValueProperty;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static myworld.obsidian.events.dispatch.EventFilters.keyPressed;
+
 public class ObsidianUI {
 
     public static final CursorHandler DISCARDING_CURSOR_HANDLER = (c) -> {};
 
     public static final String ROOT_COMPONENT_STYLE_NAME = "Root";
-
-    public static final String FOCUSED_DATA_NAME = "focused";
-    public static final String HOVERED_DATA_NAME = "hovered";
 
     protected final Component root;
     protected final ValueProperty<LayoutEngine> layout;
@@ -63,6 +63,14 @@ public class ObsidianUI {
     public ObsidianUI(DisplayEngine display){
         root = new Component();
         root.styleName().set(ROOT_COMPONENT_STYLE_NAME);
+        root.dispatcher().subscribe(KeyEvent.class, keyPressed(Key.TAB), evt -> {
+            if(evt.getManager().isShiftDown()){
+                focusPrevious();
+            }else{
+                focusNext();
+            }
+        });
+
         layout = new ValueProperty<>();
         layout.addListener((prop, oldValue, newValue) -> {
             if(newValue != null){
@@ -174,6 +182,7 @@ public class ObsidianUI {
             var oldFocus = focusedComponent.get();
             focusedComponent.set(component);
             fireEvent(new FocusEvent(oldFocus, component));
+            System.out.println("Focused: " + component);
             return true;
         }
         return false;
@@ -233,9 +242,11 @@ public class ObsidianUI {
 
             var current = search;
             search = search.getParent();
-            var index = search.children().indexOf(current);
-            start = searchForward ? index + 1 : Math.max(0, index - 1);
-            end = searchForward ? search.children().size() : 0;
+            if(search != null){ // TODO - without this, an NPE can occur, but this isn't quite right either
+                var index = search.children().indexOf(current);
+                start = searchForward ? index + 1 : Math.max(0, index - 1);
+                end = searchForward ? search.children().size() : 0;
+            }
 
         }
         return null;
@@ -243,19 +254,19 @@ public class ObsidianUI {
 
     protected void focusedComponentChanged(ValueProperty<Component> property, Component previous, Component next){
         if(previous != null){
-            previous.renderVars().put(FOCUSED_DATA_NAME, () -> false);
+            previous.focused().set(false);
         }
         if(next != null){
-            next.renderVars().put(FOCUSED_DATA_NAME, () -> true);
+            next.focused().set(true);
         }
     }
 
     protected void hoveredComponentChanged(ValueProperty<Component> property, Component previous, Component next){
         if(previous != null){
-            previous.renderVars().put(HOVERED_DATA_NAME, () -> false);
+            previous.hovered().set(false);
         }
         if(next != null){
-            next.renderVars().put(HOVERED_DATA_NAME, () -> true);
+            next.hovered().set(true);
         }
     }
 
@@ -316,6 +327,11 @@ public class ObsidianUI {
             var focused = getFocusedComponent();
             if(focused != null){
                 dispatch(characterEvent, eventRoot, focused);
+            }
+        }else if(evt instanceof KeyEvent keyEvent){
+            var focused = getFocusedComponent();
+            if(focused != null){
+                dispatch(keyEvent, eventRoot, focused);
             }
         }else if(evt instanceof FocusEvent focusEvent){
             if(focusEvent.getOldFocus() != null){

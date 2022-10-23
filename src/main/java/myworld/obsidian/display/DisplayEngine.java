@@ -172,8 +172,8 @@ public class DisplayEngine implements AutoCloseable {
 
         if(skin != null){
 
-            var renderVars = new Variables();
-            component.renderVars().forEach((k, s) -> renderVars.set(k, s.get()));
+            var renderVars = component.generateRenderVars();
+
             var styleLookup = new StyleLookup(skin, uiSkin);
 
             for(var layer : skin.layers()){

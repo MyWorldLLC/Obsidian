@@ -63,4 +63,9 @@ public class Variables {
     public <T> boolean isDefined(String name, Class<T> type){
         return get(name, type) != null;
     }
+
+    @Override
+    public String toString(){
+        return vars.toString();
+    }
 }

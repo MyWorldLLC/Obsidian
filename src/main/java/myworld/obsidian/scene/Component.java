@@ -27,12 +27,17 @@ import java.util.function.Supplier;
 
 public class Component {
 
+    public static final String FOCUSED_DATA_NAME = "focused";
+    public static final String HOVERED_DATA_NAME = "hovered";
+
     protected final ValueProperty<Component> parent;
     protected final ListProperty<Component> children;
     protected final ListProperty<Effect> effects;
     protected final ListProperty<Object> tags;
     protected final ValueProperty<String> styleName;
     protected final ValueProperty<Boolean> focusable;
+    protected final ValueProperty<Boolean> focused;
+    protected final ValueProperty<Boolean> hovered;
     protected final MapProperty<String, Supplier<?>> renderVars;
     protected final ListProperty<Runnable> preRenderers;
     protected final EventDispatcher dispatcher;
@@ -47,6 +52,8 @@ public class Component {
         tags = new ListProperty<>();
         styleName = new ValueProperty<>(defaultStyleName(this));
         focusable = new ValueProperty<>(true);
+        focused = new ValueProperty<>(false);
+        hovered = new ValueProperty<>(false);
         renderVars = new MapProperty<>();
         preRenderers = new ListProperty<>();
         dispatcher = new EventDispatcher();
@@ -54,6 +61,9 @@ public class Component {
         needsUpdate = new ValueProperty<>();
 
         layout = new ComponentLayout();
+
+        renderVars.put(FOCUSED_DATA_NAME, focused);
+        renderVars.put(HOVERED_DATA_NAME, hovered);
     }
 
     protected void requestVisualUpdate(){
@@ -121,6 +131,14 @@ public class Component {
         return focusable;
     }
 
+    public ValueProperty<Boolean> focused(){
+        return focused;
+    }
+
+    public ValueProperty<Boolean> hovered(){
+        return hovered;
+    }
+
     public boolean isFocusable(){
         return focusable().get(false);
     }
@@ -135,6 +153,12 @@ public class Component {
 
     public void preRender(Runnable r){
         preRenderers.add(r);
+    }
+
+    public Variables generateRenderVars(){
+        var variables = new Variables();
+        renderVars.forEach((k, s) -> variables.set(k, s.get()));
+        return variables;
     }
 
     public void tag(Object tag){

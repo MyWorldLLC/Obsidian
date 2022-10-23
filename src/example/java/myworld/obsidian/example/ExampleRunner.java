@@ -121,10 +121,6 @@ public class ExampleRunner {
             System.out.println("(%d, %d)".formatted(evt.getX(), evt.getY()));
         });
 
-        example.dispatcher().subscribe(FocusEvent.class, evt -> {
-            System.out.println("Focused: " + evt.isFocused(example));
-        });
-
         example.dispatcher().subscribe(CharacterEvent.class, evt -> {
             System.out.println("Received characters: " + String.copyValueOf(evt.getCharacters()));
         });

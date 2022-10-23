@@ -27,7 +27,7 @@ def component(){
         'border-cap': 'round'
     })
 
-    layer('cursor', {
+    layer('cursor', 'cursorVisible', {
         'geometry': rectangle('1px', '15px'), # TODO - dynamic line height
         'position': move('0.5px', '0px'), # TODO - dynamic horizontal offset
         'color': black
