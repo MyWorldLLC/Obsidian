@@ -18,6 +18,7 @@ package myworld.obsidian.layout;
 
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.geometry.Bounds2D;
+import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.geometry.Point2D;
 import myworld.obsidian.properties.ListChangeListener;
 import myworld.obsidian.properties.ListProperty;
@@ -60,7 +61,7 @@ public class LayoutEngine {
         var fHeight = (float) dimensions.height();
 
         var root = ui.getRoot();
-        root.layout().clampedSize(LayoutDimension.pixels(fWidth), LayoutDimension.pixels(fHeight));
+        root.layout().clampedSize(Distance.pixels(fWidth), Distance.pixels(fHeight));
         syncLayoutProperties(root);
 
         var yogaTag = root.getTag(YogaTag.class);
@@ -288,26 +289,26 @@ public class LayoutEngine {
         };
     }
 
-    protected void setDimension(LayoutDimension dim, Runnable autoSetter, Consumer<Float> pixelSetter, Consumer<Float> percentageSetter){
-        if(LayoutDimension.AUTO.equals(dim)){
+    protected void setDimension(Distance dist, Runnable autoSetter, Consumer<Float> pixelSetter, Consumer<Float> percentageSetter){
+        if(LayoutDimension.AUTO.equals(dist)){
             autoSetter.run();
         }else{
-            switch (dim.unit()){
-                case PIXELS -> pixelSetter.accept(dim.value());
-                case PERCENTAGE -> percentageSetter.accept(dim.value());
+            switch (dist.unit()){
+                case PIXELS -> pixelSetter.accept(dist.asFloat());
+                case PERCENTAGE -> percentageSetter.accept(dist.asFloat());
             }
         }
     }
 
-    protected void yogaSetMargin(long node, int edge, LayoutDimension dim){
-        setDimension(dim,
+    protected void yogaSetMargin(long node, int edge, Distance dist){
+        setDimension(dist,
                 () -> YGNodeStyleSetMarginAuto(node, edge),
                 (d) -> YGNodeStyleSetMargin(node, edge, d),
                 (d) -> YGNodeStyleSetMarginPercent(node, edge, d));
     }
 
-    protected void yogaSetPadding(long node, int edge, LayoutDimension dim){
-        setDimension(dim,
+    protected void yogaSetPadding(long node, int edge, Distance dist){
+        setDimension(dist,
                 () -> YGNodeStyleSetPadding(node, edge, 0),
                 (d) -> YGNodeStyleSetPadding(node, edge, d),
                 (d) -> YGNodeStyleSetPaddingPercent(node, edge, d));

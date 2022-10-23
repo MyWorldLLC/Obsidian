@@ -1,5 +1,6 @@
 package myworld.obsidian.layout;
 
+import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.properties.ValueProperty;
 
 public class ComponentLayout {
@@ -12,7 +13,7 @@ public class ComponentLayout {
     protected final ValueProperty<FlexWrap> flexWrap;
     protected final ValueProperty<Float> flexGrow;
     protected final ValueProperty<Float> flexShrink;
-    protected final ValueProperty<LayoutDimension> flexBasis;
+    protected final ValueProperty<Distance> flexBasis;
 
     protected final ValueProperty<ItemAlignment> alignContent;
     protected final ValueProperty<ItemAlignment> alignSelf;
@@ -26,14 +27,14 @@ public class ComponentLayout {
     protected final ValueProperty<Offsets> margin;
     protected final ValueProperty<Offsets> padding;
 
-    protected final ValueProperty<LayoutDimension> width;
-    protected final ValueProperty<LayoutDimension> height;
+    protected final ValueProperty<Distance> width;
+    protected final ValueProperty<Distance> height;
 
-    protected final ValueProperty<LayoutDimension> minWidth;
-    protected final ValueProperty<LayoutDimension> maxWidth;
+    protected final ValueProperty<Distance> minWidth;
+    protected final ValueProperty<Distance> maxWidth;
 
-    protected final ValueProperty<LayoutDimension> minHeight;
-    protected final ValueProperty<LayoutDimension> maxHeight;
+    protected final ValueProperty<Distance> minHeight;
+    protected final ValueProperty<Distance> maxHeight;
 
     public ComponentLayout(){
         node = new ValueProperty<>();
@@ -96,7 +97,7 @@ public class ComponentLayout {
         return flexShrink;
     }
 
-    public ValueProperty<LayoutDimension> flexBasis() {
+    public ValueProperty<Distance> flexBasis() {
         return flexBasis;
     }
 
@@ -132,46 +133,46 @@ public class ComponentLayout {
         return padding;
     }
 
-    public ValueProperty<LayoutDimension> preferredWidth() {
+    public ValueProperty<Distance> preferredWidth() {
         return width;
     }
 
-    public ValueProperty<LayoutDimension> preferredHeight() {
+    public ValueProperty<Distance> preferredHeight() {
         return height;
     }
 
-    public ValueProperty<LayoutDimension> minWidth(){
+    public ValueProperty<Distance> minWidth(){
         return minWidth;
     }
 
-    public ValueProperty<LayoutDimension> maxWidth(){
+    public ValueProperty<Distance> maxWidth(){
         return maxWidth;
     }
 
-    public ValueProperty<LayoutDimension> minHeight(){
+    public ValueProperty<Distance> minHeight(){
         return minHeight;
     }
 
-    public ValueProperty<LayoutDimension> maxHeight(){
+    public ValueProperty<Distance> maxHeight(){
         return maxHeight;
     }
 
-    public void minSize(LayoutDimension width, LayoutDimension height){
+    public void minSize(Distance width, Distance height){
         minWidth.set(width);
         minHeight.set(height);
     }
 
-    public void maxSize(LayoutDimension width, LayoutDimension height){
+    public void maxSize(Distance width, Distance height){
         maxWidth.set(width);
         maxHeight.set(height);
     }
 
-    public void preferredSize(LayoutDimension width, LayoutDimension height){
+    public void preferredSize(Distance width, Distance height){
         preferredWidth().set(width);
         preferredHeight().set(height);
     }
 
-    public void clampedSize(LayoutDimension width, LayoutDimension height){
+    public void clampedSize(Distance width, Distance height){
         minSize(width, height);
         preferredSize(width, height);
         maxSize(width, height);

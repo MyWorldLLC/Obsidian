@@ -2,6 +2,7 @@ package myworld.obsidian.components;
 
 import myworld.obsidian.events.CharacterEvent;
 import myworld.obsidian.events.KeyEvent;
+import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.layout.LayoutDimension;
 import myworld.obsidian.properties.ValueProperty;
@@ -32,7 +33,7 @@ public class EditableText extends Component {
     public EditableText(String initial, String style){
         styleName.set(COMPONENT_STYLE_NAME);
         label = new Label(initial, style);
-        label.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
+        label.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         addChild(label);
 
         builder = new StringBuilder();

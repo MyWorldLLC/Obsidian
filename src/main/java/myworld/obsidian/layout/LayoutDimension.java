@@ -1,20 +1,11 @@
 package myworld.obsidian.layout;
 
-public record LayoutDimension(float value, Unit unit) {
+import myworld.obsidian.geometry.Distance;
+import myworld.obsidian.geometry.Unit;
 
-    public static final LayoutDimension AUTO = new LayoutDimension(-1f, Unit.PIXELS);
-    public static final LayoutDimension ZERO = new LayoutDimension(0f, Unit.PIXELS);
+public class LayoutDimension {
 
-    public static LayoutDimension of(float value, Unit unit){
-        return new LayoutDimension(value, unit);
-    }
-
-    public static LayoutDimension pixels(float value){
-        return of(value, Unit.PIXELS);
-    }
-
-    public static LayoutDimension percentage(float value){
-        return of(value, Unit.PERCENTAGE);
-    }
+    public static final Distance AUTO = new Distance(-1f, Unit.PIXELS);
+    public static final Distance ZERO = new Distance(0f, Unit.PIXELS);
 
 }

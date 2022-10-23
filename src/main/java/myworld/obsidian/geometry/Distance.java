@@ -16,35 +16,47 @@
 
 package myworld.obsidian.geometry;
 
-public record Distance(Number quantity, Unit unit) {
+public record Distance(Number value, Unit unit) {
+
+    public static Distance of(float value, Unit unit){
+        return new Distance(value, unit);
+    }
+
+    public static Distance pixels(float value){
+        return of(value, Unit.PIXELS);
+    }
+
+    public static Distance percentage(float value){
+        return of(value, Unit.PERCENTAGE);
+    }
 
     public int asInt(){
-        return quantity.intValue();
+        return value.intValue();
     }
 
     public float asFloat(){
-        return quantity.floatValue();
+        return value.floatValue();
     }
 
     public Distance multiply(float value){
-        return new Distance(quantity.floatValue() * value, unit);
+        return new Distance(this.value.floatValue() * value, unit);
     }
 
     public Distance add(float value){
-        return new Distance(quantity.floatValue() + value, unit);
+        return new Distance(this.value.floatValue() + value, unit);
     }
 
     public Distance subtract(float value){
-        return new Distance(quantity.floatValue() - value, unit);
+        return new Distance(this.value.floatValue() - value, unit);
     }
 
     public Distance divide(float value){
-        return new Distance(quantity.floatValue() / value, unit);
+        return new Distance(this.value.floatValue() / value, unit);
     }
 
     @Override
     public String toString(){
-        return quantity.toString() + unit.toString();
+        return value.toString() + unit.toString();
     }
 
     public static Distance fromString(String s){

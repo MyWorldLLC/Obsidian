@@ -26,6 +26,7 @@ import myworld.obsidian.events.CharacterEvent;
 import myworld.obsidian.events.FocusEvent;
 import myworld.obsidian.events.KeyEvent;
 import myworld.obsidian.events.MouseOverEvent;
+import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.input.MouseWheelAxis;
@@ -104,7 +105,7 @@ public class ExampleRunner {
 
         var example = new Component();
         example.styleName().set("Example");
-        example.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
+        example.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         ui.getRoot().addChild(example);
 
         example.data().set("text", new Text("Hello, World!", "ExampleText"));
@@ -134,12 +135,12 @@ public class ExampleRunner {
         });
 
         var editableText = new EditableText("ExampleText");
-        editableText.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
+        editableText.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         editableText.insert("Foo");
         ui.getRoot().addChild(editableText);
 
         var label = new Label();
-        label.layout().preferredSize(LayoutDimension.pixels(100), LayoutDimension.pixels(100));
+        label.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         label.text().set("Hello, World!");
         ui.getRoot().addChild(label);
 
