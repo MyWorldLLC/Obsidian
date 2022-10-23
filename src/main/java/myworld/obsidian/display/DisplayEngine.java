@@ -199,10 +199,6 @@ public class DisplayEngine implements AutoCloseable {
                 var activeStates = skin.activeForLayer(layer.layer(), renderVars);
                 layer = StyleClass.merge(layer, StyleClass.merge(activeStates));
 
-                if(layer.name() != null && layer.name().equals("cursor")){
-                    System.out.println(layer);
-                }
-
                 renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), layer, renderVars, styleLookup);
             }
 
