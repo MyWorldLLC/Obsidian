@@ -47,8 +47,6 @@ public class EditableText extends Component {
         renderVars.put(CURSOR_VISIBLE_VAR_NAME, focused());
         renderVars.put(CURSOR_OFFSET_VAR_NAME, () -> cursorPos().get() * 5); // TODO - measure cursor offset based on current text
 
-        focused().addListener((p, o, n) -> System.out.println(generateRenderVars()));
-
         preRender(() -> label.text().set(builder.toString()));
     }
 

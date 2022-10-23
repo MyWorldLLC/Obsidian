@@ -30,6 +30,7 @@ import myworld.obsidian.properties.ValueProperty;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static myworld.obsidian.events.dispatch.EventFilters.clicked;
 import static myworld.obsidian.events.dispatch.EventFilters.keyPressed;
 
 public class ObsidianUI {
@@ -68,6 +69,14 @@ public class ObsidianUI {
                 focusPrevious();
             }else{
                 focusNext();
+            }
+        });
+        root.dispatcher().subscribe(MouseButtonEvent.class, clicked(), evt -> {
+            var picked = pick(evt.getX(), evt.getY());
+            if(picked != null){
+                requestFocus(picked);
+            }else{
+                unfocus();
             }
         });
 
