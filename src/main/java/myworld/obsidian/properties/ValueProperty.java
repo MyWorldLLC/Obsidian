@@ -19,8 +19,9 @@ package myworld.obsidian.properties;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
-public class ValueProperty<T> extends Property<ValueChangeListener<T>> {
+public class ValueProperty<T> extends Property<ValueChangeListener<T>> implements Supplier<T> {
     protected final AtomicReference<T> value;
 
     public ValueProperty(){
