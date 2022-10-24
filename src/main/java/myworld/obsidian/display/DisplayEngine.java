@@ -220,11 +220,14 @@ public class DisplayEngine implements AutoCloseable {
         for(var path : skin.fonts()){
             try(var is = skin.getResolver().resolve(path)){
 
-                var fontData = Data.makeFromBytes(is.readAllBytes());
-                var typeface = Typeface.makeFromData(fontData);
-                if(!fonts.contains(typeface)){
-                    renderer.registerFont(typeface);
-                    fonts.add(typeface);
+                try(var fontData = Data.makeFromBytes(is.readAllBytes())){
+                    var typeface = Typeface.makeFromData(fontData);
+                    if(!fonts.contains(typeface)){
+                        renderer.registerFont(typeface);
+                        fonts.add(typeface);
+                    }else{
+                        typeface.close();
+                    }
                 }
             }catch(Exception e){
                 log.log(Level.WARNING, "Failed to load font {0} for skin {1}: {2}", path, skin.getName(), e);
