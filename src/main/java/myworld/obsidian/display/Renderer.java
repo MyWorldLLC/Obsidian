@@ -256,12 +256,22 @@ public class Renderer implements AutoCloseable {
     }
 
     public Font getFont(StyleClass style){
-        Typeface[] typefaces = fontCollection.findTypefaces(new String[]{style.rule(StyleRules.FONT_FAMILY)}, getFontStyle(style));
-        Typeface typeface = typefaces != null && typefaces.length > 0 ? typefaces[0] : fontCollection.defaultFallback();
+        Typeface typeface;
+        if(style != null){
+            Typeface[] typefaces = fontCollection.findTypefaces(new String[]{style.rule(StyleRules.FONT_FAMILY)}, getFontStyle(style));
+            typeface = typefaces != null && typefaces.length > 0 ? typefaces[0] : fontCollection.defaultFallback();
+        }else{
+            typeface = fontCollection.defaultFallback();
+        }
+
+        var fontSize = 12;
+        if(style != null){
+            fontSize = style.rule(StyleRules.FONT_SIZE, 12);
+        }
 
         var font = new Font(typeface);
         font.setHinting(FontHinting.NORMAL);
-        font.setSize(style.rule(StyleRules.FONT_SIZE, 12));
+        font.setSize(fontSize);
         font.setSubpixel(true);
         return font;
     }
