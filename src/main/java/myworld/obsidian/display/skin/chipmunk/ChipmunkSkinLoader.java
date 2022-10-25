@@ -16,7 +16,7 @@ public class ChipmunkSkinLoader {
 
     public static final String DEFAULT_SKIN = "/myworld/obsidian/skin/default/Skin.chp";
 
-    public static UISkin load(String path, PathResolver resolver) throws Exception {
+    public static UISkin load(String path, ResourceResolver resolver) throws Exception {
         var vm = new ChipmunkVM();
         try{
             vm.start();
@@ -47,6 +47,18 @@ public class ChipmunkSkinLoader {
                     .stream()
                     .map(p -> resolvePath(path, p))
                     .collect(Collectors.toList()));
+
+            skin.addImages(skinModule.getImages()
+                    .stream()
+                    .map(p -> resolvePath(path, p))
+                    .collect(Collectors.toList()));
+
+            skin.addSvgs(skinModule.getSvgs()
+                    .stream()
+                    .map(p -> resolvePath(path, p))
+                    .collect(Collectors.toList()));
+
+
 
             styleModule.getStyles().forEach(style -> skin.styles().put(style.name(), style));
 

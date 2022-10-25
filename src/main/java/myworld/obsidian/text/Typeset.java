@@ -21,7 +21,7 @@ import myworld.obsidian.properties.ListProperty;
 
 import java.util.function.Predicate;
 
-public class Typeset {
+public class Typeset implements AutoCloseable {
 
     protected final ListProperty<Typeface> faces;
 
@@ -59,7 +59,13 @@ public class Typeset {
     }
 
     public void clear(){
+        faces.forEach(Typeface::close);
         faces.clear();
+    }
+
+    @Override
+    public void close(){
+        clear();
     }
 
     public Typeface first(Predicate<Typeface> p) {

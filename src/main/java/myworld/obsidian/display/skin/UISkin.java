@@ -14,22 +14,26 @@ public class UISkin {
     protected final Map<String, ComponentSkin> componentSkins;
     protected final Map<String, StyleClass> styles;
     protected final List<String> fonts;
-    protected final PathResolver resolver;
+    protected final List<String> svgs;
+    protected final List<String> images;
+    protected final ResourceResolver resolver;
 
-    public UISkin(String name, PathResolver resolver){
+    public UISkin(String name, ResourceResolver resolver){
         this.name = name;
         this.resolver = resolver;
         variables = new Variables();
         componentSkins = new ConcurrentHashMap<>();
         styles = new ConcurrentHashMap<>();
         fonts = new CopyOnWriteArrayList<>();
+        svgs = new CopyOnWriteArrayList<>();
+        images = new CopyOnWriteArrayList<>();
     }
 
     public String getName(){
         return name;
     }
 
-    public PathResolver getResolver(){
+    public ResourceResolver getResolver(){
         return resolver;
     }
 
@@ -49,12 +53,16 @@ public class UISkin {
         return variables;
     }
 
-    public void addFonts(String... fontPath){
-        fonts.addAll(Arrays.asList(fontPath));
-    }
-
     public void addFonts(List<String> fontPaths){
         fonts.addAll(fontPaths);
+    }
+
+    public void addImages(List<String> imagePaths){
+        images.addAll(imagePaths);
+    }
+
+    public void addSvgs(List<String> svgPaths){
+        svgs.addAll(svgPaths);
     }
 
     public Map<String, ComponentSkin> componentSkins(){
@@ -68,4 +76,13 @@ public class UISkin {
     public List<String> fonts(){
         return fonts;
     }
+
+    public List<String> images(){
+        return images;
+    }
+
+    public List<String> svgs(){
+        return svgs;
+    }
+
 }

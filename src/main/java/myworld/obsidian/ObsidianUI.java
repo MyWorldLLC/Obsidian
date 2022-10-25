@@ -175,7 +175,7 @@ public class ObsidianUI {
 
     public void registerSkin(UISkin skin){
         skins.put(skin.getName(), skin);
-        display.ifSet(d -> d.loadFonts(skin));
+        display.ifSet(d -> d.loadResources(skin));
     }
 
     public UISkin getSkin(String name){

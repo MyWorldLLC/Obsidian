@@ -3,6 +3,7 @@ package myworld.obsidian.display;
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.paragraph.*;
 import io.github.humbleui.skija.shaper.Shaper;
+import io.github.humbleui.skija.svg.SVGDOM;
 import io.github.humbleui.types.Point;
 import io.github.humbleui.types.Rect;
 import myworld.obsidian.display.skin.StyleClass;
@@ -15,13 +16,18 @@ import myworld.obsidian.text.Text;
 import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextShadow;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class Renderer implements AutoCloseable{
+public class Renderer implements AutoCloseable {
 
     protected final FontCollection fontCollection;
     protected final TypefaceFontProvider typeProvider;
     protected final Shaper shaper;
+
+    protected final Map<ResourceHandle, SVGDOM> svgs;
+    protected final Map<ResourceHandle, Image> images;
 
     protected final ValueProperty<ColorRGBA> debugColor;
 
@@ -36,6 +42,9 @@ public class Renderer implements AutoCloseable{
         shaper = Shaper.make(FontMgr.getDefault());
 
         debugColor = new ValueProperty<>();
+
+        svgs = new HashMap<>();
+        images = new HashMap<>();
     }
 
     public ValueProperty<ColorRGBA> debugBoundsColor(){
@@ -44,6 +53,14 @@ public class Renderer implements AutoCloseable{
 
     public void registerFont(Typeface typeface){
         typeProvider.registerTypeface(typeface);
+    }
+
+    public void registerImage(ResourceHandle handle, Image image){
+        images.put(handle, image);
+    }
+
+    public void registerSvg(ResourceHandle handle, SVGDOM svg){
+        svgs.put(handle, svg);
     }
 
     public void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars, StyleLookup styles){
@@ -335,5 +352,8 @@ public class Renderer implements AutoCloseable{
         fontCollection.close();
         typeProvider.close();
         shaper.close();
+
+        images.forEach((h, i) -> i.close());
+        svgs.forEach((h, s) -> s.close());
     }
 }

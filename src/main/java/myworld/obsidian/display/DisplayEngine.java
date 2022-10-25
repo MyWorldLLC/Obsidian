@@ -16,6 +16,7 @@
 
 package myworld.obsidian.display;
 
+import io.github.humbleui.skija.svg.SVGDOM;
 import io.github.humbleui.types.IRect;
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.display.skin.*;
@@ -23,6 +24,7 @@ import myworld.obsidian.geometry.Bounds2D;
 import myworld.obsidian.geometry.Dimension2D;
 import myworld.obsidian.properties.ListChangeListener;
 import myworld.obsidian.properties.ListProperty;
+import myworld.obsidian.properties.MapProperty;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import io.github.humbleui.skija.*;
@@ -216,7 +218,13 @@ public class DisplayEngine implements AutoCloseable {
         component.children().forEach((c) -> render(ui, c, uiSkin));
     }
 
-    public void loadFonts(UISkin skin){
+    public void loadResources(UISkin skin){
+        loadFonts(skin);
+        loadImages(skin);
+        loadSvgs(skin);
+    }
+
+    protected void loadFonts(UISkin skin){
         for(var path : skin.fonts()){
             try(var is = skin.getResolver().resolve(path)){
 
@@ -231,6 +239,29 @@ public class DisplayEngine implements AutoCloseable {
                 }
             }catch(Exception e){
                 log.log(Level.WARNING, "Failed to load font {0} for skin {1}: {2}", path, skin.getName(), e);
+            }
+        }
+    }
+
+    protected void loadImages(UISkin skin){
+        for(var path : skin.images()){
+            try(var is = skin.getResolver().resolve(path)){
+                var image = Image.makeFromEncoded(is.readAllBytes());
+                renderer.registerImage(new ResourceHandle(skin.getName(), path), image);
+            }catch(Exception e){
+                log.log(Level.WARNING, "Failed to load image {0} for skin {1}: {2}", path, skin.getName(), e);
+            }
+        }
+    }
+
+    protected void loadSvgs(UISkin skin){
+        for(var path : skin.svgs()){
+            try(var is = skin.getResolver().resolve(path);
+                var data = Data.makeFromBytes(is.readAllBytes())){
+                var svg = new SVGDOM(data);
+                renderer.registerSvg(new ResourceHandle(skin.getName(), path), svg);
+            }catch(Exception e){
+                log.log(Level.WARNING, "Failed to load svg {0} for skin {1}: {2}", path, skin.getName(), e);
             }
         }
     }
@@ -272,5 +303,7 @@ public class DisplayEngine implements AutoCloseable {
         if(context != null){
             context.close();
         }
+
+        fonts.clear();
     }
 }

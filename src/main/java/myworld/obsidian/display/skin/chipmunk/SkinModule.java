@@ -13,6 +13,8 @@ public class SkinModule implements ChipmunkModule {
     protected final List<String> helpers = new ArrayList<>();
     protected final List<String> components = new ArrayList<>();
     protected final List<String> fonts = new ArrayList<>();
+    protected final List<String> images = new ArrayList<>();
+    protected final List<String> svgs = new ArrayList<>();
 
     protected String name;
     protected String description;
@@ -42,6 +44,17 @@ public class SkinModule implements ChipmunkModule {
         fonts.addAll(fontPaths);
     }
 
+    @AllowChipmunkLinkage
+    public void images(List<String> imagePaths){
+        imagePaths.forEach(p -> {
+            if(p.endsWith(".svg")){
+                svgs.add(p);
+            }else{
+                images.add(p);
+            }
+        });
+    }
+
     public String getSkinName() {
         return name;
     }
@@ -60,6 +73,14 @@ public class SkinModule implements ChipmunkModule {
 
     public List<String> getFonts(){
         return fonts;
+    }
+
+    public List<String> getImages(){
+        return images;
+    }
+
+    public List<String> getSvgs(){
+        return svgs;
     }
 
 }
