@@ -7,6 +7,7 @@ import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
+import myworld.obsidian.text.Text;
 
 import static myworld.obsidian.events.dispatch.EventFilters.*;
 
@@ -46,7 +47,10 @@ public class EditableText extends Component {
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.BACKSPACE), evt -> deletePrevious());
 
         renderVars.put(CURSOR_VISIBLE_VAR_NAME, focused());
-        renderVars.put(CURSOR_OFFSET_VAR_NAME, () -> cursorPos().get() * 5); // TODO - measure cursor offset based on current text
+        renderVars.put(CURSOR_OFFSET_VAR_NAME, () -> ui.get()
+                .getDisplay()
+                .measureTextWidth(
+                        Text.styled(builder.substring(0, cursorPos.get()), label.style().get())));
 
         preRender(() -> label.text().set(builder.toString()));
     }
