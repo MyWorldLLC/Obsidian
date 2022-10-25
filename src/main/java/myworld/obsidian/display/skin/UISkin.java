@@ -49,6 +49,18 @@ public class UISkin {
         return styles.get(name);
     }
 
+    public StyleClass getStyle(String componentName, String styleName){
+        var component = getComponentSkin(componentName);
+        if(component != null){
+            var style = component.findNamed(styleName);
+            if(style != null){
+                return style;
+            }
+        }
+
+        return getStyle(styleName);
+    }
+
     public Variables variables(){
         return variables;
     }

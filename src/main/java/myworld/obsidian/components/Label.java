@@ -1,5 +1,6 @@
 package myworld.obsidian.components;
 
+import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
@@ -11,7 +12,7 @@ public class Label extends Component {
     public static final String TEXT_DATA_NAME = "text";
 
     protected final ValueProperty<String> text;
-    protected final ValueProperty<String> style;
+    protected final ValueProperty<StyleClass> style;
 
     public Label(){
         this(null, null);
@@ -21,7 +22,7 @@ public class Label extends Component {
         this(text, null);
     }
 
-    public Label(String text, String style){
+    public Label(String text, StyleClass style){
         styleName.set(COMPONENT_STYLE_NAME);
 
         this.text = new ValueProperty<>();
@@ -37,7 +38,7 @@ public class Label extends Component {
         return text;
     }
 
-    public ValueProperty<String> style(){
+    public ValueProperty<StyleClass> style(){
         return style;
     }
 

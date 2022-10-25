@@ -18,6 +18,7 @@ package myworld.obsidian.display;
 
 import io.github.humbleui.skija.svg.SVGDOM;
 import io.github.humbleui.types.IRect;
+import io.github.humbleui.types.Rect;
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.display.skin.*;
 import myworld.obsidian.geometry.Bounds2D;
@@ -29,6 +30,7 @@ import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.impl.Library;
+import myworld.obsidian.text.Text;
 import myworld.obsidian.text.Typeset;
 
 import java.util.*;
@@ -288,6 +290,14 @@ public class DisplayEngine implements AutoCloseable {
             surface.flushAndSubmit(true);
         }
 
+    }
+
+    public Rect measureText(Text t){
+        return renderer.measureText(t);
+    }
+
+    public float measureTextWidth(Text t){
+        return renderer.measureTextWidth(t);
     }
 
     @Override

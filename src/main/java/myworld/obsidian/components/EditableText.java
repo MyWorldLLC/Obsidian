@@ -1,5 +1,6 @@
 package myworld.obsidian.components;
 
+import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.events.CharacterEvent;
 import myworld.obsidian.events.KeyEvent;
 import myworld.obsidian.geometry.Distance;
@@ -25,11 +26,11 @@ public class EditableText extends Component {
         this(null);
     }
 
-    public EditableText(String style){
+    public EditableText(StyleClass style){
         this("", style);
     }
 
-    public EditableText(String initial, String style){
+    public EditableText(String initial, StyleClass style){
         styleName.set(COMPONENT_STYLE_NAME);
         label = new Label(initial, style);
         label.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
@@ -54,7 +55,7 @@ public class EditableText extends Component {
         return label;
     }
 
-    public ValueProperty<String> style(){
+    public ValueProperty<StyleClass> style(){
         return label.style();
     }
 

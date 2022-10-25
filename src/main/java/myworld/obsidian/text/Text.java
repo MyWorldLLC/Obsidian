@@ -1,16 +1,18 @@
 package myworld.obsidian.text;
 
-public record Text(String text, String styleClass) {
+import myworld.obsidian.display.skin.StyleClass;
+
+public record Text(String text, StyleClass style) {
 
     public static Text plain(String text){
         return new Text(text, null);
     }
 
-    public static Text styled(String text, String styleClass){
-        return new Text(text, styleClass);
+    public static Text styled(String text, StyleClass style){
+        return new Text(text, style);
     }
 
     public boolean hasStyle(){
-        return styleClass != null && !styleClass.isEmpty();
+        return style != null;
     }
 }

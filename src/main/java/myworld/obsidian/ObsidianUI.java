@@ -19,6 +19,7 @@ package myworld.obsidian;
 import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.DisplayEngine;
+import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.events.*;
 import myworld.obsidian.input.InputManager;
@@ -184,6 +185,14 @@ public class ObsidianUI {
 
     public void useSkin(String name){
         selectedSkin.set(name);
+    }
+
+    public StyleClass getStyle(String name){
+        var skin = getSkin(selectedSkin.get());
+        if(skin != null){
+            return skin.getStyle(name);
+        }
+        return null;
     }
 
     public boolean requestFocus(Component component){

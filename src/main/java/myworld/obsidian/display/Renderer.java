@@ -232,19 +232,10 @@ public class Renderer implements AutoCloseable {
             Text text = renderVars.get(varName, Text.class);
 
             if(text.hasStyle()){
-                var textStyle = styles.getStyle(text.styleClass());
-                if(textStyle != null){
-                    style = StyleClass.merge(textStyle, style);
-                }
+                style = StyleClass.merge(text.style(), style);
             }
 
-            Typeface[] typefaces = fontCollection.findTypefaces(new String[]{style.rule(StyleRules.FONT_FAMILY)}, getFontStyle(style));
-            Typeface typeface = typefaces != null && typefaces.length > 0 ? typefaces[0] : fontCollection.defaultFallback();
-
-            var font = new Font(typeface);
-            font.setHinting(FontHinting.NORMAL);
-            font.setSize(style.rule(StyleRules.FONT_SIZE, 12));
-            font.setSubpixel(true);
+            var font = getFont(style);
 
             TextBlob blob = shaper.shape(text.text(), font, boundingRect.getWidth());
 
@@ -262,6 +253,25 @@ public class Renderer implements AutoCloseable {
         }
 
         return path;
+    }
+
+    public Font getFont(StyleClass style){
+        Typeface[] typefaces = fontCollection.findTypefaces(new String[]{style.rule(StyleRules.FONT_FAMILY)}, getFontStyle(style));
+        Typeface typeface = typefaces != null && typefaces.length > 0 ? typefaces[0] : fontCollection.defaultFallback();
+
+        var font = new Font(typeface);
+        font.setHinting(FontHinting.NORMAL);
+        font.setSize(style.rule(StyleRules.FONT_SIZE, 12));
+        font.setSubpixel(true);
+        return font;
+    }
+
+    public Rect measureText(Text t){
+        return getFont(t.style()).measureText(t.text());
+    }
+
+    public float measureTextWidth(Text t){
+        return getFont(t.style()).measureText(t.text()).getWidth();
     }
 
     public static PaintStrokeCap skiaCap(String cap){

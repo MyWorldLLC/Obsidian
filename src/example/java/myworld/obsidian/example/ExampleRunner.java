@@ -107,7 +107,7 @@ public class ExampleRunner {
         example.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         ui.getRoot().addChild(example);
 
-        example.renderVars().put("text", () -> new Text("Hello, World!", "ExampleText"));
+        example.renderVars().put("text", () -> new Text("Hello, World!", ui.getStyle("ExampleText")));
 
         example.dispatcher().subscribe(MouseOverEvent.class, evt -> evt.entered(example), evt -> {
             System.out.println("Mouse entered");
@@ -129,7 +129,7 @@ public class ExampleRunner {
             System.out.println("Key: " + evt.getKey());
         });
 
-        var editableText = new EditableText("ExampleText");
+        var editableText = new EditableText(ui.getStyle("ExampleText"));
         editableText.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         editableText.insert("Foo");
         ui.getRoot().addChild(editableText);
