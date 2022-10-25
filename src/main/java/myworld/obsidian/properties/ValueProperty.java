@@ -43,7 +43,7 @@ public class ValueProperty<T> extends Property<ValueChangeListener<T>> implement
     }
 
     public boolean ifSet(Consumer<T> c){
-        var v = value.get();
+        var v = get();
         if(v != null){
             c.accept(v);
             return true;
@@ -56,7 +56,7 @@ public class ValueProperty<T> extends Property<ValueChangeListener<T>> implement
     }
 
     public T get(T ifNull){
-        var v = value.get();
+        var v = get();
         return v != null ? v : ifNull;
     }
 
