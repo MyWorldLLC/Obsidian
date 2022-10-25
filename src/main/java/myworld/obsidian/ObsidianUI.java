@@ -65,6 +65,7 @@ public class ObsidianUI {
     public ObsidianUI(DisplayEngine display){
         root = new Component();
         root.styleName().set(ROOT_COMPONENT_STYLE_NAME);
+        root.ui().set(this);
         root.dispatcher().subscribe(KeyEvent.class, keyPressed(Key.TAB), evt -> {
             if(evt.getManager().isShiftDown()){
                 focusPrevious();

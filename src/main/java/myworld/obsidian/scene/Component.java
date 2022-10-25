@@ -16,6 +16,7 @@
 
 package myworld.obsidian.scene;
 
+import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.display.skin.Variables;
 import myworld.obsidian.events.dispatch.EventDispatcher;
 import myworld.obsidian.layout.ComponentLayout;
@@ -30,6 +31,7 @@ public class Component {
     public static final String FOCUSED_DATA_NAME = "focused";
     public static final String HOVERED_DATA_NAME = "hovered";
 
+    protected final ValueProperty<ObsidianUI> ui;
     protected final ValueProperty<Component> parent;
     protected final ListProperty<Component> children;
     protected final ListProperty<Effect> effects;
@@ -47,6 +49,7 @@ public class Component {
 
     public Component(Component... children){
         parent = new ValueProperty<>();
+        ui = new DelegatingValueProperty<>(parent, Component::ui);
         this.children = new ListProperty<>(children);
         effects = new ListProperty<>();
         tags = new ListProperty<>();
@@ -93,6 +96,10 @@ public class Component {
 
     public boolean isChild(Component child){
         return children.stream().anyMatch(c -> c == child);
+    }
+
+    public ValueProperty<ObsidianUI> ui(){
+        return ui;
     }
 
     public ValueProperty<Component> parent(){
