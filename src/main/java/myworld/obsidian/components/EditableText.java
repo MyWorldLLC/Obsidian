@@ -7,7 +7,6 @@ import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
-import myworld.obsidian.text.Text;
 
 import static myworld.obsidian.events.dispatch.EventFilters.*;
 
@@ -47,14 +46,27 @@ public class EditableText extends Component {
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.BACKSPACE), evt -> deletePrevious());
 
         renderVars.put(CURSOR_VISIBLE_VAR_NAME, focused());
-        renderVars.put(CURSOR_OFFSET_VAR_NAME, () -> ui.get()
-                .getDisplay()
-                .measureTextWidth(
-                        Text.styled(builder.substring(0, cursorPos.get()), label.style().get())));
-        renderVars.put(LINE_HEIGHT_VAR_NAME, () -> ui.get()
-                .getDisplay()
-                .measureText(
-                        Text.styled(builder.substring(0, cursorPos.get()), label.style().get())).getHeight() + 5);
+        renderVars.put(CURSOR_OFFSET_VAR_NAME, () -> {
+            var ruler = label.getRuler();
+
+            var s = builder.toString();
+
+            if(cursorPos.get() == 0){
+                return 0f;
+            }
+
+            int limit = cursorPos.get();
+
+            var offset = 0f;
+            var positions = ruler.getXPositions(s);
+            var widths = ruler.getWidths(s);
+
+            offset = positions[limit - 1] + widths[limit - 1];
+
+            return offset;
+        });
+        renderVars.put(LINE_HEIGHT_VAR_NAME, () -> label.getRuler()
+                .getLineHeight());
 
         preRender(() -> label.text().set(builder.toString()));
     }
@@ -81,6 +93,7 @@ public class EditableText extends Component {
     }
 
     public void insert(char[] characters){
+
         builder.insert(cursorPos.get(), characters);
         cursorPos.setWith(c -> c + characters.length);
     }

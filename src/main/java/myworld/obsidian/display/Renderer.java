@@ -15,6 +15,7 @@ import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.text.Text;
 import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextShadow;
+import myworld.obsidian.text.TextStyle;
 
 import java.util.HashMap;
 import java.util.List;
@@ -236,7 +237,7 @@ public class Renderer implements AutoCloseable {
                 style = StyleClass.merge(text.style(), style);
             }
 
-            var font = getFont(style);
+            var font = getFont(style, renderVars);
 
             TextBlob blob = shaper.shape(text.text(), font, boundingRect.getWidth());
 
@@ -257,32 +258,39 @@ public class Renderer implements AutoCloseable {
     }
 
     public Font getFont(StyleClass style){
+        return getFont(style, Variables.empty());
+    }
+
+    public Font getFont(StyleClass style, Variables renderVars){
+        return getFont(style.rule(StyleRules.FONT_FAMILY, renderVars), getFontStyle(style, renderVars), getFontSize(style, renderVars));
+    }
+
+    public Font getFont(String family, TextStyle style, float size){
+        return getFont(family, getFontStyle(style), size);
+    }
+
+    public Font getFont(String family, FontStyle style, float size){
         Typeface typeface;
         if(style != null){
-            Typeface[] typefaces = fontCollection.findTypefaces(new String[]{style.rule(StyleRules.FONT_FAMILY, Variables.empty())}, getFontStyle(style, Variables.empty()));
+            Typeface[] typefaces = fontCollection.findTypefaces(new String[]{family}, style);
             typeface = typefaces != null && typefaces.length > 0 ? typefaces[0] : fontCollection.defaultFallback();
         }else{
             typeface = fontCollection.defaultFallback();
         }
 
-        var fontSize = 12;
-        if(style != null){
-            fontSize = style.rule(StyleRules.FONT_SIZE, Variables.empty(),12);
-        }
-
         var font = new Font(typeface);
         font.setHinting(FontHinting.NORMAL);
-        font.setSize(fontSize);
+        font.setSize(size);
         font.setSubpixel(true);
         return font;
     }
 
-    public Rect measureText(Text t){
-        return getFont(t.style()).measureText(t.text());
+    public TextRuler getTextRuler(String fontFamily, TextStyle style, float size){
+        return new TextRuler(this, getFont(fontFamily, style, size));
     }
 
-    public float measureTextWidth(Text t){
-        return getFont(t.style()).measureText(t.text()).getWidth();
+    public TextRuler getTextRuler(StyleClass textStyle, Variables v){
+        return new TextRuler(this, getFont(textStyle, v));
     }
 
     public static PaintStrokeCap skiaCap(String cap){
@@ -318,6 +326,16 @@ public class Renderer implements AutoCloseable {
         };
     }
 
+    protected static float getFontSize(StyleClass style, Variables renderVars){
+        var size = style.rule(StyleRules.FONT_SIZE, renderVars);
+        if(size == null){
+            size = 12f;
+        }else if(size instanceof Integer s){
+            size = s.floatValue();
+        }
+        return (Float) size;
+    }
+
     protected static Paint getFill(StyleClass style, Variables renderVars){
         Paint fill = null;
         if (style.hasRule(StyleRules.COLOR)) {
@@ -343,7 +361,18 @@ public class Renderer implements AutoCloseable {
     }
 
     protected static FontStyle getFontStyle(StyleClass style, Variables renderVars) {
-        return switch (style.rule(StyleRules.FONT_STYLE, renderVars, myworld.obsidian.text.TextStyle.NORMAL)) {
+        var value = style.rule(StyleRules.FONT_STYLE, renderVars);
+        if(value == null){
+            value = TextStyle.NORMAL;
+        }
+        if(value instanceof String s){
+            return getFontStyle(TextStyle.valueOf(s));
+        }
+        return getFontStyle((TextStyle) value);
+    }
+
+    protected static FontStyle getFontStyle(TextStyle style) {
+        return switch (style) {
             case NORMAL -> FontStyle.NORMAL;
             case BOLD -> FontStyle.BOLD;
             case ITALIC -> FontStyle.ITALIC;

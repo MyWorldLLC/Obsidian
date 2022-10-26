@@ -9,14 +9,19 @@ def component(){
     name('Label')
 
     data({
-        'text': 'string'
+        'text': 'string',
+        'fontFamily': 'string',
+        'fontStyle': 'string',
+        'fontSize': 'float',
+        'color': 'color'
     })
 
     layer('text', {
         'geometry': 'text',
-        'color': black,
-        'font-family': 'Clear Sans',
-        'font-size': 14
+        'color': data('color', black),
+        'font-family': data('fontFamily', 'Clear Sans'),
+        'font-style': data('fontStyle', 'NORMAL'),
+        'font-size': data('fontSize', 14)
     })
 
 }

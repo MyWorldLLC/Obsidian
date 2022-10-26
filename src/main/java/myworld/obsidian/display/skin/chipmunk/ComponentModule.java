@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static myworld.obsidian.display.skin.StyleClass.evaluate;
+
 public class ComponentModule implements ChipmunkModule {
 
     public static final String MODULE_NAME = "obsidian.component";
@@ -63,6 +65,17 @@ public class ComponentModule implements ChipmunkModule {
     @AllowChipmunkLinkage
     public StyleRule data(String varName){
         return StyleRule.of(v -> v.get(varName));
+    }
+
+    @AllowChipmunkLinkage
+    public StyleRule data(String varName, Object ruleOrValue){
+        return StyleRule.of(v -> {
+            var value = v.get(varName);
+            if(value == null){
+                value = evaluate(ruleOrValue, v);
+            }
+            return value;
+        });
     }
 
     @AllowChipmunkLinkage

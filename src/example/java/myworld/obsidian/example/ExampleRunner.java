@@ -32,6 +32,7 @@ import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.input.MouseWheelAxis;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
+import myworld.obsidian.text.TextStyle;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 
@@ -129,7 +130,7 @@ public class ExampleRunner {
             System.out.println("Key: " + evt.getKey());
         });
 
-        var editableText = new EditableText(ui.getStyle("ExampleText"));
+        var editableText = new EditableText();
         editableText.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         editableText.insert("Foo");
         ui.getRoot().addChild(editableText);

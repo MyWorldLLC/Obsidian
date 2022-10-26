@@ -30,6 +30,7 @@ import myworld.obsidian.scene.Component;
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.impl.Library;
 import myworld.obsidian.text.Text;
+import myworld.obsidian.text.TextStyle;
 import myworld.obsidian.text.Typeset;
 
 import java.util.*;
@@ -291,12 +292,12 @@ public class DisplayEngine implements AutoCloseable {
 
     }
 
-    public Rect measureText(Text t){
-        return renderer.measureText(t);
+    public TextRuler getTextRuler(String fontFamily, TextStyle style, float size){
+        return renderer.getTextRuler(fontFamily, style, size);
     }
 
-    public float measureTextWidth(Text t){
-        return renderer.measureTextWidth(t);
+    public TextRuler getTextRuler(StyleClass textStyle, Variables v){
+        return renderer.getTextRuler(textStyle, v);
     }
 
     @Override
