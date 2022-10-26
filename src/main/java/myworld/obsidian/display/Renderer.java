@@ -93,8 +93,9 @@ public class Renderer implements AutoCloseable {
 
         if(position != null){
             transform = Matrix33.makeTranslate(
-                            toPixels(position.x(), componentBounds.width()),
-                            toPixels(position.y(), componentBounds.height()))
+                            // The shift by 0.5f aligns pixels so that they make a crisp line rather than a blurred one
+                            toPixels(position.x(), componentBounds.width()) - 0.5f,
+                            toPixels(position.y(), componentBounds.height()) - 0.5f)
                     .makeConcat(transform);
         }
 
