@@ -28,8 +28,8 @@ def component(){
     })
 
     layer('cursor', 'cursorVisible', {
-        'geometry': rectangle('1px', '15px'), # TODO - dynamic line height
-        'position': move(pixels('cursorOffset'), '0px'),
+        'geometry': rectangle('1px', pixels('lineHeight')), # TODO - dynamic line height
+        'position': move(pixels('cursorOffset'), '2px'),
         'color': black
     })
 

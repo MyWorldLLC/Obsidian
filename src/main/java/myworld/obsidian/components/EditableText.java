@@ -51,6 +51,10 @@ public class EditableText extends Component {
                 .getDisplay()
                 .measureTextWidth(
                         Text.styled(builder.substring(0, cursorPos.get()), label.style().get())));
+        renderVars.put(LINE_HEIGHT_VAR_NAME, () -> ui.get()
+                .getDisplay()
+                .measureText(
+                        Text.styled(builder.substring(0, cursorPos.get()), label.style().get())).getHeight() + 5);
 
         preRender(() -> label.text().set(builder.toString()));
     }
