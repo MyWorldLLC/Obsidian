@@ -4,14 +4,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public record StyleClass(String name, String layer, String stateParam, Map<String, Object> rules) {
+public record StyleClass(String name, String layer, String stateParam, Map<String, StyleRule> rules) {
 
     public StyleClass {
         Objects.requireNonNull(rules, "Style class rules may not be null");
         rules = Map.copyOf(rules);
     }
 
-    public StyleClass(Map<String, Object> rules){
+    public StyleClass(Map<String, StyleRule> rules){
         this(null, null, null, rules);
     }
 
@@ -27,14 +27,22 @@ public record StyleClass(String name, String layer, String stateParam, Map<Strin
         return stateParam != null;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T rule(String name){
-        return (T) rules.get(name);
+    public <T> T rule(String name, Variables data){
+        return rule(name).evaluate(data);
     }
 
-    public <T> T rule(String name, T defaultValue){
-        T value = rule(name);
-        return value != null ? value : defaultValue;
+    public <T> T rule(String name, Variables data, T defaultValue){
+        return ruleOrConstant(name, defaultValue).evaluate(data);
+    }
+
+    @SuppressWarnings("unchecked")
+    public StyleRule rule(String name){
+        return ruleOrConstant(name, null);
+    }
+
+    public <T> StyleRule ruleOrConstant(String name, T defaultValue){
+        StyleRule rule = rules.get(name);
+        return rule != null ? rule : new ConstantRule<>(defaultValue);
     }
 
     public boolean hasRule(String name){
@@ -66,20 +74,32 @@ public record StyleClass(String name, String layer, String stateParam, Map<Strin
                         (existing, next) -> next)));
     }
 
-    public static StyleClass forName(String name, Map<String, Object> rules){
+    public static StyleClass forName(String name, Map<String, StyleRule> rules){
         return new StyleClass(name, null, null, rules);
     }
 
-    public static StyleClass forLayer(String layer, Map<String, Object> rules){
+    public static StyleClass forLayer(String layer, Map<String, StyleRule> rules){
         return new StyleClass(null, layer, null, rules);
     }
 
-    public static StyleClass forState(String stateParam, Map<String, Object> rules){
+    public static StyleClass forState(String stateParam, Map<String, StyleRule> rules){
         return new StyleClass(null, null, stateParam, rules);
     }
 
-    public static StyleClass forLayerState(String layer, String stateParam, Map<String, Object> rules){
+    public static StyleClass forLayerState(String layer, String stateParam, Map<String, StyleRule> rules){
         return new StyleClass(null, layer, stateParam, rules);
+    }
+
+    public static Map<String, StyleRule> normalize(Map<String, Object> style){
+        var rules = new HashMap<String, StyleRule>(style.size());
+        style.forEach((k, v) -> {
+            if(v instanceof StyleRule rule){
+                rules.put(k, rule);
+            }else{
+                rules.put(k, new ConstantRule<>(v));
+            }
+        });
+        return rules;
     }
 
 }

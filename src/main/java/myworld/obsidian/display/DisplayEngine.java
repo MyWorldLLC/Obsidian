@@ -186,7 +186,7 @@ public class DisplayEngine implements AutoCloseable {
 
                 var styleClasses = skin.activeForLayer(layer, renderVars, s -> {
 
-                    List<String> mixStyles = s.rule(StyleRules.STYLES);
+                    List<String> mixStyles = s.rule(StyleRules.STYLES, renderVars);
                     var result = s;
 
                     if(mixStyles != null){

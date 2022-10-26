@@ -21,6 +21,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Variables {
 
+    public static Variables empty(){
+        return new Variables();
+    }
+
     protected final Map<String, Object> vars;
 
     public Variables(){

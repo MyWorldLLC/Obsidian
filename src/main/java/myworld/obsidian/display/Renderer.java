@@ -77,11 +77,11 @@ public class Renderer implements AutoCloseable {
 
         var geometry = (Object) createSkiaGeometry(boundingRect, style, renderVars, styles);
 
-        Paint fill = getFill(style);
-        Paint stroke = getStroke(style);
+        Paint fill = getFill(style, renderVars);
+        Paint stroke = getStroke(style, renderVars);
 
-        Move position = style.rule(StyleRules.POSITION);
-        Rotate rotation = style.rule(StyleRules.ROTATION);
+        Move position = style.rule(StyleRules.POSITION, renderVars);
+        Rotate rotation = style.rule(StyleRules.ROTATION, renderVars);
 
         Matrix33 transform = Matrix33.IDENTITY;
         if(rotation != null) {
@@ -108,7 +108,7 @@ public class Renderer implements AutoCloseable {
             var visualBounds = renderPath.getBounds();
             if (visualBounds.getWidth() > boundingRect.getWidth() || visualBounds.getHeight() > boundingRect.getHeight()) {
 
-                switch (style.rule(StyleRules.OVERFLOW_MODE, OverflowModes.SCALE)){
+                switch (style.rule(StyleRules.OVERFLOW_MODE, renderVars, OverflowModes.SCALE)){
                     case OverflowModes.CLIP ->
                             canvas.clipRect(boundingRect, true);
                     case OverflowModes.SCALE_UNIFORM ->
@@ -202,7 +202,7 @@ public class Renderer implements AutoCloseable {
     }
 
     public Object createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars, StyleLookup styles){
-        Object geometry = style.rule(StyleRules.GEOMETRY);
+        Object geometry = style.rule(StyleRules.GEOMETRY, renderVars);
         var path = new Path();
         if(geometry instanceof Rectangle r){
            path.addRect(
@@ -239,13 +239,13 @@ public class Renderer implements AutoCloseable {
 
             TextBlob blob = shaper.shape(text.text(), font, boundingRect.getWidth());
 
-            var color = style.rule(StyleRules.COLOR, Colors.BLACK);
+            var color = style.rule(StyleRules.COLOR, renderVars, Colors.BLACK);
             ColorRGBA backgroundColor = null;
             if(style.hasRule(StyleRules.TEXT_BACKGROUND_COLOR)){
-                backgroundColor = style.rule(StyleRules.TEXT_BACKGROUND_COLOR);
+                backgroundColor = style.rule(StyleRules.TEXT_BACKGROUND_COLOR, renderVars);
             }
 
-            return new RenderableText(blob, font, boundingRect, color, backgroundColor, getTextDecoration(style), getShadows(style));
+            return new RenderableText(blob, font, boundingRect, color, backgroundColor, getTextDecoration(style, renderVars), getShadows(style, renderVars));
 
         }else{
             // Default to filling in the componentBounds as a rectangle
@@ -258,7 +258,7 @@ public class Renderer implements AutoCloseable {
     public Font getFont(StyleClass style){
         Typeface typeface;
         if(style != null){
-            Typeface[] typefaces = fontCollection.findTypefaces(new String[]{style.rule(StyleRules.FONT_FAMILY)}, getFontStyle(style));
+            Typeface[] typefaces = fontCollection.findTypefaces(new String[]{style.rule(StyleRules.FONT_FAMILY, Variables.empty())}, getFontStyle(style, Variables.empty()));
             typeface = typefaces != null && typefaces.length > 0 ? typefaces[0] : fontCollection.defaultFallback();
         }else{
             typeface = fontCollection.defaultFallback();
@@ -266,7 +266,7 @@ public class Renderer implements AutoCloseable {
 
         var fontSize = 12;
         if(style != null){
-            fontSize = style.rule(StyleRules.FONT_SIZE, 12);
+            fontSize = style.rule(StyleRules.FONT_SIZE, Variables.empty(),12);
         }
 
         var font = new Font(typeface);
@@ -317,32 +317,32 @@ public class Renderer implements AutoCloseable {
         };
     }
 
-    protected static Paint getFill(StyleClass style){
+    protected static Paint getFill(StyleClass style, Variables renderVars){
         Paint fill = null;
         if (style.hasRule(StyleRules.COLOR)) {
             fill = new Paint();
-            fill.setColor(style.rule(StyleRules.COLOR, Colors.WHITE).toARGB());
+            fill.setColor(style.rule(StyleRules.COLOR, renderVars, Colors.WHITE).toARGB());
         }
         return fill;
     }
 
-    protected static Paint getStroke(StyleClass style){
+    protected static Paint getStroke(StyleClass style, Variables renderVars){
         Paint stroke = null;
         if (style.hasAny(StyleRules.BORDER_CAP, StyleRules.BORDER_COLOR, StyleRules.BORDER_JOIN,
                 StyleRules.BORDER_MITER, StyleRules.BORDER_WIDTH)) {
             stroke = new Paint()
                     .setStroke(true)
-                    .setColor(style.rule(StyleRules.BORDER_COLOR, Colors.TRANSPARENT).toARGB())
-                    .setStrokeWidth(style.rule(StyleRules.BORDER_WIDTH, 1f))
-                    .setStrokeCap(skiaCap(style.rule(StyleRules.BORDER_CAP, Borders.CAP_SQUARE)))
-                    .setStrokeJoin(skiaJoin(style.rule(StyleRules.BORDER_JOIN, Borders.JOIN_BEVEL)))
-                    .setStrokeMiter(style.rule(StyleRules.BORDER_MITER, 0f));
+                    .setColor(style.rule(StyleRules.BORDER_COLOR, renderVars, Colors.TRANSPARENT).toARGB())
+                    .setStrokeWidth(style.rule(StyleRules.BORDER_WIDTH, renderVars, 1f))
+                    .setStrokeCap(skiaCap(style.rule(StyleRules.BORDER_CAP, renderVars, Borders.CAP_SQUARE)))
+                    .setStrokeJoin(skiaJoin(style.rule(StyleRules.BORDER_JOIN, renderVars, Borders.JOIN_BEVEL)))
+                    .setStrokeMiter(style.rule(StyleRules.BORDER_MITER, renderVars, 0f));
         }
         return stroke;
     }
 
-    protected static FontStyle getFontStyle(StyleClass style) {
-        return switch (style.rule(StyleRules.FONT_STYLE, myworld.obsidian.text.TextStyle.NORMAL)) {
+    protected static FontStyle getFontStyle(StyleClass style, Variables renderVars) {
+        return switch (style.rule(StyleRules.FONT_STYLE, renderVars, myworld.obsidian.text.TextStyle.NORMAL)) {
             case NORMAL -> FontStyle.NORMAL;
             case BOLD -> FontStyle.BOLD;
             case ITALIC -> FontStyle.ITALIC;
@@ -350,14 +350,14 @@ public class Renderer implements AutoCloseable {
         };
     }
 
-    protected static TextDecoration getTextDecoration(StyleClass style){
-        return style.rule(StyleRules.TEXT_DECORATION, null);
+    protected static TextDecoration getTextDecoration(StyleClass style, Variables renderVars){
+        return style.rule(StyleRules.TEXT_DECORATION, renderVars);
     }
 
     @SuppressWarnings("unchecked")
-    protected static TextShadow[] getShadows(StyleClass style){
+    protected static TextShadow[] getShadows(StyleClass style, Variables renderVars){
         if(style.hasRule(StyleRules.TEXT_SHADOW)){
-            var shadows = style.rule(StyleRules.TEXT_SHADOW);
+            var shadows = style.rule(StyleRules.TEXT_SHADOW, renderVars);
             if(shadows instanceof List shadowList){
                 return ((List<TextShadow>) shadowList).toArray(new TextShadow[]{});
             }else if(shadows instanceof TextShadow shadow){
