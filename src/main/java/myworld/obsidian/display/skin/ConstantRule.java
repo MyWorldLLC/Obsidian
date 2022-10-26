@@ -1,16 +1,11 @@
 package myworld.obsidian.display.skin;
 
-public class ConstantRule<T> implements StyleRule {
-
-    protected final T value;
-
-    public ConstantRule(T value){
-        this.value = value;
-    }
+public record ConstantRule<T>(T value) implements StyleRule {
 
     @Override
     @SuppressWarnings("unchecked")
     public T evaluate(Variables data) {
         return value;
     }
+
 }

@@ -20,6 +20,7 @@ import chipmunk.runtime.ChipmunkModule;
 import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
 import myworld.obsidian.display.skin.ComponentInterface;
 import myworld.obsidian.display.skin.StyleClass;
+import myworld.obsidian.display.skin.StyleRule;
 import myworld.obsidian.display.skin.VarType;
 
 import java.util.ArrayList;
@@ -57,6 +58,11 @@ public class ComponentModule implements ChipmunkModule {
                 // TODO - log warning
             }
         }
+    }
+
+    @AllowChipmunkLinkage
+    public StyleRule data(String varName){
+        return StyleRule.of(v -> v.get(varName));
     }
 
     @AllowChipmunkLinkage

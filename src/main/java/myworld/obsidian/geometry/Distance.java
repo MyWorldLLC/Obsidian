@@ -18,15 +18,15 @@ package myworld.obsidian.geometry;
 
 public record Distance(Number value, Unit unit) {
 
-    public static Distance of(float value, Unit unit){
+    public static Distance of(Number value, Unit unit){
         return new Distance(value, unit);
     }
 
-    public static Distance pixels(float value){
+    public static Distance pixels(Number value){
         return of(value, Unit.PIXELS);
     }
 
-    public static Distance percentage(float value){
+    public static Distance percentage(Number value){
         return of(value, Unit.PERCENTAGE);
     }
 
@@ -38,20 +38,20 @@ public record Distance(Number value, Unit unit) {
         return value.floatValue();
     }
 
-    public Distance multiply(float value){
-        return new Distance(this.value.floatValue() * value, unit);
+    public Distance multiply(Number value){
+        return new Distance(this.value.floatValue() * value.floatValue(), unit);
     }
 
-    public Distance add(float value){
-        return new Distance(this.value.floatValue() + value, unit);
+    public Distance add(Number value){
+        return new Distance(this.value.floatValue() + value.floatValue(), unit);
     }
 
-    public Distance subtract(float value){
-        return new Distance(this.value.floatValue() - value, unit);
+    public Distance subtract(Number value){
+        return new Distance(this.value.floatValue() - value.floatValue(), unit);
     }
 
-    public Distance divide(float value){
-        return new Distance(this.value.floatValue() / value, unit);
+    public Distance divide(Number value){
+        return new Distance(this.value.floatValue() / value.floatValue(), unit);
     }
 
     @Override

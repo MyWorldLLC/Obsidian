@@ -20,9 +20,12 @@ import chipmunk.runtime.ChipmunkModule;
 import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
 import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
+import myworld.obsidian.display.skin.StyleRule;
 import myworld.obsidian.geometry.*;
 import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextShadow;
+
+import static myworld.obsidian.display.skin.StyleClass.evaluate;
 
 public class GraphicsModule implements ChipmunkModule {
 
@@ -34,6 +37,14 @@ public class GraphicsModule implements ChipmunkModule {
             throw new IllegalArgumentException(d + " is not a valid distance string");
         }
         return dist;
+    }
+
+    protected static Distance coerceDistance(Object d){
+        if(d instanceof Distance dist){
+            return dist;
+        }else{
+            return parseDistance((String) d);
+        }
     }
 
     @AllowChipmunkLinkage
@@ -65,143 +76,117 @@ public class GraphicsModule implements ChipmunkModule {
     }
 
     @AllowChipmunkLinkage
-    public ColorRGBA color(String hexColor){
-        return ColorRGBA.of(hexColor);
+    public StyleRule pixels(String varName){
+        return StyleRule.of(v -> Distance.pixels(v.get(varName, Number.class)));
     }
 
     @AllowChipmunkLinkage
-    public SvgPath path(String path){
-        return new SvgPath(path);
+    public StyleRule percentage(String varName){
+        return StyleRule.of(v -> Distance.percentage(v.get(varName, Number.class)));
     }
 
     @AllowChipmunkLinkage
-    public Ellipse circle(String radius){
-        return Ellipse.circle(parseDistance(radius));
+    public StyleRule color(Object hexColor){
+        return StyleRule.of(v -> ColorRGBA.of(evaluate(hexColor, v)));
     }
 
     @AllowChipmunkLinkage
-    public Ellipse oval(String width, String height){
-        return new Ellipse(parseDistance(width), parseDistance(height));
+    public StyleRule path(Object path){
+        return StyleRule.of(v -> new SvgPath(evaluate(path, v)));
     }
 
     @AllowChipmunkLinkage
-    public Rectangle rectangle(String width, String height){
-        return new Rectangle(parseDistance(width), parseDistance(height));
+    public StyleRule circle(Object radius){
+        return StyleRule.of(v -> Ellipse.circle(coerceDistance(evaluate(radius, v))));
     }
 
     @AllowChipmunkLinkage
-    public Rectangle square(String s){
-        return Rectangle.square(parseDistance(s));
+    public StyleRule oval(Object width, Object height){
+        return StyleRule.of(v -> new Ellipse(coerceDistance(evaluate(width, v)), coerceDistance(evaluate(height, v))));
     }
 
     @AllowChipmunkLinkage
-    public Move move(String x, String y){
-        return new Move(parseDistance(x), parseDistance(y));
+    public StyleRule rectangle(Object width, Object height){
+        return StyleRule.of(v ->new Rectangle(coerceDistance(evaluate(width, v)), coerceDistance(evaluate(height, v))));
     }
 
     @AllowChipmunkLinkage
-    public Move offset(String x, String y){
+    public StyleRule square(Object s){
+        return StyleRule.of(v -> Rectangle.square(coerceDistance(evaluate(s, v))));
+    }
+
+    @AllowChipmunkLinkage
+    public StyleRule move(Object x, Object y){
+        return StyleRule.of(v -> new Move(coerceDistance(evaluate(x, v)), coerceDistance(evaluate(y, v))));
+    }
+
+    @AllowChipmunkLinkage
+    public StyleRule offset(Object x, Object y){
         return move(x, y);
     }
 
     @AllowChipmunkLinkage
-    public Rotate rotate(Float degrees){
-        return new Rotate(degrees);
+    public StyleRule rotate(Object degrees){
+        return StyleRule.of(v -> new Rotate(evaluate(degrees, v)));
     }
 
     @AllowChipmunkLinkage
-    public Rotate rotate(Integer degrees){
-        return new Rotate(degrees);
+    public StyleRule underline(){
+        return underline(null, TextDecoration.DEFAULT_THICKNESS);
     }
 
     @AllowChipmunkLinkage
-    public TextDecoration underline(){
-        return underline((ColorRGBA) null, TextDecoration.DEFAULT_THICKNESS);
-    }
-
-    @AllowChipmunkLinkage
-    public TextDecoration underline(String lineStyle){
-        return underline(null, lineStyle, TextDecoration.DEFAULT_THICKNESS);
-    }
-
-    @AllowChipmunkLinkage
-    public TextDecoration underline(Float thickness){
-        return underline(null, TextDecoration.LineStyle.SOLID.name(), thickness);
-    }
-
-    @AllowChipmunkLinkage
-    public TextDecoration underline(String lineStyle, Float thickness){
-        return underline(null, lineStyle, thickness);
-    }
-
-    @AllowChipmunkLinkage
-    public TextDecoration underline(ColorRGBA color){
+    public StyleRule underline(Object color){
         return underline(color, TextDecoration.DEFAULT_THICKNESS);
     }
 
     @AllowChipmunkLinkage
-    public TextDecoration underline(ColorRGBA color, String lineStyle){
-        return underline(color, lineStyle, TextDecoration.DEFAULT_THICKNESS);
-    }
-
-    @AllowChipmunkLinkage
-    public TextDecoration underline(ColorRGBA color, Float thickness){
+    public StyleRule underline(Object color, Object thickness){
         return underline(color, TextDecoration.LineStyle.SOLID.name(), thickness);
     }
 
-    @AllowChipmunkLinkage
-    public TextDecoration underline(ColorRGBA color, String lineStyle, Float thickness){
-        return TextDecoration.underline(color, TextDecoration.LineStyle.valueOf(lineStyle.trim().toUpperCase()), thickness);
+    protected StyleRule underline(Object color, Object lineStyle, Object thickness){
+        return StyleRule.of(v -> TextDecoration.underline(
+                evaluate(color, v),
+                TextDecoration.LineStyle.valueOf(((String)evaluate(lineStyle, v)).trim().toUpperCase()),
+                evaluate(thickness, v)));
     }
 
     @AllowChipmunkLinkage
-    public TextDecoration strikeThrough(){
-        return strikeThrough((ColorRGBA) null, TextDecoration.DEFAULT_THICKNESS);
+    public StyleRule strikeThrough(){
+        return strikeThrough(null, TextDecoration.DEFAULT_THICKNESS);
     }
 
     @AllowChipmunkLinkage
-    public TextDecoration strikeThrough(String lineStyle){
-        return strikeThrough(null, lineStyle, TextDecoration.DEFAULT_THICKNESS);
-    }
-
-    @AllowChipmunkLinkage
-    public TextDecoration strikeThrough(Float thickness){
-        return strikeThrough(null, TextDecoration.LineStyle.SOLID.name(), thickness);
-    }
-
-    @AllowChipmunkLinkage
-    public TextDecoration strikeThrough(String lineStyle, Float thickness){
-        return strikeThrough(null, lineStyle, thickness);
-    }
-
-    @AllowChipmunkLinkage
-    public TextDecoration strikeThrough(ColorRGBA color){
+    public StyleRule strikeThrough(Object color){
         return strikeThrough(color, TextDecoration.DEFAULT_THICKNESS);
     }
 
     @AllowChipmunkLinkage
-    public TextDecoration strikeThrough(ColorRGBA color, String lineStyle){
-        return strikeThrough(color, lineStyle, TextDecoration.DEFAULT_THICKNESS);
+    public StyleRule strikeThrough(Object color, Object thickness){
+        return strikeThrough(color, TextDecoration.LineStyle.SOLID.name(), thickness);
+    }
+
+    protected StyleRule strikeThrough(Object color, Object lineStyle, Object thickness){
+        return StyleRule.of(v ->TextDecoration.strikeThrough(
+                evaluate(color, v),
+                TextDecoration.LineStyle.valueOf(((String)evaluate(lineStyle, v)).trim().toUpperCase()),
+                evaluate(thickness, v)));
     }
 
     @AllowChipmunkLinkage
-    public TextDecoration strikeThrough(ColorRGBA color, Float thickness){
-        return TextDecoration.strikeThrough(color, thickness);
+    public StyleRule decoration(Object underline, Object strikeThrough, Object color, Object lineStyle, Object thickness){
+        return StyleRule.of(v -> new TextDecoration(
+                evaluate(underline, v),
+                evaluate(strikeThrough, v),
+                evaluate(color, v),
+                TextDecoration.LineStyle.valueOf(((String)evaluate(lineStyle, v)).trim().toUpperCase()),
+                evaluate(thickness, v)));
     }
 
     @AllowChipmunkLinkage
-    public TextDecoration strikeThrough(ColorRGBA color, String lineStyle, Float thickness){
-        return TextDecoration.strikeThrough(color, TextDecoration.LineStyle.valueOf(lineStyle.trim().toUpperCase()), thickness);
-    }
-
-    @AllowChipmunkLinkage
-    public TextDecoration decoration(Boolean underline, Boolean strikeThrough, ColorRGBA color, String lineStyle, Float thickness){
-        return new TextDecoration(underline, strikeThrough, color, TextDecoration.LineStyle.valueOf(lineStyle.trim().toUpperCase()), thickness);
-    }
-
-    @AllowChipmunkLinkage
-    public TextShadow textShadow(Move offset, ColorRGBA color, Float blurSigma){
-        return new TextShadow(offset, color, blurSigma);
+    public StyleRule textShadow(Object offset, Object color, Object blurSigma){
+        return StyleRule.of(v -> new TextShadow(evaluate(offset, v), evaluate(color, v), evaluate(blurSigma, v)));
     }
 
 }

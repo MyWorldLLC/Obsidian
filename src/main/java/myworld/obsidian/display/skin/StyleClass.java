@@ -93,13 +93,21 @@ public record StyleClass(String name, String layer, String stateParam, Map<Strin
     public static Map<String, StyleRule> normalize(Map<String, Object> style){
         var rules = new HashMap<String, StyleRule>(style.size());
         style.forEach((k, v) -> {
-            if(v instanceof StyleRule rule){
-                rules.put(k, rule);
-            }else{
-                rules.put(k, new ConstantRule<>(v));
-            }
+            rules.put(k, wrap(v));
         });
         return rules;
+    }
+
+    public static StyleRule wrap(Object ruleOrValue){
+        if(ruleOrValue instanceof StyleRule rule){
+            return rule;
+        }else{
+            return new ConstantRule<>(ruleOrValue);
+        }
+    }
+
+    public static <T> T evaluate(Object ruleOrValue, Variables v){
+        return wrap(ruleOrValue).evaluate(v);
     }
 
 }
