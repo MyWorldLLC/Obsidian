@@ -25,7 +25,6 @@ import myworld.obsidian.geometry.Bounds2D;
 import myworld.obsidian.geometry.Dimension2D;
 import myworld.obsidian.properties.ListChangeListener;
 import myworld.obsidian.properties.ListProperty;
-import myworld.obsidian.properties.MapProperty;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import io.github.humbleui.skija.*;
