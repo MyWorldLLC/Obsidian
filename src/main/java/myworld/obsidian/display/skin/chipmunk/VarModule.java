@@ -27,7 +27,7 @@ public class VarModule implements ChipmunkModule {
     public static final String MODULE_NAME = "obsidian.vars";
 
     @AllowChipmunkLinkage
-    protected final Map<String, Object> vars = new HashMap<>();
+    public final Map<String, Object> vars = new HashMap<>();
 
     public Map<String, Object> getVars(){
         return vars;
