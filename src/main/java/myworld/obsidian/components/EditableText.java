@@ -62,8 +62,9 @@ public class EditableText extends Component {
             var widths = ruler.getWidths(s);
 
             offset = positions[limit - 1] + widths[limit - 1];
+            var bounds = ui().get().getLayout().getLocalBounds(this);
 
-            return offset;
+            return Math.min(offset, bounds.width());
         });
         renderVars.put(LINE_HEIGHT_VAR_NAME, () -> label.getRuler()
                 .getLineHeight());

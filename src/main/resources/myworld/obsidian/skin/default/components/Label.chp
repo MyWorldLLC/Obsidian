@@ -3,6 +3,7 @@ module component
 from obsidian.component import *
 from obsidian.graphics import *
 from obsidian.style import *
+from obsidian.vars import *
 
 def component(){
 
@@ -13,7 +14,15 @@ def component(){
         'fontFamily': 'string',
         'fontStyle': 'string',
         'fontSize': 'float',
-        'color': 'color'
+        'color': 'color',
+        'showHighlight': 'boolean',
+        'highlightColor': 'color'
+    })
+
+    layer('highlight', 'showHighlight', {
+        'geometry': rectangle('100%', '100%'), # TODO - width/offset passed by component
+        'position': offset('0px', '0px'),
+        'color': data('highlightColor', vars['highlightColor'])
     })
 
     layer('text', {

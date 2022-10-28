@@ -27,6 +27,8 @@ def skin(){
         '/fonts/clear-sans/ClearSans-Thin.ttf'
     ])
 
+    vars['highlightColor'] = color('#25EFF988')
+
     style('ExampleText', {
         'color': color('#00FF00')
     })
