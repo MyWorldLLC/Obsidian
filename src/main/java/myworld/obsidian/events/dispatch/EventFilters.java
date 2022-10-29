@@ -23,6 +23,17 @@ public class EventFilters {
         };
     }
 
+    public static <T extends BaseEvent> Predicate<T> whenAny(Predicate<T>... predicates){
+        return evt -> {
+            for(var p : predicates){
+                if(!evt.isConsumed() && p.test(evt)){
+                    return true;
+                }
+            }
+            return false;
+        };
+    }
+
     public static Predicate<KeyEvent> keyIs(Key key){
         return evt -> evt.getKey().equals(key);
     }

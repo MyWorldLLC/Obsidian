@@ -4,6 +4,8 @@ import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.TextRuler;
 import myworld.obsidian.display.skin.StyleClass;
+import myworld.obsidian.events.MouseMoveEvent;
+import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
@@ -26,6 +28,9 @@ public class Label extends Component {
     public static final String TEXT_COLOR_DATA_NAME = "color";
     public static final String SHOW_HIGHLIGHT_DATA_NAME = "showHighlight";
     public static final String HIGHLIGHT_COLOR_DATA_NAME = "highlightColor";
+    public static final String HIGHLIGHT_POS_DATA_NAME = "highlightPos";
+    public static final String HIGHLIGHT_WIDTH_DATA_NAME = "highlightWidth";
+    public static final String HIGHLIGHT_HEIGHT_DATA_NAME = "highlightHeight";
 
     protected final ValueProperty<String> text;
     protected final ValueProperty<String> fontFamily;
@@ -71,6 +76,24 @@ public class Label extends Component {
         renderVars.put(TEXT_COLOR_DATA_NAME, color);
         renderVars.put(SHOW_HIGHLIGHT_DATA_NAME, () -> selectable.get() && selection.get() != null);
         renderVars.put(HIGHLIGHT_COLOR_DATA_NAME, selectionColor);
+        renderVars.put(HIGHLIGHT_POS_DATA_NAME, () -> {
+            if(selection.get() != null){
+                return getRuler().getXPositions(text().get())[clampedStringIndex(selection.get().start())];
+            }
+            return 0f;
+        });
+        renderVars.put(HIGHLIGHT_WIDTH_DATA_NAME, () -> {
+            if(selection.get() != null || text().get("").isEmpty()){
+                var ruler = getRuler();
+                var widths = ruler.getWidths(text().get());
+                var positions = ruler.getXPositions(text().get());
+                return (widths[clampedStringIndex(selection.get().end())]
+                        + positions[clampedStringIndex(selection.get().end())])
+                        - positions[clampedStringIndex(selection.get().start())];
+            }
+            return 0f;
+        });
+        renderVars.put(HIGHLIGHT_HEIGHT_DATA_NAME, () -> getRuler().getLineHeight());
     }
 
     public ValueProperty<String> text(){
@@ -111,6 +134,10 @@ public class Label extends Component {
 
     public TextRuler getRuler(){
         return ui.get().getDisplay().getTextRuler(fontFamily.get(), fontStyle.get(), fontSize.get());
+    }
+
+    protected int clampedStringIndex(int index){
+        return Range.clamp(0, index, Math.max(0, text().get().length() - 1));
     }
 
 }

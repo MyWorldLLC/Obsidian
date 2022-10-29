@@ -1,12 +1,10 @@
 package myworld.obsidian.components;
 
-import myworld.obsidian.display.TextRuler;
 import myworld.obsidian.display.skin.StyleClass;
-import myworld.obsidian.events.CharacterEvent;
-import myworld.obsidian.events.KeyEvent;
-import myworld.obsidian.events.MouseButtonEvent;
+import myworld.obsidian.events.*;
 import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
+import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.util.Range;
@@ -48,10 +46,23 @@ public class EditableText extends Component {
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.RIGHT), evt -> cursorForward());
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.BACKSPACE), evt -> deletePrevious());
         dispatcher.subscribe(MouseButtonEvent.class, mousePressed(), evt ->
-            moveCursor(label.getRuler().getClickIndex(builder.toString(), label.localizeX(evt.getX())))
+            moveCursor(label.getRuler().getCharIndex(builder.toString(), label.localizeX(evt.getX())))
+        );
+        dispatcher.subscribe(MouseMoveEvent.class, e -> e.getManager().isDown(MouseButton.PRIMARY), evt ->
+                moveCursor(label.getRuler().getCharIndex(builder.toString(), label.localizeX(evt.getX())))
         );
 
-        renderVars.put(CURSOR_VISIBLE_VAR_NAME, focused());
+        dispatcher.subscribe(MouseMoveEvent.class, e -> e.getManager().isDown(MouseButton.PRIMARY),
+                evt -> {
+                    var index = label.getRuler().getCharIndex(builder.toString(), label.localizeX(evt.getX()));
+                    var range = label.selection().get(new Range<>(index, index));
+                    label.selection().set(new Range<>(Math.min(range.start(), index), Math.max(range.end(), index)));
+                    System.out.printf("Index: %d, range: %s%n", index, label.selection().get());
+                });
+
+        dispatcher.subscribe(FocusEvent.class, e -> e.lostFocus(this), evt -> label.selection().set(null));
+
+        renderVars.put(CURSOR_VISIBLE_VAR_NAME, () -> focused().get() && editable().get());
         renderVars.put(CURSOR_OFFSET_VAR_NAME, () -> {
             var ruler = label.getRuler();
 
@@ -76,7 +87,6 @@ public class EditableText extends Component {
                 .getLineHeight());
 
         preRender(() -> label.text().set(builder.toString()));
-        preRender(() -> label.selection().set(new Range<>(0, builder.length())));
     }
 
     public Label getLabel(){

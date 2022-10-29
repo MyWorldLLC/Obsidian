@@ -16,12 +16,15 @@ def component(){
         'fontSize': 'float',
         'color': 'color',
         'showHighlight': 'boolean',
-        'highlightColor': 'color'
+        'highlightColor': 'color',
+        'highlightHeight': 'float',
+        'highlightPos': 'float',
+        'highlightWidth': 'float'
     })
 
     layer('highlight', 'showHighlight', {
-        'geometry': rectangle('100%', '100%'), # TODO - width/offset passed by component
-        'position': offset('0px', '0px'),
+        'geometry': rectangle(pixels('highlightWidth'), pixels('highlightHeight')),
+        'position': offset(pixels('highlightPos'), '0px'),
         'color': data('highlightColor', vars['highlightColor'])
     })
 

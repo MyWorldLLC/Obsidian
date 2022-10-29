@@ -37,7 +37,7 @@ public class TextRuler {
         return font.getMetrics().getHeight();
     }
 
-    public int getClickIndex(String s, float xCoord){
+    public int getCharIndex(String s, float xCoord){
         var widths = getWidths(s);
         var positions = getXPositions(s);
 

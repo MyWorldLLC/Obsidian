@@ -5,16 +5,21 @@ import myworld.obsidian.events.*;
 import myworld.obsidian.events.dispatch.EventDispatcher;
 import myworld.obsidian.properties.ValueProperty;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class InputManager {
 
     protected final ObsidianUI ui;
     protected final KeyStates state;
+    protected final Map<MouseButton, Boolean> mouseState;
     protected final ValueProperty<MousePos> mousePosition;
     protected final EventDispatcher dispatcher;
 
     public InputManager(ObsidianUI ui){
         this.ui = ui;
         state = new KeyStates();
+        mouseState = new HashMap<>();
         mousePosition = new ValueProperty<>();
         dispatcher = new EventDispatcher();
     }
@@ -44,6 +49,7 @@ public class InputManager {
     }
 
     public void fireMouseButtonEvent(MouseButton button, boolean isDown, int x, int y) {
+        mouseState.put(button, isDown);
         handleEvent(new MouseButtonEvent(this, x, y, button, isDown));
     }
 
@@ -66,6 +72,11 @@ public class InputManager {
         if(!evt.isConsumed()){
             ui.fireEvent(evt);
         }
+    }
+
+    public boolean isDown(MouseButton button){
+        var down = mouseState.get(button);
+        return down != null ? down : false;
     }
 
     public boolean isKeyDown(Key key){
