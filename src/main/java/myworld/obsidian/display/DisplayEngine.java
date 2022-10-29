@@ -178,49 +178,76 @@ public class DisplayEngine implements AutoCloseable {
 
             var renderVars = component.generateRenderVars();
 
+            var backgroundLayers = new ArrayList<StyleClass>();
+            var foregroundLayers = new ArrayList<StyleClass>();
+
             var styleLookup = new StyleLookup(skin, uiSkin);
 
             // For each named layer, merge all style classes applicable for the given renderVars
             // (including state-independent classes)
             for(var layer : skin.layerNames()){
 
-                var styleClasses = skin.activeForLayer(layer, renderVars, s -> {
+                var styleClasses = skin.activeForLayer(layer, renderVars, s -> mixStyles(s, renderVars, styleLookup));
 
-                    List<String> mixStyles = s.rule(StyleRules.STYLES, renderVars);
-                    var result = s;
+                var background = styleClasses.stream()
+                        .filter(s -> !s.isForegroundLayer())
+                        .reduce(StyleClass::merge)
+                        .orElse(null);
 
-                    if(mixStyles != null){
-                        var combined = new StyleClass();
+                var foreground = styleClasses.stream()
+                        .filter(StyleClass::isForegroundLayer)
+                        .reduce(StyleClass::merge)
+                        .orElse(null);
 
-                        // Iteratively merge together the imported styles, with conflicting rules from later
-                        // referenced ones overriding rules from previously referenced ones
-                        for(String mixName : mixStyles){
-                            var mixStyle = styleLookup.getStyle(mixName);
+                if(background != null){
+                    backgroundLayers.add(background);
+                }
 
-                            if(mixStyle != null){
-                                combined = StyleClass.merge(combined, mixStyle);
-                            }
-                        }
-
-                        // Note that local class rules override mixed-in style rules
-                        result = StyleClass.merge(combined, s);
-                    }
-
-                    return result;
-                });
-
-                if(!styleClasses.isEmpty()){
-                    var style = StyleClass.merge(styleClasses);
-                    renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), style, renderVars, styleLookup);
+                if(foreground != null){
+                    foregroundLayers.add(foreground);
                 }
 
             }
 
+            backgroundLayers.forEach(style -> {
+                renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), style, renderVars, styleLookup);
+            });
+
+            component.children().forEach((c) -> render(ui, c, uiSkin));
+
+            foregroundLayers.forEach(style -> {
+                renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), style, renderVars, styleLookup);
+            });
+
         }else{
             log.log(Level.WARNING, "Cannot render component {0} because no skin is present", component.styleName().get());
+            component.children().forEach((c) -> render(ui, c, uiSkin));
         }
 
-        component.children().forEach((c) -> render(ui, c, uiSkin));
+    }
+
+    protected StyleClass mixStyles(StyleClass s, Variables renderVars, StyleLookup styleLookup){
+        List<String> mixStyles = s.rule(StyleRules.STYLES, renderVars);
+        var result = s;
+
+        if(mixStyles != null){
+            var combined = new StyleClass();
+
+            // Iteratively merge together the imported styles, with conflicting rules from later
+            // referenced ones overriding rules from previously referenced ones
+            for(String mixName : mixStyles){
+                var mixStyle = styleLookup.getStyle(mixName);
+
+                if(mixStyle != null){
+                    combined = StyleClass.merge(combined, mixStyle);
+                }
+            }
+
+            // Note that local class rules override mixed-in style rules
+            result = StyleClass.merge(combined, s);
+        }
+
+        return result;
     }
 
     public void loadResources(UISkin skin){

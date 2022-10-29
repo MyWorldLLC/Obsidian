@@ -93,6 +93,16 @@ public class ComponentModule implements ChipmunkModule {
         styles.add(StyleClass.forLayerState(layer, variable, StyleClass.normalize(style)));
     }
 
+    @AllowChipmunkLinkage
+    public void foreground(String layer, Map<String, Object> style){
+        styles.add(StyleClass.forForegroundLayer(layer, StyleClass.normalize(style)));
+    }
+
+    @AllowChipmunkLinkage
+    public void foreground(String layer, String variable, Map<String, Object> style){
+        styles.add(StyleClass.forForegroundLayerState(layer, variable, StyleClass.normalize(style)));
+    }
+
     public String getComponentName(){
         return name;
     }

@@ -9,6 +9,7 @@ import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
+import myworld.obsidian.util.Range;
 
 import static myworld.obsidian.events.dispatch.EventFilters.*;
 
@@ -75,6 +76,7 @@ public class EditableText extends Component {
                 .getLineHeight());
 
         preRender(() -> label.text().set(builder.toString()));
+        preRender(() -> label.selection().set(new Range<>(0, builder.length())));
     }
 
     public Label getLabel(){
@@ -99,7 +101,6 @@ public class EditableText extends Component {
     }
 
     public void insert(char[] characters){
-
         builder.insert(cursorPos.get(), characters);
         cursorPos.setWith(c -> c + characters.length);
     }

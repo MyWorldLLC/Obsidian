@@ -27,7 +27,7 @@ def component(){
         'border-cap': 'round'
     })
 
-    layer('cursor', 'cursorVisible', {
+    foreground('cursor', 'cursorVisible', {
         'geometry': rectangle('1px', pixels('lineHeight')),
         'position': move(pixels('cursorOffset'), '2px'),
         'color': black

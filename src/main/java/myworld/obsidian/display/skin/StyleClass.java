@@ -4,23 +4,31 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public record StyleClass(String name, String layer, String stateParam, Map<String, StyleRule> rules) {
+public record StyleClass(String name, String layer, boolean isForeground, String stateParam, Map<String, StyleRule> rules) {
 
     public StyleClass {
         Objects.requireNonNull(rules, "Style class rules may not be null");
         rules = Map.copyOf(rules);
     }
 
+    public StyleClass(String name, String layer, String stateParam, Map<String, StyleRule> rules){
+        this(name, layer, false, stateParam, rules);
+    }
+
     public StyleClass(Map<String, StyleRule> rules){
-        this(null, null, null, rules);
+        this(null, null, false, null, rules);
     }
 
     public StyleClass(){
-        this(null, null, null, Collections.emptyMap());
+        this(null, null, false, null, Collections.emptyMap());
     }
 
     public boolean isLayer(){
         return layer != null;
+    }
+
+    public boolean isForegroundLayer(){
+        return isLayer() && isForeground;
     }
 
     public boolean isStateLimited(){
@@ -82,12 +90,20 @@ public record StyleClass(String name, String layer, String stateParam, Map<Strin
         return new StyleClass(null, layer, null, rules);
     }
 
+    public static StyleClass forForegroundLayer(String layer, Map<String, StyleRule> rules){
+        return new StyleClass(null, layer, true,null, rules);
+    }
+
     public static StyleClass forState(String stateParam, Map<String, StyleRule> rules){
         return new StyleClass(null, null, stateParam, rules);
     }
 
     public static StyleClass forLayerState(String layer, String stateParam, Map<String, StyleRule> rules){
         return new StyleClass(null, layer, stateParam, rules);
+    }
+
+    public static StyleClass forForegroundLayerState(String layer, String stateParam, Map<String, StyleRule> rules){
+        return new StyleClass(null, layer, true, stateParam, rules);
     }
 
     public static Map<String, StyleRule> normalize(Map<String, Object> style){
