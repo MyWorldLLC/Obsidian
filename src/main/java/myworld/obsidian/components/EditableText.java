@@ -1,8 +1,10 @@
 package myworld.obsidian.components;
 
+import myworld.obsidian.display.TextRuler;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.events.CharacterEvent;
 import myworld.obsidian.events.KeyEvent;
+import myworld.obsidian.events.MouseButtonEvent;
 import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.properties.ValueProperty;
@@ -44,6 +46,9 @@ public class EditableText extends Component {
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.LEFT), evt -> cursorBackward());
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.RIGHT), evt -> cursorForward());
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.BACKSPACE), evt -> deletePrevious());
+        dispatcher.subscribe(MouseButtonEvent.class, mousePressed(), evt ->
+            moveCursor(label.getRuler().getClickIndex(builder.toString(), label.localizeX(evt.getX())))
+        );
 
         renderVars.put(CURSOR_VISIBLE_VAR_NAME, focused());
         renderVars.put(CURSOR_OFFSET_VAR_NAME, () -> {

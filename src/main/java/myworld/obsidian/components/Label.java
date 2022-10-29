@@ -69,7 +69,7 @@ public class Label extends Component {
         renderVars.put(FONT_STYLE_DATA_NAME, fontStyle);
         renderVars.put(FONT_SIZE_DATA_NAME, fontSize);
         renderVars.put(TEXT_COLOR_DATA_NAME, color);
-        renderVars.put(SHOW_HIGHLIGHT_DATA_NAME, () -> true);
+        renderVars.put(SHOW_HIGHLIGHT_DATA_NAME, () -> selectable.get() && selection.get() != null);
         renderVars.put(HIGHLIGHT_COLOR_DATA_NAME, selectionColor);
     }
 

@@ -19,6 +19,7 @@ package myworld.obsidian.scene;
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.display.skin.Variables;
 import myworld.obsidian.events.dispatch.EventDispatcher;
+import myworld.obsidian.geometry.Point2D;
 import myworld.obsidian.layout.ComponentLayout;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.properties.MapProperty;
@@ -196,6 +197,23 @@ public class Component {
 
     public EventDispatcher dispatcher(){
         return dispatcher;
+    }
+
+    public Point2D localize(Point2D p){
+        return localize(p.x(), p.y());
+    }
+
+    public Point2D localize(float x, float y){
+        var bounds = ui.get().getLayout().getSceneBounds(this);
+        return new Point2D(x - bounds.left(), y - bounds.top());
+    }
+
+    public float localizeX(float x){
+        return localize(x, 0).x();
+    }
+
+    public float localizeY(float y){
+        return localize(0, y).y();
     }
 
     public static String defaultStyleName(Component component){

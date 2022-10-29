@@ -37,4 +37,25 @@ public class TextRuler {
         return font.getMetrics().getHeight();
     }
 
+    public int getClickIndex(String s, float xCoord){
+        var widths = getWidths(s);
+        var positions = getXPositions(s);
+
+        if(xCoord < 0){
+            return 0;
+        }
+
+        for(int i = 0; i < s.length(); i++){
+            float pos = positions[i];
+            float advance = widths[i];
+            if(pos <= xCoord && xCoord <= pos + advance){
+                // We're in this character's bounds - if we're in
+                // the left half, return this character, otherwise
+                // return the next character.
+                return xCoord <= (pos + 0.5f * advance) ? i : i + 1;
+            }
+        }
+        return s.length();
+    }
+
 }
