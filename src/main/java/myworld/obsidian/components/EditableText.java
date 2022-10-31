@@ -44,7 +44,9 @@ public class EditableText extends Component {
         cursorPos = new ValueProperty<>(0);
         dragStart = new ValueProperty<>();
 
-        dispatcher.subscribe(CharacterEvent.class, e -> editable.get() && !e.getManager().isControlDown(), evt -> insert(evt.getCharacters()));
+        dispatcher.subscribe(CharacterEvent.class, e -> editable.get() && !e.getManager().isControlDown(),
+                evt -> insert(evt.getCharacters()));
+
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.LEFT), evt -> cursorBackward());
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.RIGHT), evt -> cursorForward());
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.BACKSPACE), evt -> deletePrevious());
@@ -52,9 +54,11 @@ public class EditableText extends Component {
         dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_C), evt -> {
             ui().ifSet(ui -> ui.clipboard().ifSet(c -> c.toClipboard(copy())));
         });
+
         dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_X), evt -> {
             ui().ifSet(ui -> ui.clipboard().ifSet(c -> c.toClipboard(cut())));
         });
+
         dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_V), evt -> {
             ui().ifSet(ui -> ui.clipboard().ifSet(c -> {
                 var s = c.fromClipboard();

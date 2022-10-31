@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class InputManager {
 
@@ -142,9 +143,11 @@ public class InputManager {
     }
 
     public boolean onlyKeysDown(Set<Key> keys){
-        return state.stream()
+        var pressedSet = state.stream()
                 .filter(Map.Entry::getValue)
-                .allMatch(e -> keys.contains(Key.values()[e.getKey()]));
+                .map(e -> Key.values()[e.getKey()])
+                .collect(Collectors.toSet());
+        return pressedSet.equals(keys);
     }
 
 }

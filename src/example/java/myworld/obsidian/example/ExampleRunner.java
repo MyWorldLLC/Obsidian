@@ -99,6 +99,7 @@ public class ExampleRunner {
         ui = ObsidianUI.createForGL(getRenderWidth(), getRenderHeight(), 0);
         ui.registerSkin(ChipmunkSkinLoader.loadFromClasspath(ChipmunkSkinLoader.DEFAULT_SKIN));
         ui.useSkin("Obsidian");
+        ui.clipboard().set(new GLFWClipboard(window));
         //ui.getDisplay().enableRenderDebug(Colors.RED);
 
         registerInputListeners(window);
@@ -271,7 +272,6 @@ public class ExampleRunner {
             ui.getInput().fireMouseWheelEvent(MouseWheelAxis.VERTICAL, x, y, (float)yScroll);
         }
     }
-
 
     protected void keyCallback(long window, int glfwKey, int scancode, int action, int mods){
         // Ignore modifiers because Obsidian already tracks those
