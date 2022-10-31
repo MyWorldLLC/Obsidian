@@ -24,6 +24,8 @@ import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.events.*;
 import myworld.obsidian.input.InputManager;
 import myworld.obsidian.input.Key;
+import myworld.obsidian.input.MouseButton;
+import myworld.obsidian.properties.MapProperty;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.layout.LayoutEngine;
 import myworld.obsidian.properties.ValueProperty;
@@ -50,6 +52,7 @@ public class ObsidianUI {
 
     protected final ValueProperty<Component> focusedComponent;
     protected final ValueProperty<Component> hoveredComponent;
+    protected final MapProperty<MouseButton, Component> buttonReceivers;
 
     protected final Map<String, UISkin> skins;
     protected final ValueProperty<String> selectedSkin;
@@ -97,6 +100,7 @@ public class ObsidianUI {
         focusedComponent.addListener(this::focusedComponentChanged);
         hoveredComponent = new ValueProperty<>();
         hoveredComponent.addListener(this::hoveredComponentChanged);
+        buttonReceivers = new MapProperty<>();
 
         skins = new ConcurrentHashMap<>();
         selectedSkin = new ValueProperty<>();
@@ -370,6 +374,21 @@ public class ObsidianUI {
                 if(hoverEvent.getCurrent() != null){
                     dispatch(evt, eventRoot, hoverEvent.getCurrent());
                 }
+            }
+
+        }else if(evt instanceof MouseButtonEvent buttonEvent){
+            if(buttonEvent.isDown()){
+                var mousePos = input.get().getMousePosition();
+                var target = mousePos != null ? pick(mousePos.x(), mousePos.y()) : eventRoot;
+                buttonReceivers.put(buttonEvent.getButton(), target);
+                dispatch(evt, eventRoot, target);
+            }else{
+                Component target = buttonReceivers.remove(buttonEvent.getButton());
+                if(target == null){
+                    var mousePos = input.get().getMousePosition();
+                    target = mousePos != null ? pick(mousePos.x(), mousePos.y()) : eventRoot;
+                }
+                dispatch(evt, eventRoot, target);
             }
 
         }else{

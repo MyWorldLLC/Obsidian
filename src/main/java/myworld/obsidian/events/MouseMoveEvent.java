@@ -13,11 +13,11 @@ public class MouseMoveEvent extends BaseMouseEvent {
         this.dy = dy;
     }
 
-    public int getDx() {
+    public int getDeltaX() {
         return dx;
     }
 
-    public int getDy() {
+    public int getDeltaY() {
         return dy;
     }
 

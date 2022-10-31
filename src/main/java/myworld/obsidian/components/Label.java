@@ -84,11 +84,15 @@ public class Label extends Component {
         });
         renderVars.put(HIGHLIGHT_WIDTH_DATA_NAME, () -> {
             if(selection.get() != null || text().get("").isEmpty()){
+                if(selection.get().end().equals(selection.get().start())){
+                    return 0f;
+                }
+
                 var ruler = getRuler();
                 var widths = ruler.getWidths(text().get());
                 var positions = ruler.getXPositions(text().get());
-                return (widths[clampedStringIndex(selection.get().end())]
-                        + positions[clampedStringIndex(selection.get().end())])
+                return (widths[clampedStringIndex(selection.get().end() - 1)]
+                        + positions[clampedStringIndex(selection.get().end() - 1)])
                         - positions[clampedStringIndex(selection.get().start())];
             }
             return 0f;

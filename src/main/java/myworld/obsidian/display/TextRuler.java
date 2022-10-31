@@ -1,7 +1,6 @@
 package myworld.obsidian.display;
 
 import io.github.humbleui.skija.Font;
-import io.github.humbleui.types.Rect;
 
 /**
  * This is safe to use within a single render pass, but should never be retained between

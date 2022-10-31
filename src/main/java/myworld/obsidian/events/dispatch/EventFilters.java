@@ -54,6 +54,14 @@ public class EventFilters {
         return mousePressed(MouseButton.PRIMARY);
     }
 
+    public static Predicate<MouseButtonEvent> mouseReleased(MouseButton button){
+        return evt -> evt.isUp() && evt.getButton().equals(button);
+    }
+
+    public static Predicate<MouseButtonEvent> mouseReleased(){
+        return mouseReleased(MouseButton.PRIMARY);
+    }
+
     public static Predicate<MouseWheelEvent> mouseScrolled(MouseWheelAxis axis){
         return evt -> evt.getAxis().equals(axis);
     }

@@ -1,23 +1,26 @@
 package myworld.obsidian.events;
 
+import myworld.obsidian.geometry.Point2D;
 import myworld.obsidian.input.InputManager;
 
 public abstract class BaseMouseEvent extends InputEvent {
 
-    protected final int x;
-    protected final int y;
+    protected final Point2D point;
 
     public BaseMouseEvent(InputManager manager, int x, int y){
         super(manager);
-        this.x = x;
-        this.y = y;
+        point = new Point2D(x, y);
+    }
+
+    public Point2D getPoint(){
+        return point;
     }
 
     public int getX() {
-        return x;
+        return (int) point.x();
     }
 
     public int getY() {
-        return y;
+        return (int) point.y();
     }
 }

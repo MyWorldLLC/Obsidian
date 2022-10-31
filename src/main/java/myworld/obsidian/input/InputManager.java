@@ -4,6 +4,7 @@ import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.events.*;
 import myworld.obsidian.events.dispatch.EventDispatcher;
 import myworld.obsidian.properties.ValueProperty;
+import myworld.obsidian.scene.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ public class InputManager {
     protected final KeyStates state;
     protected final Map<MouseButton, Boolean> mouseState;
     protected final ValueProperty<MousePos> mousePosition;
+    protected final ValueProperty<Component> mouseButtonTarget;
     protected final EventDispatcher dispatcher;
 
     public InputManager(ObsidianUI ui){
@@ -21,6 +23,7 @@ public class InputManager {
         state = new KeyStates();
         mouseState = new HashMap<>();
         mousePosition = new ValueProperty<>();
+        mouseButtonTarget = new ValueProperty<>();
         dispatcher = new EventDispatcher();
     }
 

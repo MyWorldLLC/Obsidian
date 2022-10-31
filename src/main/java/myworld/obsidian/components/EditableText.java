@@ -3,6 +3,7 @@ package myworld.obsidian.components;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.events.*;
 import myworld.obsidian.geometry.Distance;
+import myworld.obsidian.geometry.Point2D;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.properties.ValueProperty;
@@ -22,6 +23,7 @@ public class EditableText extends Component {
     protected final StringBuilder builder;
     protected final ValueProperty<Boolean> editable;
     protected final ValueProperty<Integer> cursorPos;
+    protected final ValueProperty<Point2D> dragStart;
 
     public EditableText(){
         this(null);
@@ -40,29 +42,51 @@ public class EditableText extends Component {
         builder = new StringBuilder();
         editable = new ValueProperty<>(true);
         cursorPos = new ValueProperty<>(0);
+        dragStart = new ValueProperty<>();
 
         dispatcher.subscribe(CharacterEvent.class, e -> editable.get(), evt -> insert(evt.getCharacters()));
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.LEFT), evt -> cursorBackward());
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.RIGHT), evt -> cursorForward());
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.BACKSPACE), evt -> deletePrevious());
-        dispatcher.subscribe(MouseButtonEvent.class, mousePressed(), evt ->
-            moveCursor(label.getRuler().getCharIndex(builder.toString(), label.localizeX(evt.getX())))
-        );
-        dispatcher.subscribe(MouseMoveEvent.class, e -> e.getManager().isDown(MouseButton.PRIMARY), evt ->
-                moveCursor(label.getRuler().getCharIndex(builder.toString(), label.localizeX(evt.getX())))
-        );
+        dispatcher.subscribe(MouseButtonEvent.class, mousePressed(), evt ->{
+            moveCursor(label.getRuler().getCharIndex(builder.toString(), label.localizeX(evt.getX())));
+        });
+        dispatcher.subscribe(MouseButtonEvent.class, mouseReleased(), evt -> {
+            if(dragStart.get() == null){
+                // If there's a selection, clear it
+                label.selection().set(null);
+            }else{
+                dragStart.set(null);
+                moveCursor(calculateCursorIndex(label.localizeX(evt.getX())));
+            }
+
+        });
+
+        dispatcher.subscribe(MouseMoveEvent.class, e -> e.getManager().isDown(MouseButton.PRIMARY), evt ->{
+            if(dragStart.get() == null){
+                moveCursor(calculateCursorIndex(label.localizeX(evt.getX())));
+            }
+        });
 
         dispatcher.subscribe(MouseMoveEvent.class, e -> e.getManager().isDown(MouseButton.PRIMARY),
                 evt -> {
-                    var index = label.getRuler().getCharIndex(builder.toString(), label.localizeX(evt.getX()));
-                    var range = label.selection().get(new Range<>(index, index));
-                    label.selection().set(new Range<>(Math.min(range.start(), index), Math.max(range.end(), index)));
-                    System.out.printf("Index: %d, range: %s%n", index, label.selection().get());
+
+                    if(dragStart.get() == null){
+                        dragStart.set(label.localize(evt.getPoint()));
+                    }
+
+                    var ruler = label.getRuler();
+                    var s = builder.toString();
+
+                    var startIndex = ruler.getCharIndex(s, dragStart.get().x());
+                    var index = ruler.getCharIndex(s, label.localizeX(evt.getX()));
+
+                    label.selection().set(new Range<>(Math.min(startIndex, index), Math.max(startIndex, index)));
                 });
 
         dispatcher.subscribe(FocusEvent.class, e -> e.lostFocus(this), evt -> label.selection().set(null));
 
-        renderVars.put(CURSOR_VISIBLE_VAR_NAME, () -> focused().get() && editable().get());
+        renderVars.put(CURSOR_VISIBLE_VAR_NAME, () -> focused().get() && editable().get() && dragStart.get() == null);
         renderVars.put(CURSOR_OFFSET_VAR_NAME, () -> {
             var ruler = label.getRuler();
 
@@ -140,6 +164,10 @@ public class EditableText extends Component {
         pos = Math.max(0, pos);
         pos = Math.min(pos, builder.length());
         cursorPos.set(pos);
+    }
+
+    protected int calculateCursorIndex(float xCoord){
+        return label.getRuler().getCharIndex(builder.toString(), xCoord);
     }
 
 }
