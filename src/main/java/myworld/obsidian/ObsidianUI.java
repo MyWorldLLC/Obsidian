@@ -355,6 +355,11 @@ public class ObsidianUI {
             if(focused != null){
                 dispatch(keyEvent, eventRoot, focused);
             }
+        }else if(evt instanceof FileDropEvent fileEvent){
+            var focused = getFocusedComponent();
+            if(focused != null){
+                dispatch(fileEvent, eventRoot, focused);
+            }
         }else if(evt instanceof FocusEvent focusEvent){
             if(focusEvent.getOldFocus() != null){
                 dispatch(evt, eventRoot, focusEvent.getOldFocus());

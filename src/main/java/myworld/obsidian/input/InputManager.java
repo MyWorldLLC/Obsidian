@@ -35,46 +35,51 @@ public class InputManager {
         return dispatcher;
     }
 
-    public void fireCharacterEvent(char[] characters){
-        handleEvent(new CharacterEvent(this, characters));
+    public CharacterEvent fireCharacterEvent(char[] characters){
+        return handleEvent(new CharacterEvent(this, characters));
     }
 
-    public void fireKeyEvent(Key key, boolean isDown) {
+    public KeyEvent fireKeyEvent(Key key, boolean isDown) {
 
         var repeating = state.get(key.ordinal());
         state.set(key.ordinal(), isDown);
 
-        handleEvent(new KeyEvent(this, key, isDown, repeating));
+        return handleEvent(new KeyEvent(this, key, isDown, repeating));
     }
 
-    public void fireMouseWheelEvent(MouseWheelAxis axis, int x, int y, float wheelDelta) {
-        handleEvent(new MouseWheelEvent(this, axis, x, y, wheelDelta));
+    public MouseWheelEvent fireMouseWheelEvent(MouseWheelAxis axis, int x, int y, float wheelDelta) {
+        return handleEvent(new MouseWheelEvent(this, axis, x, y, wheelDelta));
     }
 
-    public void fireMouseButtonEvent(MouseButton button, boolean isDown, int x, int y) {
+    public MouseButtonEvent fireMouseButtonEvent(MouseButton button, boolean isDown, int x, int y) {
         mouseState.put(button, isDown);
-        handleEvent(new MouseButtonEvent(this, x, y, button, isDown));
+        return handleEvent(new MouseButtonEvent(this, x, y, button, isDown));
     }
 
-    public void fireMouseMoveEvent(int x, int y) {
+    public MouseMoveEvent fireMouseMoveEvent(int x, int y) {
         int dx = 0;
         int dy = 0;
         var oldPos = getMousePosition();
         if(oldPos != null && oldPos.x() == x && oldPos.y() == y){
-            return; // De-duplicate events at the same pixel coordinates
+            return null; // De-duplicate events at the same pixel coordinates
         }else if(oldPos != null){
             dx = x - oldPos.x();
             dy = y - oldPos.y();
         }
         mousePosition.set(new MousePos(x, y));
-        handleEvent(new MouseMoveEvent(this, x, y, dx, dy));
+        return handleEvent(new MouseMoveEvent(this, x, y, dx, dy));
     }
 
-    protected void handleEvent(InputEvent evt){
+    public FileDropEvent fireFileDropEvent(String[] filePaths){
+        return handleEvent(new FileDropEvent(this, filePaths));
+    }
+
+    protected <T extends InputEvent> T handleEvent(T evt){
         dispatcher.dispatch(evt);
         if(!evt.isConsumed()){
             ui.fireEvent(evt);
         }
+        return evt;
     }
 
     public boolean isDown(MouseButton button){
