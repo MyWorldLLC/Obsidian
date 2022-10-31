@@ -83,7 +83,7 @@ public class Label extends Component {
             return 0f;
         });
         renderVars.put(HIGHLIGHT_WIDTH_DATA_NAME, () -> {
-            if(selection.get() != null || text().get("").isEmpty()){
+            if(selection.get() != null){
                 if(selection.get().end().equals(selection.get().start())){
                     return 0f;
                 }

@@ -47,26 +47,18 @@ public class EditableText extends Component {
         dispatcher.subscribe(CharacterEvent.class, e -> editable.get() && !e.getManager().isControlDown(),
                 evt -> insert(evt.getCharacters()));
 
-        dispatcher.subscribe(KeyEvent.class, keyPressed(Key.LEFT), evt -> cursorBackward());
-        dispatcher.subscribe(KeyEvent.class, keyPressed(Key.RIGHT), evt -> cursorForward());
-        dispatcher.subscribe(KeyEvent.class, keyPressed(Key.BACKSPACE), evt -> deletePrevious());
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT), evt -> cursorBackward());
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.RIGHT), evt -> cursorForward());
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_SHIFT, Key.LEFT), evt -> adjustHighlight(false));
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_SHIFT, Key.RIGHT), evt -> adjustHighlight(true));
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.BACKSPACE), evt -> delete());
 
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_C), evt -> {
-            ui().ifSet(ui -> ui.clipboard().ifSet(c -> c.toClipboard(copy())));
-        });
-
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_X), evt -> {
-            ui().ifSet(ui -> ui.clipboard().ifSet(c -> c.toClipboard(cut())));
-        });
-
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_V), evt -> {
-            ui().ifSet(ui -> ui.clipboard().ifSet(c -> {
-                var s = c.fromClipboard();
-                if(s != null){
-                    paste(s);
-                }
-            }));
-        });
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_C), evt -> copy());
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_X), evt -> cut());
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_V), evt -> paste());
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.RIGHT_CONTROL, Key.KEY_C), evt -> copy());
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.RIGHT_CONTROL, Key.KEY_X), evt -> cut());
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.RIGHT_CONTROL, Key.KEY_V), evt -> paste());
 
         dispatcher.subscribe(MouseButtonEvent.class, mousePressed(), evt ->{
             moveCursor(label.getRuler().getCharIndex(builder.toString(), label.localizeX(evt.getX())));
@@ -74,7 +66,7 @@ public class EditableText extends Component {
         dispatcher.subscribe(MouseButtonEvent.class, mouseReleased(), evt -> {
             if(dragStart.get() == null){
                 // If there's a selection, clear it
-                label.selection().set(null);
+                clearSelection();
             }else{
                 dragStart.set(null);
                 positionCursor(evt);
@@ -152,15 +144,21 @@ public class EditableText extends Component {
     public void insert(String s){
         builder.insert(cursorPos.get(), s);
         cursorPos.setWith(c -> c + s.length());
+        clearSelection();
     }
 
     public void insert(char[] characters){
         builder.insert(cursorPos.get(), characters);
         cursorPos.setWith(c -> c + characters.length);
+        clearSelection();
     }
 
     public void select(int start, int end){
         label.selection().set(new Range<>(start, end));
+    }
+
+    public void clearSelection(){
+        label.selection().set(null);
     }
 
     public String copy(){
@@ -173,6 +171,8 @@ public class EditableText extends Component {
             var s = builder.substring(selection.start(), selection.end());
             if(delete){
                 builder.delete(selection.start(), selection.end());
+                moveCursor(selection.start());
+                clearSelection();
             }
             ui().ifSet(ui -> ui.clipboard().ifSet(c -> c.toClipboard(s)));
             return s;
@@ -184,8 +184,24 @@ public class EditableText extends Component {
         return copy(true);
     }
 
-    public void paste(String s){
-        insert(s.toCharArray());
+    public void paste(){
+        ui().ifSet(ui -> ui.clipboard().ifSet(c -> {
+            var s = c.fromClipboard();
+            if(s != null){
+                insert(s.toCharArray());
+            }
+        }));
+    }
+
+    public void delete(){
+        var selection = label.selection().get();
+        if(selection != null){
+            builder.delete(selection.start(), selection.end());
+            clearSelection();
+            moveCursor(selection.start());
+        }else{
+            deletePrevious();
+        }
     }
 
     public void deletePrevious(){
@@ -202,11 +218,52 @@ public class EditableText extends Component {
     }
 
     public void cursorForward(){
-        moveCursor(cursorPos.get() + 1);
+        cursorForward(true);
     }
 
     public void cursorBackward(){
+        cursorBackward(true);
+    }
+
+    public void cursorForward(boolean clearSelection){
+        moveCursor(cursorPos.get() + 1);
+        if(clearSelection){
+            clearSelection();
+        }
+    }
+
+    public void cursorBackward(boolean clearSelection){
         moveCursor(cursorPos().get() - 1);
+        if(clearSelection){
+            clearSelection();
+        }
+    }
+
+    protected void adjustHighlight(boolean forward){
+        var cursor = cursorPos.get();
+        var nextCursor = forward ? cursor + 1 : cursor - 1;
+        if(nextCursor < 0 || nextCursor > builder.length()){
+            return;
+        }
+
+        var range = label.selection().get(new Range<>(cursor, cursor));
+
+        if(forward){
+            if(nextCursor > range.end()){
+                range = new Range<>(range.start(), nextCursor);
+            }else if(nextCursor > range.start()){
+                range = new Range<>(nextCursor, range.end());
+            }
+        }else{
+            if(nextCursor > range.start() && nextCursor < range.end()){
+                range = new Range<>(range.start(), nextCursor);
+            }else if(nextCursor < range.start()){
+                range = new Range<>(nextCursor, range.end());
+            }
+        }
+        label.selection().set(range);
+
+        moveCursor(nextCursor);
     }
 
     public void moveCursor(int pos){
