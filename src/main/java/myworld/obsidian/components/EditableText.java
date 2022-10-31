@@ -44,10 +44,26 @@ public class EditableText extends Component {
         cursorPos = new ValueProperty<>(0);
         dragStart = new ValueProperty<>();
 
-        dispatcher.subscribe(CharacterEvent.class, e -> editable.get(), evt -> insert(evt.getCharacters()));
+        dispatcher.subscribe(CharacterEvent.class, e -> editable.get() && !e.getManager().isControlDown(), evt -> insert(evt.getCharacters()));
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.LEFT), evt -> cursorBackward());
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.RIGHT), evt -> cursorForward());
         dispatcher.subscribe(KeyEvent.class, keyPressed(Key.BACKSPACE), evt -> deletePrevious());
+
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_C), evt -> {
+            ui().ifSet(ui -> ui.clipboard().ifSet(c -> c.toClipboard(copy())));
+        });
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_X), evt -> {
+            ui().ifSet(ui -> ui.clipboard().ifSet(c -> c.toClipboard(cut())));
+        });
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_V), evt -> {
+            ui().ifSet(ui -> ui.clipboard().ifSet(c -> {
+                var s = c.fromClipboard();
+                if(s != null){
+                    paste(s);
+                }
+            }));
+        });
+
         dispatcher.subscribe(MouseButtonEvent.class, mousePressed(), evt ->{
             moveCursor(label.getRuler().getCharIndex(builder.toString(), label.localizeX(evt.getX())));
         });
@@ -81,7 +97,7 @@ public class EditableText extends Component {
                     var startIndex = ruler.getCharIndex(s, dragStart.get().x());
                     var index = ruler.getCharIndex(s, label.localizeX(evt.getX()));
 
-                    label.selection().set(new Range<>(Math.min(startIndex, index), Math.max(startIndex, index)));
+                    select(Math.min(startIndex, index), Math.max(startIndex, index));
                 });
 
         dispatcher.subscribe(FocusEvent.class, e -> e.lostFocus(this), evt -> label.selection().set(null));
@@ -137,6 +153,35 @@ public class EditableText extends Component {
     public void insert(char[] characters){
         builder.insert(cursorPos.get(), characters);
         cursorPos.setWith(c -> c + characters.length);
+    }
+
+    public void select(int start, int end){
+        label.selection().set(new Range<>(start, end));
+    }
+
+    public String copy(){
+        return copy(false);
+    }
+
+    public String copy(boolean delete){
+        var selection = label.selection().get();
+        if(selection != null){
+            var s = builder.substring(selection.start(), selection.end());
+            if(delete){
+                builder.delete(selection.start(), selection.end());
+            }
+            ui().ifSet(ui -> ui.clipboard().ifSet(c -> c.toClipboard(s)));
+            return s;
+        }
+        return null;
+    }
+
+    public String cut(){
+        return copy(true);
+    }
+
+    public void paste(String s){
+        insert(s.toCharArray());
     }
 
     public void deletePrevious(){

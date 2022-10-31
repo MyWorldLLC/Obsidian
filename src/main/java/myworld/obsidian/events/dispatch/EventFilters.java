@@ -8,6 +8,7 @@ import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.input.MouseWheelAxis;
 
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class EventFilters {
@@ -44,6 +45,10 @@ public class EventFilters {
 
     public static Predicate<KeyEvent> keyPressed(Key key, boolean acceptRepeating){
         return evt -> evt.isDown() && (!evt.isRepeating() || acceptRepeating) && evt.getKey().equals(key);
+    }
+
+    public static Predicate<KeyEvent> accelerator(Key... keys){
+        return evt -> evt.getManager().onlyKeysDown(Set.of(keys));
     }
 
     public static Predicate<MouseButtonEvent> mousePressed(MouseButton button){

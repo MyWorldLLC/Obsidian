@@ -18,6 +18,8 @@ package myworld.obsidian.input;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 public class KeyStates {
 
@@ -38,5 +40,13 @@ public class KeyStates {
     public boolean set(int key, boolean state){
         var former = states.put(key, state);
         return former != null && former;
+    }
+
+    public void forEach(BiConsumer<Integer, Boolean> visitor){
+        states.forEach(visitor);
+    }
+
+    public Stream<Map.Entry<Integer, Boolean>> stream(){
+        return states.entrySet().stream();
     }
 }

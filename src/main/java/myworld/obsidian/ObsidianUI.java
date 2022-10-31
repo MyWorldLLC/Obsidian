@@ -22,6 +22,7 @@ import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.events.*;
+import myworld.obsidian.input.ClipboardHandler;
 import myworld.obsidian.input.InputManager;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
@@ -46,6 +47,7 @@ public class ObsidianUI {
     protected final ValueProperty<LayoutEngine> layout;
     protected final ValueProperty<DisplayEngine> display;
     protected final ValueProperty<InputManager> input;
+    protected final ValueProperty<ClipboardHandler> clipboard;
     protected final ValueProperty<CursorHandler> cursor;
 
     protected final ValueProperty<ColorRGBA> clearColor;
@@ -94,6 +96,7 @@ public class ObsidianUI {
         layout.set(new LayoutEngine(this));
         this.display = new ValueProperty<>(display);
         input = new ValueProperty<>(new InputManager(this));
+        clipboard = new ValueProperty<>(ClipboardHandler.droppingClipboard());
         cursor = new ValueProperty<>(DISCARDING_CURSOR_HANDLER);
 
         focusedComponent = new ValueProperty<>();
@@ -131,16 +134,12 @@ public class ObsidianUI {
         this.display.set(display);
     }
 
+    public ValueProperty<ClipboardHandler> clipboard(){
+        return clipboard;
+    }
+
     public ValueProperty<CursorHandler> cursorHandler(){
         return cursor;
-    }
-
-    public CursorHandler getCursorHandler(){
-        return cursor.get();
-    }
-
-    public void setCursorHandler(CursorHandler handler){
-        cursor.set(handler);
     }
 
     public ValueProperty<ColorRGBA> clearColor(){

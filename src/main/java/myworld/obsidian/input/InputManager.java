@@ -6,8 +6,10 @@ import myworld.obsidian.events.dispatch.EventDispatcher;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class InputManager {
 
@@ -137,6 +139,12 @@ public class InputManager {
 
     public boolean isMetaDown(){
         return isLeftMetaDown() || isRightMetaDown();
+    }
+
+    public boolean onlyKeysDown(Set<Key> keys){
+        return state.stream()
+                .filter(Map.Entry::getValue)
+                .allMatch(e -> keys.contains(Key.values()[e.getKey()]));
     }
 
 }
