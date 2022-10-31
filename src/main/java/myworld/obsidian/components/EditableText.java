@@ -57,14 +57,14 @@ public class EditableText extends Component {
                 label.selection().set(null);
             }else{
                 dragStart.set(null);
-                moveCursor(calculateCursorIndex(label.localizeX(evt.getX())));
+                positionCursor(evt);
             }
 
         });
 
         dispatcher.subscribe(MouseMoveEvent.class, e -> e.getManager().isDown(MouseButton.PRIMARY), evt ->{
             if(dragStart.get() == null){
-                moveCursor(calculateCursorIndex(label.localizeX(evt.getX())));
+                positionCursor(evt);
             }
         });
 
@@ -164,6 +164,10 @@ public class EditableText extends Component {
         pos = Math.max(0, pos);
         pos = Math.min(pos, builder.length());
         cursorPos.set(pos);
+    }
+
+    protected void positionCursor(BaseMouseEvent evt){
+        moveCursor(calculateCursorIndex(label.localizeX(evt.getX())));
     }
 
     protected int calculateCursorIndex(float xCoord){
