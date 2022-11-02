@@ -10,7 +10,7 @@ import static myworld.obsidian.events.dispatch.EventFilters.*;
 
 public class TextField extends Component {
 
-    public static TextField plan(){
+    public static TextField plain(){
         return new TextField();
     }
 
