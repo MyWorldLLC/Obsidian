@@ -9,6 +9,14 @@ import myworld.obsidian.scene.Component;
 
 public class Container<T> extends Component {
 
+    public Container(){
+        this(false);
+    }
+
+    public Container(boolean focusable){
+        this.focusable.set(focusable);
+    }
+
     public Container<T> withPadding(Distance padding){
         layout.padding().set(new Offsets(padding));
         return this;

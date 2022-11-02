@@ -107,7 +107,7 @@ public class ExampleRunner {
 
         var example = new Component();
         example.styleName().set("Example");
-        example.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
+        example.layout().preferredSize(Distance.pixels(100), Distance.pixels(50));
         layout.left().addChild(example);
 
         example.renderVars().put("text", () -> new Text("Hello, World!", ui.getStyle("ExampleText")));
@@ -142,7 +142,6 @@ public class ExampleRunner {
         label.text().set("Hello, World!");
         layout.left().addChild(label);
 
-        ui.focusNext();
         ui.requestFocus(textField);
 
     }
@@ -158,7 +157,7 @@ public class ExampleRunner {
     public void createSurface(){
         ui.display().ifSet(DisplayEngine::close);
         ui.setDisplay(DisplayEngine.createForGL(getRenderWidth(), getRenderHeight(), 0));
-        ui.getDisplay().enableRenderDebug(Colors.RED);
+        //ui.getDisplay().enableRenderDebug(Colors.RED);
     }
 
     public void run(){

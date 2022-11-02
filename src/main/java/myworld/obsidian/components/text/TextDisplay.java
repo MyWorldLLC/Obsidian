@@ -51,6 +51,7 @@ public class TextDisplay extends Component {
 
     public TextDisplay(String text, StyleClass style){
         styleName.set(COMPONENT_STYLE_NAME);
+        focusable.set(false);
 
         this.text = new ValueProperty<>();
         this.style = new ValueProperty<>();

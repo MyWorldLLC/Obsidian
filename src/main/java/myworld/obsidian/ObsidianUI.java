@@ -22,8 +22,6 @@ import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.events.*;
-import myworld.obsidian.geometry.Dimension2D;
-import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.ClipboardHandler;
 import myworld.obsidian.input.InputManager;
 import myworld.obsidian.input.Key;
@@ -35,6 +33,7 @@ import myworld.obsidian.properties.ValueProperty;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 import static myworld.obsidian.events.dispatch.EventFilters.mousePressed;
 import static myworld.obsidian.events.dispatch.EventFilters.keyPressed;
@@ -81,8 +80,12 @@ public class ObsidianUI {
             }
         });
         root.dispatcher().subscribe(MouseButtonEvent.class, mousePressed(), evt -> {
-            var picked = pick(evt.getX(), evt.getY());
+            var picked = pick(evt.getX(), evt.getY(), (c) -> {
+                System.out.println("Candidate is: " + c.styleName().get(c.getClass().getName()));
+                return c.isFocusable();
+            });
             if(picked != null){
+                System.out.println("Picked: " + picked.styleName().get() + ": " + picked.getClass());
                 requestFocus(picked);
             }else{
                 unfocus();
@@ -305,19 +308,27 @@ public class ObsidianUI {
     }
 
     public Component pick(int x, int y){
-        return pick(getRoot(), x, y);
+        return pick(getRoot(), x, y, (c) -> true);
     }
 
     public Component pick(Component component, int x, int y){
-        if(getLayout().testBounds(component, x, y)){
+        return pick(component, x, y, (c) -> true);
+    }
+
+    public Component pick(int x, int y, Predicate<Component> pickable){
+        return pick(getRoot(), x, y, pickable);
+    }
+
+    public Component pick(Component component, int x, int y, Predicate<Component> pickable){
+        if(getLayout().testSceneBounds(component, x, y)){
             for(var child : component.children()){
-                var candidate = pick(child, x, y);
-                if(candidate != null){
+                var candidate = pick(child, x, y, pickable);
+                if(candidate != null && pickable.test(candidate)){
                     return candidate;
                 }
             }
-            // We didn't find a child with a tighter bound, so return this
-            return component;
+            // We didn't find a child with a tighter bound, so return this component
+            return pickable.test(component) ? component : null;
         }
 
         return null;
