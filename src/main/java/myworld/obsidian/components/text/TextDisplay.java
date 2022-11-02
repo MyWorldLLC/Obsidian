@@ -1,18 +1,16 @@
-package myworld.obsidian.components;
+package myworld.obsidian.components.text;
 
 import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.TextRuler;
 import myworld.obsidian.display.skin.StyleClass;
-import myworld.obsidian.events.MouseMoveEvent;
-import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
 import myworld.obsidian.text.TextStyle;
 import myworld.obsidian.util.Range;
 
-public class Label extends Component {
+public class TextDisplay extends Component {
 
     public static final String COMPONENT_STYLE_NAME = "Label";
     public static final String DEFAULT_FONT_FAMILY = "Clear Sans";
@@ -43,15 +41,15 @@ public class Label extends Component {
     protected final ValueProperty<Range<Integer>> selection;
     protected final ValueProperty<ColorRGBA> selectionColor;
 
-    public Label(){
+    public TextDisplay(){
         this(null, null);
     }
 
-    public Label(String text){
+    public TextDisplay(String text){
         this(text, null);
     }
 
-    public Label(String text, StyleClass style){
+    public TextDisplay(String text, StyleClass style){
         styleName.set(COMPONENT_STYLE_NAME);
 
         this.text = new ValueProperty<>();

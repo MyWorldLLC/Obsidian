@@ -220,4 +220,9 @@ public class Component {
         return component.getClass().getSimpleName();
     }
 
+    public static Component restyle(Component component, String componentStyleName){
+        component.styleName().set(componentStyleName);
+        return component;
+    }
+
 }

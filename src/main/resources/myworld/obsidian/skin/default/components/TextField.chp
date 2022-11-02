@@ -1,0 +1,27 @@
+module component
+
+from obsidian.component import *
+from obsidian.graphics import *
+from obsidian.style import *
+
+def component(){
+
+    name('TextField')
+
+    data({
+        'focused': 'boolean'
+    })
+
+    layer('background', {
+        'geometry': rectangle('100%', '100%'),
+        'color': white
+    })
+
+    layer('background', 'focused', {
+        'border-color': color('#4CCAF4'),
+        'border-width': 1.5,
+        'border-join': 'round',
+        'border-cap': 'round'
+    })
+
+}

@@ -9,22 +9,9 @@ def component(){
     name('EditableText')
 
     data({
-        'focused': 'boolean',
         'lineHeight': 'float',
         'cursorOffset': 'float',
         'cursorVisible': 'boolean'
-    })
-
-    layer('background', {
-        'geometry': rectangle('100%', '100%'),
-        'color': white
-    })
-
-    layer('background', 'focused', {
-        'border-color': color('#4CCAF4'),
-        'border-width': 1.5,
-        'border-join': 'round',
-        'border-cap': 'round'
     })
 
     foreground('cursor', 'cursorVisible', {

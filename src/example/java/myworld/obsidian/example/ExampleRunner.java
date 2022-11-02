@@ -17,13 +17,12 @@
 package myworld.obsidian.example;
 
 import myworld.obsidian.ObsidianUI;
-import myworld.obsidian.components.EditableText;
-import myworld.obsidian.components.Label;
+import myworld.obsidian.components.text.TextDisplay;
+import myworld.obsidian.components.text.TextField;
 import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
 import myworld.obsidian.events.CharacterEvent;
-import myworld.obsidian.events.FocusEvent;
 import myworld.obsidian.events.KeyEvent;
 import myworld.obsidian.events.MouseOverEvent;
 import myworld.obsidian.geometry.Distance;
@@ -32,7 +31,6 @@ import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.input.MouseWheelAxis;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
-import myworld.obsidian.text.TextStyle;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 
@@ -131,12 +129,12 @@ public class ExampleRunner {
             System.out.println("Key: " + evt.getKey());
         });
 
-        var editableText = new EditableText();
-        editableText.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
-        editableText.insert("Foo");
-        ui.getRoot().addChild(editableText);
+        var textField = TextField.password('*');
+        textField.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
+        textField.insert("Foo");
+        ui.getRoot().addChild(textField);
 
-        var label = new Label();
+        var label = new TextDisplay();
         label.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         label.text().set("Hello, World!");
         ui.getRoot().addChild(label);
