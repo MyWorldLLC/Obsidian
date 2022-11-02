@@ -1,16 +1,15 @@
 package myworld.obsidian.components.text;
 
+import myworld.obsidian.display.ColorRGBA;
+import myworld.obsidian.display.TextRuler;
 import myworld.obsidian.display.skin.StyleClass;
-import myworld.obsidian.events.*;
 import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.geometry.Point2D;
-import myworld.obsidian.input.Key;
-import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
+import myworld.obsidian.text.TextStyle;
 import myworld.obsidian.util.Range;
 
-import static myworld.obsidian.events.dispatch.EventFilters.*;
 
 public class EditableTextDisplay extends Component {
 
@@ -81,6 +80,34 @@ public class EditableTextDisplay extends Component {
 
     public ValueProperty<Integer> cursorPos(){
         return cursorPos;
+    }
+
+    public ValueProperty<String> fontFamily(){
+        return label.fontFamily();
+    }
+
+    public ValueProperty<TextStyle> fontStyle(){
+        return label.fontStyle();
+    }
+
+    public ValueProperty<Float> fontSize(){
+        return label.fontSize();
+    }
+
+    public ValueProperty<ColorRGBA> color(){
+        return label.color();
+    }
+
+    public ValueProperty<Boolean> selectable(){
+        return label.selectable();
+    }
+
+    public ValueProperty<ColorRGBA> selectionColor(){
+        return label.selectionColor();
+    }
+
+    public TextRuler getRuler(){
+        return label.getRuler();
     }
 
     public void insert(String s){
