@@ -41,6 +41,7 @@ public class Component {
     protected final ValueProperty<Boolean> focusable;
     protected final ValueProperty<Boolean> focused;
     protected final ValueProperty<Boolean> hovered;
+    protected final ValueProperty<Boolean> layoutOnly;
     protected final MapProperty<String, Supplier<?>> renderVars;
     protected final ListProperty<Runnable> preRenderers;
     protected final EventDispatcher dispatcher;
@@ -58,6 +59,7 @@ public class Component {
         focusable = new ValueProperty<>(true);
         focused = new ValueProperty<>(false);
         hovered = new ValueProperty<>(false);
+        layoutOnly = new ValueProperty<>(false);
         renderVars = new MapProperty<>();
         preRenderers = new ListProperty<>();
         dispatcher = new EventDispatcher();
@@ -84,6 +86,12 @@ public class Component {
         child.parent().set(this);
         child.onAttach();
         children.add(child);
+    }
+
+    public void addChildren(Component... children){
+        for(var child : children){
+            addChild(child);
+        }
     }
 
     public boolean removeChild(Component child){
@@ -149,6 +157,14 @@ public class Component {
 
     public boolean isFocusable(){
         return focusable().get(false);
+    }
+
+    public ValueProperty<Boolean> layoutOnly(){
+        return layoutOnly;
+    }
+
+    public boolean isLayoutOnly(){
+        return layoutOnly.get();
     }
 
     public MapProperty<String, Supplier<?>> renderVars(){

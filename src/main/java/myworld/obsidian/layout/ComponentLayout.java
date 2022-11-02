@@ -45,13 +45,13 @@ public class ComponentLayout {
         flexWrap = new ValueProperty<>(FlexWrap.NO_WRAP);
         flexGrow = new ValueProperty<>(0f);
         flexShrink = new ValueProperty<>(1f);
-        flexBasis = new ValueProperty<>(LayoutDimension.AUTO);
+        flexBasis = new ValueProperty<>(Layout.AUTO);
 
         alignContent = new ValueProperty<>(ItemAlignment.FLEX_START);
         alignSelf = new ValueProperty<>(ItemAlignment.AUTO);
         alignItems = new ValueProperty<>(ItemAlignment.STRETCH);
 
-        aspectRatio = new ValueProperty<>(2f);
+        aspectRatio = new ValueProperty<>(Layout.UNDEFINED);
 
         justifyContent = new ValueProperty<>(ItemJustification.FLEX_START);
         layoutDirection = new ValueProperty<>(LayoutDirection.INHERIT);
@@ -59,14 +59,14 @@ public class ComponentLayout {
         margin = new ValueProperty<>(Offsets.AUTO);
         padding = new ValueProperty<>(Offsets.ZERO);
 
-        width = new ValueProperty<>(LayoutDimension.AUTO);
-        height = new ValueProperty<>(LayoutDimension.AUTO);
+        width = new ValueProperty<>(Layout.AUTO);
+        height = new ValueProperty<>(Layout.AUTO);
 
-        minWidth = new ValueProperty<>(LayoutDimension.AUTO);
-        maxWidth = new ValueProperty<>(LayoutDimension.AUTO);
+        minWidth = new ValueProperty<>(Layout.AUTO);
+        maxWidth = new ValueProperty<>(Layout.AUTO);
 
-        minHeight = new ValueProperty<>(LayoutDimension.AUTO);
-        maxHeight = new ValueProperty<>(LayoutDimension.AUTO);
+        minHeight = new ValueProperty<>(Layout.AUTO);
+        maxHeight = new ValueProperty<>(Layout.AUTO);
     }
 
     public ValueProperty<Long> node(){

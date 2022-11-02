@@ -64,18 +64,23 @@ public class Renderer implements AutoCloseable {
         svgs.put(handle, svg);
     }
 
-    public void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars, StyleLookup styles){
-        canvas.save();
-
-        var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
+    public void renderDebug(Canvas canvas, Bounds2D componentBounds){
         if(debugColor.get() != null){
+            var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
             var debugPaint = new Paint();
             debugPaint.setColor(debugColor.get().toARGB());
             debugPaint.setStroke(true);
             debugPaint.setStrokeWidth(1f);
             canvas.drawRect(boundingRect, debugPaint);
         }
+    }
 
+    public void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars, StyleLookup styles){
+        canvas.save();
+
+        renderDebug(canvas, componentBounds);
+
+        var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
         var geometry = (Object) createSkiaGeometry(boundingRect, style, renderVars, styles);
 
         Paint fill = getFill(style, renderVars);

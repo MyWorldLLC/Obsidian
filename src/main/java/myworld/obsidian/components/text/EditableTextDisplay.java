@@ -32,7 +32,7 @@ public class EditableTextDisplay extends Component {
     public EditableTextDisplay(StyleClass style){
         styleName.set(COMPONENT_STYLE_NAME);
         label = new TextDisplay("", style);
-        label.layout().preferredSize(Distance.percentage(100), Distance.percentage(100));
+        label.layout().clampedSize(Distance.percentage(100), Distance.percentage(100));
         addChild(label);
 
         editor = new ValueProperty<>();

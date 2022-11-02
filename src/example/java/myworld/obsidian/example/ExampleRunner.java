@@ -102,10 +102,13 @@ public class ExampleRunner {
 
         registerInputListeners(window);
 
+        var layout = new ExampleLayout();
+        ui.getRoot().addChild(layout);
+
         var example = new Component();
         example.styleName().set("Example");
         example.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
-        ui.getRoot().addChild(example);
+        layout.left().addChild(example);
 
         example.renderVars().put("text", () -> new Text("Hello, World!", ui.getStyle("ExampleText")));
 
@@ -129,18 +132,18 @@ public class ExampleRunner {
             System.out.println("Key: " + evt.getKey());
         });
 
-        var textField = TextField.password('*');
+        var textField = TextField.plain();
         textField.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         textField.insert("Foo");
-        ui.getRoot().addChild(textField);
+        layout.center().addChild(textField);
 
         var label = new TextDisplay();
         label.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         label.text().set("Hello, World!");
-        ui.getRoot().addChild(label);
+        layout.left().addChild(label);
 
         ui.focusNext();
-        ui.focusNext();
+        ui.requestFocus(textField);
 
     }
 

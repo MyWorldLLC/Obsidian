@@ -22,6 +22,8 @@ import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.events.*;
+import myworld.obsidian.geometry.Dimension2D;
+import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.ClipboardHandler;
 import myworld.obsidian.input.InputManager;
 import myworld.obsidian.input.Key;
@@ -95,6 +97,7 @@ public class ObsidianUI {
         });
         layout.set(new LayoutEngine(this));
         this.display = new ValueProperty<>(display);
+
         input = new ValueProperty<>(new InputManager(this));
         clipboard = new ValueProperty<>(ClipboardHandler.droppingClipboard());
         cursor = new ValueProperty<>(DISCARDING_CURSOR_HANDLER);

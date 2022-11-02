@@ -174,7 +174,7 @@ public class DisplayEngine implements AutoCloseable {
 
         component.preRenderers().forEach(Runnable::run);
 
-        if(skin != null){
+        if(skin != null && !component.isLayoutOnly()){
 
             var renderVars = component.generateRenderVars();
 
@@ -220,7 +220,11 @@ public class DisplayEngine implements AutoCloseable {
             });
 
         }else{
-            log.log(Level.WARNING, "Cannot render component {0} because no skin is present", component.styleName().get());
+            if(!component.isLayoutOnly()){
+                log.log(Level.WARNING, "Cannot render component {0} because no skin is present", component.styleName().get());
+            }else{
+                renderer.renderDebug(getCanvas(), ui.getLayout().getSceneBounds(component));
+            }
             component.children().forEach((c) -> render(ui, c, uiSkin));
         }
 

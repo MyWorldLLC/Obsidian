@@ -290,7 +290,7 @@ public class LayoutEngine {
     }
 
     protected void setDimension(Distance dist, Runnable autoSetter, Consumer<Float> pixelSetter, Consumer<Float> percentageSetter){
-        if(LayoutDimension.AUTO.equals(dist)){
+        if(Layout.AUTO.equals(dist)){
             autoSetter.run();
         }else{
             switch (dist.unit()){
