@@ -13,7 +13,7 @@ import myworld.obsidian.util.Range;
 
 public class EditableTextDisplay extends Component {
 
-    public static final String COMPONENT_STYLE_NAME = "EditableText";
+    public static final String COMPONENT_STYLE_NAME = "EditableTextDisplay";
     public static final String LINE_HEIGHT_VAR_NAME = "lineHeight";
     public static final String CURSOR_OFFSET_VAR_NAME = "cursorOffset";
     public static final String CURSOR_VISIBLE_VAR_NAME = "cursorVisible";

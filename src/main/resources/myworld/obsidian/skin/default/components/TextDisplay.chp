@@ -7,7 +7,7 @@ from obsidian.vars import *
 
 def component(){
 
-    name('Label')
+    name('TextDisplay')
 
     data({
         'text': 'string',

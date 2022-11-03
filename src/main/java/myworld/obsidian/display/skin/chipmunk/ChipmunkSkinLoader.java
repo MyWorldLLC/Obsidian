@@ -121,6 +121,12 @@ public class ChipmunkSkinLoader {
         compilation.getSources().addAll(Arrays.asList(sources));
         compiler.getModuleLoader().setDelegate(dependencies);
 
+        compilation.getSources().forEach(s -> {
+            if(s.getIs() == null){
+                throw new IllegalStateException("Could not resolve Chipmunk source path: " + s.getFileName());
+            }
+        });
+
         return compiler.compile(compilation);
     }
 

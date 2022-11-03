@@ -12,7 +12,7 @@ import myworld.obsidian.util.Range;
 
 public class TextDisplay extends Component {
 
-    public static final String COMPONENT_STYLE_NAME = "Label";
+    public static final String COMPONENT_STYLE_NAME = "TextDisplay";
     public static final String DEFAULT_FONT_FAMILY = "Clear Sans";
     public static final TextStyle DEFAULT_FONT_STYLE = TextStyle.NORMAL;
     public static final Float DEFAULT_FONT_SIZE = 14f;

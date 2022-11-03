@@ -12,8 +12,8 @@ def skin(){
     components([
         '/Root.chp',
         '/Example.chp',
-        '/components/Label.chp',
-        '/components/EditableText.chp',
+        '/components/TextDisplay.chp',
+        '/components/EditableTextDisplay.chp',
         '/components/TextField.chp'
     ])
 

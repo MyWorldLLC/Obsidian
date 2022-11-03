@@ -6,7 +6,7 @@ from obsidian.style import *
 
 def component(){
 
-    name('EditableText')
+    name('EditableTextDisplay')
 
     data({
         'lineHeight': 'float',
