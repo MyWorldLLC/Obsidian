@@ -1,4 +1,4 @@
-package myworld.obsidian.events;
+package myworld.obsidian.events.input;
 
 import myworld.obsidian.input.InputManager;
 import myworld.obsidian.input.Key;

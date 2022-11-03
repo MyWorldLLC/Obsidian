@@ -1,0 +1,34 @@
+module component
+
+from obsidian.component import *
+from obsidian.graphics import *
+from obsidian.style import *
+
+def component(){
+
+    name('Button')
+
+    data({
+        'focused': 'boolean',
+        'hovered': 'boolean',
+        'pressed': 'boolean'
+    })
+
+    layer('background', {
+        'geometry': rectangle('100%', '100%'),
+        'color': white,
+        'border-color': color('#AAAAAA'),
+        'border-width': 1.0,
+        'border-join': 'round',
+        'border-cap': 'round'
+    })
+
+    layer('background', 'focused', {
+        'styles': ['DefaultFocus']
+    })
+
+    layer('background', 'pressed', {
+        'color': color('#AAAAAA')
+    })
+
+}

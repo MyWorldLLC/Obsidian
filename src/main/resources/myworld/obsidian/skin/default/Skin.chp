@@ -14,7 +14,9 @@ def skin(){
         '/Example.chp',
         '/components/TextDisplay.chp',
         '/components/EditableTextDisplay.chp',
-        '/components/TextField.chp'
+        '/components/TextField.chp',
+        '/components/Button.chp',
+        '/components/Checkbox.chp'
     ])
 
     fonts([
@@ -29,8 +31,16 @@ def skin(){
     ])
 
     vars['highlightColor'] = color('#25EFF988')
+    vars['focusColor'] = color('#4CCAF4')
 
     style('ExampleText', {
         'color': color('#00FF00')
+    })
+
+    style('DefaultFocus', {
+        'border-color': vars['focusColor'],
+        'border-width': 1.5,
+        'border-join': 'round',
+        'border-cap': 'round'
     })
 }

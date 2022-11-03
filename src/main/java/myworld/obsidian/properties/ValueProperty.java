@@ -60,4 +60,8 @@ public class ValueProperty<T> extends Property<ValueChangeListener<T>> implement
         return v != null ? v : ifNull;
     }
 
+    public boolean isSet(){
+        return get() != null;
+    }
+
 }

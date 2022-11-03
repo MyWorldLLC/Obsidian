@@ -1,5 +1,6 @@
-package myworld.obsidian.events;
+package myworld.obsidian.events.input;
 
+import myworld.obsidian.events.BaseEvent;
 import myworld.obsidian.input.InputManager;
 
 public class InputEvent extends BaseEvent {

@@ -4,6 +4,7 @@ import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.TextRuler;
 import myworld.obsidian.display.skin.StyleClass;
+import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
@@ -45,6 +46,10 @@ public class TextDisplay extends Component {
         this(null, null);
     }
 
+    public TextDisplay(Text text){
+        this(text.text(), text.style());
+    }
+
     public TextDisplay(String text){
         this(text, null);
     }
@@ -67,6 +72,11 @@ public class TextDisplay extends Component {
 
         this.text.set(text);
         this.style.set(style);
+
+        preLayout(() -> {
+            var ruler = getRuler();
+            layout.preferredSize(Distance.pixels(ruler.getWidth(text().get())), Distance.pixels(ruler.getLineHeight()));
+        });
 
         renderVars.put(TEXT_DATA_NAME, () -> Text.styled(this.text.get(), this.style.get()));
         renderVars.put(FONT_FAMILY_DATA_NAME, fontFamily);

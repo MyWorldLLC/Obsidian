@@ -1,5 +1,6 @@
-package myworld.obsidian.events;
+package myworld.obsidian.events.scene;
 
+import myworld.obsidian.events.BaseEvent;
 import myworld.obsidian.scene.Component;
 
 public class FocusEvent extends BaseEvent {

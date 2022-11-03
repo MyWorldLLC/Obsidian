@@ -1,9 +1,9 @@
 package myworld.obsidian.events.dispatch;
 
 import myworld.obsidian.events.BaseEvent;
-import myworld.obsidian.events.KeyEvent;
-import myworld.obsidian.events.MouseButtonEvent;
-import myworld.obsidian.events.MouseWheelEvent;
+import myworld.obsidian.events.input.KeyEvent;
+import myworld.obsidian.events.input.MouseButtonEvent;
+import myworld.obsidian.events.input.MouseWheelEvent;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.input.MouseWheelAxis;

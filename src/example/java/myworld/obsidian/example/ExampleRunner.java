@@ -17,18 +17,21 @@
 package myworld.obsidian.example;
 
 import myworld.obsidian.ObsidianUI;
+import myworld.obsidian.components.Button;
+import myworld.obsidian.components.Checkbox;
 import myworld.obsidian.components.text.TextDisplay;
 import myworld.obsidian.components.text.TextField;
-import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
-import myworld.obsidian.events.CharacterEvent;
-import myworld.obsidian.events.KeyEvent;
-import myworld.obsidian.events.MouseOverEvent;
+import myworld.obsidian.events.input.CharacterEvent;
+import myworld.obsidian.events.input.KeyEvent;
+import myworld.obsidian.events.input.MouseOverEvent;
+import myworld.obsidian.events.scene.ButtonEvent;
 import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.input.MouseWheelAxis;
+import myworld.obsidian.layout.Offsets;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
 import org.lwjgl.glfw.*;
@@ -133,7 +136,7 @@ public class ExampleRunner {
         });
 
         var textField = TextField.plain();
-        textField.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
+        textField.layout().preferredSize(Distance.pixels(100), Distance.pixels(50));
         textField.insert("Foo");
         layout.center().addChild(textField);
 
@@ -141,6 +144,17 @@ public class ExampleRunner {
         label.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         label.text().set("Hello, World!");
         layout.left().addChild(label);
+
+        var button = Button.textButton(Text.styled("Hello, Buttons!", ui.getStyle("ExampleText")));
+        button.layout().margin().set(new Offsets(Distance.pixels(15)));
+        button.addButtonListener(ButtonEvent::isPressed, evt -> System.out.println("Pressed!"));
+        button.addButtonListener(ButtonEvent::isClicked, evt -> System.out.println("Clicked!"));
+        button.addButtonListener(ButtonEvent::isReleased, evt -> System.out.println("Released!"));
+        layout.right().addChild(button);
+
+        var checkbox = new Checkbox();
+        checkbox.addCheckListener(evt -> System.out.println("Checked: " + evt.isChecked()));
+        layout.right().addChild(checkbox);
 
         ui.requestFocus(textField);
 

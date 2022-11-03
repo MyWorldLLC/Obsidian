@@ -12,8 +12,8 @@ public class Column extends Container<Column> {
 
     public Column(boolean topToBottom){
         layout.flexDirection().set(topToBottom ? FlexDirection.COLUMN : FlexDirection.COLUMN_REVERSE);
-        withItemAlignment(ItemAlignment.FLEX_START);
-        withJustification(ItemJustification.FLEX_END);
+        withItemAlignment(ItemAlignment.CENTER);
+        withJustification(ItemJustification.FLEX_START);
         layoutOnly().set(true);
     }
 }

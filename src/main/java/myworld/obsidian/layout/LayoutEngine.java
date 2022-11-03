@@ -61,6 +61,7 @@ public class LayoutEngine {
         var fHeight = (float) dimensions.height();
 
         var root = ui.getRoot();
+        root.apply(c -> c.preLayouts().forEach(Runnable::run));
         root.layout().clampedSize(Distance.pixels(fWidth), Distance.pixels(fHeight));
         syncLayoutProperties(root);
 

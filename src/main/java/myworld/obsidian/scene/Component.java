@@ -25,6 +25,7 @@ import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.properties.MapProperty;
 import myworld.obsidian.properties.ValueProperty;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Component {
@@ -43,6 +44,7 @@ public class Component {
     protected final ValueProperty<Boolean> hovered;
     protected final ValueProperty<Boolean> layoutOnly;
     protected final MapProperty<String, Supplier<?>> renderVars;
+    protected final ListProperty<Runnable> preLayouts;
     protected final ListProperty<Runnable> preRenderers;
     protected final EventDispatcher dispatcher;
 
@@ -61,6 +63,7 @@ public class Component {
         hovered = new ValueProperty<>(false);
         layoutOnly = new ValueProperty<>(false);
         renderVars = new MapProperty<>();
+        preLayouts = new ListProperty<>();
         preRenderers = new ListProperty<>();
         dispatcher = new EventDispatcher();
 
@@ -101,6 +104,12 @@ public class Component {
             child.onDetach();
         }
         return removed;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Component> T withChildren(Component... children){
+        addChildren(children);
+        return (T) this;
     }
 
     public boolean isChild(Component child){
@@ -171,6 +180,14 @@ public class Component {
         return renderVars;
     }
 
+    public ListProperty<Runnable> preLayouts(){
+        return preLayouts;
+    }
+
+    public void preLayout(Runnable r){
+        preLayouts.add(r);
+    }
+
     public ListProperty<Runnable> preRenderers(){
         return preRenderers;
     }
@@ -207,6 +224,14 @@ public class Component {
                 .orElse(null);
     }
 
+    public void disableFocus(){
+        apply(c -> c.focusable().set(false));
+    }
+
+    public void enableFocus(){
+        apply(c -> c.focusable().set(true));
+    }
+
     public void onAttach(){}
 
     public void onDetach(){}
@@ -230,6 +255,11 @@ public class Component {
 
     public float localizeY(float y){
         return localize(0, y).y();
+    }
+
+    public void apply(Consumer<Component> c){
+        c.accept(this);
+        children.forEach(child -> child.apply(c));
     }
 
     public static String defaultStyleName(Component component){

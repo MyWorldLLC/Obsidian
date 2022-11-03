@@ -22,6 +22,8 @@ import myworld.obsidian.display.DisplayEngine;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.events.*;
+import myworld.obsidian.events.input.*;
+import myworld.obsidian.events.scene.FocusEvent;
 import myworld.obsidian.input.ClipboardHandler;
 import myworld.obsidian.input.InputManager;
 import myworld.obsidian.input.Key;

@@ -17,4 +17,14 @@
 package myworld.obsidian.geometry;
 
 public record Point2D(float x, float y) {
+
+    public float distanceSquared(Point2D other){
+        var dx = x - other.x;
+        var dy = y - other.y;
+        return dx * dx + dy * dy;
+    }
+
+    public float distance(Point2D other){
+        return (float) Math.sqrt(distanceSquared(other));
+    }
 }

@@ -1,6 +1,10 @@
 package myworld.obsidian.components.text;
 
-import myworld.obsidian.events.*;
+import myworld.obsidian.events.input.CharacterEvent;
+import myworld.obsidian.events.input.KeyEvent;
+import myworld.obsidian.events.input.MouseButtonEvent;
+import myworld.obsidian.events.input.MouseMoveEvent;
+import myworld.obsidian.events.scene.FocusEvent;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.properties.ValueProperty;

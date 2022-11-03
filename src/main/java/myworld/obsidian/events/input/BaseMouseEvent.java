@@ -1,4 +1,4 @@
-package myworld.obsidian.events;
+package myworld.obsidian.events.input;
 
 import myworld.obsidian.geometry.Point2D;
 import myworld.obsidian.input.InputManager;

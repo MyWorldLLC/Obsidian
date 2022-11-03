@@ -1,12 +1,11 @@
 package myworld.obsidian.input;
 
 import myworld.obsidian.ObsidianUI;
-import myworld.obsidian.events.*;
 import myworld.obsidian.events.dispatch.EventDispatcher;
+import myworld.obsidian.events.input.*;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

@@ -1,0 +1,36 @@
+module component
+
+from obsidian.component import *
+from obsidian.graphics import *
+from obsidian.style import *
+
+def component(){
+
+    name('Checkbox')
+
+    data({
+        'focused': 'boolean',
+        'hovered': 'boolean',
+        'checked': 'boolean'
+    })
+
+    layer('background', {
+        'geometry': circle('100%'),
+        'color': white,
+        'border-color': color('#AAAAAA'),
+        'border-width': 1.0,
+        'border-join': 'round',
+        'border-cap': 'round'
+    })
+
+    layer('background', 'focused', {
+        'styles': ['DefaultFocus']
+    })
+
+    layer('check', 'checked', {
+        'geometry': circle('40%'),
+        'position': offset('12.5%', '12.5%'),
+        'color': color('#00000099')
+    })
+
+}
