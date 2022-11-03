@@ -332,13 +332,8 @@ public class Renderer implements AutoCloseable {
     }
 
     protected static float getFontSize(StyleClass style, Variables renderVars){
-        var size = style.rule(StyleRules.FONT_SIZE, renderVars);
-        if(size == null){
-            size = 12f;
-        }else if(size instanceof Integer s){
-            size = s.floatValue();
-        }
-        return (Float) size;
+        Number size = style.rule(StyleRules.FONT_SIZE, renderVars, 12f);
+        return size.floatValue();
     }
 
     protected static Paint getFill(StyleClass style, Variables renderVars){
@@ -354,13 +349,17 @@ public class Renderer implements AutoCloseable {
         Paint stroke = null;
         if (style.hasAny(StyleRules.BORDER_CAP, StyleRules.BORDER_COLOR, StyleRules.BORDER_JOIN,
                 StyleRules.BORDER_MITER, StyleRules.BORDER_WIDTH)) {
+
+            Number width = style.rule(StyleRules.BORDER_WIDTH, renderVars, 1f);
+            Number miter = style.rule(StyleRules.BORDER_MITER, renderVars, 0f);
+
             stroke = new Paint()
                     .setStroke(true)
                     .setColor(style.rule(StyleRules.BORDER_COLOR, renderVars, Colors.TRANSPARENT).toARGB())
-                    .setStrokeWidth(style.rule(StyleRules.BORDER_WIDTH, renderVars, 1f))
+                    .setStrokeWidth(width.floatValue())
                     .setStrokeCap(skiaCap(style.rule(StyleRules.BORDER_CAP, renderVars, Borders.CAP_SQUARE)))
                     .setStrokeJoin(skiaJoin(style.rule(StyleRules.BORDER_JOIN, renderVars, Borders.JOIN_BEVEL)))
-                    .setStrokeMiter(style.rule(StyleRules.BORDER_MITER, renderVars, 0f));
+                    .setStrokeMiter(miter.floatValue());
         }
         return stroke;
     }
