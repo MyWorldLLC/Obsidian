@@ -80,12 +80,8 @@ public class ObsidianUI {
             }
         });
         root.dispatcher().subscribe(MouseButtonEvent.class, mousePressed(), evt -> {
-            var picked = pick(evt.getX(), evt.getY(), (c) -> {
-                System.out.println("Candidate is: " + c.styleName().get(c.getClass().getName()));
-                return c.isFocusable();
-            });
+            var picked = pick(evt.getX(), evt.getY(), Component::isFocusable);
             if(picked != null){
-                System.out.println("Picked: " + picked.styleName().get() + ": " + picked.getClass());
                 requestFocus(picked);
             }else{
                 unfocus();
