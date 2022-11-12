@@ -16,7 +16,8 @@ def skin(){
         '/components/EditableTextDisplay.chp',
         '/components/TextField.chp',
         '/components/Button.chp',
-        '/components/Checkbox.chp'
+        '/components/Checkbox.chp',
+        '/components/Slider.chp'
     ])
 
     fonts([

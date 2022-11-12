@@ -135,7 +135,7 @@ public class ExampleRunner {
             System.out.println("Key: " + evt.getKey());
         });
 
-        var textField = TextField.plain();
+        var textField = TextField.password('*');
         textField.layout().preferredSize(Distance.pixels(100), Distance.pixels(50));
         textField.insert("Foo");
         layout.center().addChild(textField);
