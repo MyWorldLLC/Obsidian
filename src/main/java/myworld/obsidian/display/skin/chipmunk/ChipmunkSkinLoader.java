@@ -103,9 +103,7 @@ public class ChipmunkSkinLoader {
 
             }
 
-
             vm.stop();
-
 
             return skin;
         }finally{
@@ -140,7 +138,7 @@ public class ChipmunkSkinLoader {
             pathParts.remove(pathParts.size() - 1);
         }
         pathParts.add(componentPath);
-        return String.join("/", pathParts.toArray(new String[]{}));
+        return String.join("/", pathParts.toArray(new String[]{})).replaceAll("//", "/");
     }
 
 }
