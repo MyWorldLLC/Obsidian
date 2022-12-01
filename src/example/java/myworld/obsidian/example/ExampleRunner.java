@@ -97,7 +97,7 @@ public class ExampleRunner {
         GL.createCapabilities();
         glfwSwapInterval(1); // Use VSync
 
-        ui = ObsidianUI.createForGL(getRenderWidth(), getRenderHeight(), 0);
+        ui = ObsidianUI.createForGL(getRenderWidth(), getRenderHeight(), 4, 0);
         ui.registerSkin(ChipmunkSkinLoader.loadFromClasspath(ChipmunkSkinLoader.DEFAULT_SKIN));
         ui.useSkin("Obsidian");
         ui.clipboard().set(new GLFWClipboard(window));
@@ -170,7 +170,7 @@ public class ExampleRunner {
 
     public void createSurface(){
         ui.display().ifSet(DisplayEngine::close);
-        ui.setDisplay(DisplayEngine.createForGL(getRenderWidth(), getRenderHeight(), 0));
+        ui.setDisplay(DisplayEngine.createForGL(getRenderWidth(), getRenderHeight(), 4, 0));
         //ui.getDisplay().enableRenderDebug(Colors.RED);
     }
 

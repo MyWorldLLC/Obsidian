@@ -62,8 +62,8 @@ public class ObsidianUI {
     protected final Map<String, UISkin> skins;
     protected final ValueProperty<String> selectedSkin;
 
-    public static ObsidianUI createForGL(int width, int height, int framebufferHandle){
-        return new ObsidianUI(DisplayEngine.createForGL(width, height, framebufferHandle));
+    public static ObsidianUI createForGL(int width, int height, int samples, int framebufferHandle){
+        return new ObsidianUI(DisplayEngine.createForGL(width, height, samples, framebufferHandle));
     }
 
     public static ObsidianUI createForCpu(int width, int height){

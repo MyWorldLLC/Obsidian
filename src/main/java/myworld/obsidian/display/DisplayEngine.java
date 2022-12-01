@@ -57,12 +57,12 @@ public class DisplayEngine implements AutoCloseable {
 
     protected final ListChangeListener<Component> sceneListener;
 
-    public static DisplayEngine createForGL(int width, int height, int framebufferHandle){
+    public static DisplayEngine createForGL(int width, int height, int samples, int framebufferHandle){
         var context = DirectContext.makeGL();
         var renderTarget = BackendRenderTarget.makeGL(
                 width,
                 height,
-                0,
+                samples,
                 0,
                 framebufferHandle,
                 FramebufferFormat.GR_GL_RGBA8);
