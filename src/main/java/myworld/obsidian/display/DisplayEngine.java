@@ -105,6 +105,10 @@ public class DisplayEngine implements AutoCloseable {
         dimensions.set(new Dimension2D(width, height));
     }
 
+    public SurfaceManager getSurfaceManager(){
+        return surfaceManager;
+    }
+
     public Image snapshot(){
         return getSurface().makeImageSnapshot();
     }

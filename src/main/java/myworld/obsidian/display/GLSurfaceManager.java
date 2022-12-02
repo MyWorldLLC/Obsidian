@@ -8,8 +8,8 @@ public class GLSurfaceManager implements SurfaceManager {
     protected BackendRenderTarget renderTarget;
     protected Surface surface;
 
-    protected final int samples;
-    protected final int framebufferHandle;
+    protected int samples;
+    protected int framebufferHandle;
 
     public GLSurfaceManager(int width, int height, int samples, int framebufferHandle){
         this.samples = samples;
@@ -59,9 +59,31 @@ public class GLSurfaceManager implements SurfaceManager {
         makeSurface(width, height);
     }
 
+    public void rebuild(int width, int height, int samples, int framebufferHandle){
+        setSamples(samples);
+        setFramebufferHandle(framebufferHandle);
+        resize(width, height);
+    }
+
     @Override
     public Surface getSurface() {
         return surface;
+    }
+
+    public int getSamples(){
+        return samples;
+    }
+
+    public void setSamples(int samples){
+        this.samples = samples;
+    }
+
+    public int getFramebufferHandle(){
+        return framebufferHandle;
+    }
+
+    public void setFramebufferHandle(int framebufferHandle){
+        this.framebufferHandle = framebufferHandle;
     }
 
     @Override
