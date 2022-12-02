@@ -18,7 +18,6 @@ package myworld.obsidian.display;
 
 import io.github.humbleui.skija.svg.SVGDOM;
 import io.github.humbleui.types.IRect;
-import io.github.humbleui.types.Rect;
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.display.skin.*;
 import myworld.obsidian.geometry.Bounds2D;
@@ -29,7 +28,6 @@ import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.impl.Library;
-import myworld.obsidian.text.Text;
 import myworld.obsidian.text.TextStyle;
 import myworld.obsidian.text.Typeset;
 
@@ -48,9 +46,7 @@ public class DisplayEngine implements AutoCloseable {
 
     protected final ValueProperty<Dimension2D> dimensions;
 
-    protected final DirectContext context;
-    protected final BackendRenderTarget renderTarget;
-    protected final Surface surface;
+    protected final SurfaceManager surfaceManager;
 
     protected final Typeset fonts;
     protected final Renderer renderer;
@@ -58,37 +54,15 @@ public class DisplayEngine implements AutoCloseable {
     protected final ListChangeListener<Component> sceneListener;
 
     public static DisplayEngine createForGL(int width, int height, int samples, int framebufferHandle){
-        var context = DirectContext.makeGL();
-        var renderTarget = BackendRenderTarget.makeGL(
-                width,
-                height,
-                samples,
-                0,
-                framebufferHandle,
-                FramebufferFormat.GR_GL_RGBA8);
-
-        var surface = Surface.makeFromBackendRenderTarget(
-                context,
-                renderTarget,
-                SurfaceOrigin.BOTTOM_LEFT,
-                SurfaceColorFormat.RGBA_8888,
-                ColorSpace.getDisplayP3(),
-                new SurfaceProps(PixelGeometry.RGB_H)
-        );
-
-        return new DisplayEngine(width, height, context, renderTarget, surface);
+        return new DisplayEngine(width, height, new GLSurfaceManager(width, height, samples, framebufferHandle));
     }
 
     public static DisplayEngine createForCpu(int width, int height){
-        var surface = Surface.makeRaster(getImageInfo(width, height));
-
-        return new DisplayEngine(width, height, null, null, surface);
+        return new DisplayEngine(width, height, new CpuSurfaceManager(width, height));
     }
 
-    protected DisplayEngine(int width, int height, DirectContext context, BackendRenderTarget renderTarget, Surface surface){
-        this.context = context;
-        this.renderTarget = renderTarget;
-        this.surface = surface;
+    protected DisplayEngine(int width, int height, SurfaceManager surfaceManager){
+        this.surfaceManager = surfaceManager;
 
         dimensions = new ValueProperty<>(new Dimension2D(width, height));
 
@@ -123,15 +97,20 @@ public class DisplayEngine implements AutoCloseable {
     }
 
     public Canvas getCanvas(){
-        return surface.getCanvas();
+        return getSurface().getCanvas();
+    }
+
+    public void resize(int width, int height){
+        surfaceManager.resize(width, height);
+        dimensions.set(new Dimension2D(width, height));
     }
 
     public Image snapshot(){
-        return surface.makeImageSnapshot();
+        return getSurface().makeImageSnapshot();
     }
 
     public Image snapshot(Bounds2D area){
-        return surface.makeImageSnapshot(
+        return getSurface().makeImageSnapshot(
                 new IRect(
                 (int) area.left(),
                 (int) area.top(),
@@ -141,13 +120,13 @@ public class DisplayEngine implements AutoCloseable {
     }
 
     public Bitmap makeWritableBitmap(){
-        return makeWritableBitmap(surface.getWidth(), surface.getHeight());
+        return makeWritableBitmap(getSurface().getWidth(), getSurface().getHeight());
     }
 
     public Bitmap makeWritableBitmap(int width, int height){
-        final var bytesPerRow = width * surface.getImageInfo().getBytesPerPixel();
+        final var bytesPerRow = width * getSurface().getImageInfo().getBytesPerPixel();
         var data = new byte[bytesPerRow * height];
-        return Bitmap.makeFromImage(Image.makeRaster(surface.getImageInfo(), data, bytesPerRow));
+        return Bitmap.makeFromImage(Image.makeRaster(getSurface().getImageInfo(), data, bytesPerRow));
     }
 
     public Bitmap getSurfacePixels(Bitmap target){
@@ -155,7 +134,7 @@ public class DisplayEngine implements AutoCloseable {
     }
 
     public Bitmap getSurfacePixels(Bitmap target, int srcX, int srcY){
-        surface.readPixels(target, srcX, srcY);
+        getSurface().readPixels(target, srcX, srcY);
         return target;
     }
 
@@ -165,7 +144,7 @@ public class DisplayEngine implements AutoCloseable {
     }
 
     protected ImageInfo getImageInfo(){
-        return getImageInfo(surface.getWidth(), surface.getHeight());
+        return getImageInfo(getSurface().getWidth(), getSurface().getHeight());
     }
 
     public void render(ObsidianUI ui, Component component, UISkin uiSkin){
@@ -290,6 +269,10 @@ public class DisplayEngine implements AutoCloseable {
         }
     }
 
+    protected Surface getSurface(){
+        return surfaceManager.getSurface();
+    }
+
     protected void loadSvgs(UISkin skin){
         for(var path : skin.svgs()){
             try(var is = skin.getResolver().resolve(path);
@@ -320,8 +303,8 @@ public class DisplayEngine implements AutoCloseable {
 
     public void flush(){
 
-        if(surface != null){
-            surface.flushAndSubmit(true);
+        if(getSurface() != null){
+            getSurface().flushAndSubmit(true);
         }
 
     }
@@ -336,17 +319,7 @@ public class DisplayEngine implements AutoCloseable {
 
     @Override
     public void close() {
-        if(renderTarget != null){
-            renderTarget.close();
-        }
-
-        if(surface != null){
-            surface.close();
-        }
-
-        if(context != null){
-            context.close();
-        }
+        surfaceManager.close();
 
         fonts.clear();
     }

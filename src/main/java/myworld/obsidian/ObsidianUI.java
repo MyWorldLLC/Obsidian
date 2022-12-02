@@ -70,6 +70,10 @@ public class ObsidianUI {
         return new ObsidianUI(DisplayEngine.createForCpu(width, height));
     }
 
+    public static ObsidianUI createHeadless(){
+        return new ObsidianUI(null);
+    }
+
     public ObsidianUI(DisplayEngine display){
         root = new Component();
         root.styleName().set(ROOT_COMPONENT_STYLE_NAME);

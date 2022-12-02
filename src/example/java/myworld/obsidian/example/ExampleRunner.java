@@ -169,8 +169,7 @@ public class ExampleRunner {
     }
 
     public void createSurface(){
-        ui.display().ifSet(DisplayEngine::close);
-        ui.setDisplay(DisplayEngine.createForGL(getRenderWidth(), getRenderHeight(), 4, 0));
+        ui.display().ifSet(d -> d.resize(getRenderWidth(), getRenderHeight()));
         //ui.getDisplay().enableRenderDebug(Colors.RED);
     }
 
