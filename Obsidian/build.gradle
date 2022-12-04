@@ -1,0 +1,168 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
+}
+
+def getGitVersion(){
+    def version = "git describe --tags --always --first-parent".execute().text.trim()
+    version.contains('-') ? version[0..<version.indexOf('-')] + '-SNAPSHOT' : version
+}
+
+def getGitCredentials(){
+    def process = "git credential fill".execute()
+    def stream = new PrintStream(process.getOutputStream(), true)
+    stream.println("url=https://github.com/")
+    stream.close()
+
+    process.text.trim().split("\n").collectEntries {it.split("=")}
+}
+def gitCredentials = getGitCredentials()
+
+def getPlatform(){
+    def platform = System.getProperty('os.name').toLowerCase()
+    if(platform.contains('win')){
+        platform = 'win'
+    }else if(platform.contains('mac')){
+        platform = 'mac'
+    }else if(platform.contains('linux')){
+        platform = 'linux'
+    }
+    return platform
+}
+
+def getSkijaPlatform(){
+    def platforms = [
+            'win': 'windows',
+            'mac': 'macos-x64',
+            'linux': 'linux'
+    ]
+    platforms[getPlatform()]
+}
+
+def getLwjglPlatform(){
+    def platforms = [
+            'win': 'windows',
+            'mac': 'macos',
+            'linux': 'linux'
+    ]
+    platforms[getPlatform()]
+}
+
+def jfxVersion = "17"
+javafx {
+    version = jfxVersion
+    modules = ['javafx.graphics']
+    configuration = 'compileOnly'
+}
+
+group = 'com.myworldvw'
+version = getGitVersion()
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://packages.jetbrains.team/maven/p/skija/maven'
+    }
+    maven {
+        name = "Chipmunk"
+        url = uri("https://maven.pkg.github.com/MyWorldLLC/Chipmunk")
+        credentials {
+            username = System.getenv("GITHUB_USER") ?: gitCredentials["username"]
+            password = System.getenv("GITHUB_TOKEN") ?: gitCredentials["password"]
+        }
+    }
+}
+
+sourceSets {
+    example {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+        java {
+            srcDir 'example/java'
+        }
+    }
+}
+
+configurations {
+    exampleImplementation.extendsFrom(implementation)
+}
+
+dependencies {
+    api "org.openjfx:javafx-base:$jfxVersion"
+    api "org.openjfx:javafx-graphics:$jfxVersion"
+    api "org.openjfx:javafx-controls:$jfxVersion"
+    api "org.openjfx:javafx-web:$jfxVersion"
+    api "org.openjfx:javafx-media:$jfxVersion"
+
+    implementation 'org.lwjgl:lwjgl-yoga:3.3.1'
+    implementation "io.github.humbleui:skija-shared:0.105.0"
+    implementation 'myworld:chipmunk:1.0.0-SNAPSHOT'
+
+    exampleCompileClasspath 'org.lwjgl:lwjgl:3.3.1'
+    exampleCompileClasspath 'org.lwjgl:lwjgl-glfw:3.3.1'
+    exampleCompileClasspath 'org.lwjgl:lwjgl-opengl:3.3.1'
+    exampleRuntimeOnly "org.lwjgl:lwjgl:3.3.1:natives-${getLwjglPlatform()}"
+    exampleRuntimeOnly "org.lwjgl:lwjgl-glfw:3.3.1:natives-${getLwjglPlatform()}"
+    exampleRuntimeOnly "org.lwjgl:lwjgl-yoga:3.3.1:natives-${getLwjglPlatform()}"
+    exampleRuntimeOnly "org.lwjgl:lwjgl-opengl:3.3.1:natives-${getLwjglPlatform()}"
+    exampleRuntimeOnly "org.openjfx:javafx-base:$jfxVersion:$platform"
+    exampleRuntimeOnly "org.openjfx:javafx-graphics:$jfxVersion:$platform"
+    exampleRuntimeOnly "org.openjfx:javafx-controls:$jfxVersion:$platform"
+    exampleRuntimeOnly "org.openjfx:javafx-web:$jfxVersion:$platform"
+    exampleRuntimeOnly "org.openjfx:javafx-media:$jfxVersion:$platform"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    withJavadocJar()
+    withSourcesJar()
+}
+
+/*project.components.findByName("java").addVariantsFromConfiguration(configurations.linux_x64) {
+    // dependencies for this variant are considered runtime dependencies
+    it.mapToMavenScope("runtime")
+    // and also optional dependencies, because we don't want them to leak
+    it.mapToOptional()
+}
+
+project.components.findByName("java").addVariantsFromConfiguration(configurations.windows_x64) {
+    // dependencies for this variant are considered runtime dependencies
+    it.mapToMavenScope("runtime")
+    // and also optional dependencies, because we don't want them to leak
+    it.mapToOptional()
+}*/
+
+publishing {
+    publications {
+        maven(MavenPublication){
+
+            groupId = project.group
+            artifactId = 'obsidian'
+            version = project.version
+
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/MyWorldLLC/Packages")
+            credentials {
+                username = System.getenv("GITHUB_USER") ?: gitCredentials["username"]
+                password = System.getenv("GITHUB_TOKEN") ?: gitCredentials["password"]
+            }
+        }
+    }
+}
+
+task run(type: JavaExec){
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(16)
+    }
+    classpath = sourceSets.example.compileClasspath + sourceSets.example.runtimeClasspath
+    mainClass = 'myworld.obsidian.example.ExampleRunner'
+}

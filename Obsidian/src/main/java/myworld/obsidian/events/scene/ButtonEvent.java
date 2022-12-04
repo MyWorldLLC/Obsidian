@@ -1,6 +1,5 @@
 package myworld.obsidian.events.scene;
 
-import myworld.obsidian.components.Button;
 import myworld.obsidian.events.input.MouseButtonEvent;
 import myworld.obsidian.scene.Component;
 

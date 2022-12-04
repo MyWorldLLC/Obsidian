@@ -1,8 +1,4 @@
-plugins {
-    id 'java-library'
-    id 'maven-publish'
-    id 'org.openjfx.javafxplugin' version '0.0.9'
-}
+
 
 def getGitVersion(){
     def version = "git describe --tags --always --first-parent".execute().text.trim()
@@ -19,132 +15,76 @@ def getGitCredentials(){
 }
 def gitCredentials = getGitCredentials()
 
-def getPlatform(){
-    def platform = System.getProperty('os.name').toLowerCase()
-    if(platform.contains('win')){
-        platform = 'win'
-    }else if(platform.contains('mac')){
-        platform = 'mac'
-    }else if(platform.contains('linux')){
-        platform = 'linux'
-    }
-    return platform
-}
-
-def getSkijaPlatform(){
-    def platforms = [
-            'win': 'windows',
-            'mac': 'macos-x64',
-            'linux': 'linux'
-    ]
-    platforms[getPlatform()]
-}
-
-def getLwjglPlatform(){
-    def platforms = [
-            'win': 'windows',
-            'mac': 'macos',
-            'linux': 'linux'
-    ]
-    platforms[getPlatform()]
-}
-
-def jfxVersion = "16"
-javafx {
-    version = jfxVersion
-    modules = ['javafx.graphics']
-    configuration = 'compileOnly'
-}
-
 group = 'com.myworldvw'
 version = getGitVersion()
 
-repositories {
-    mavenCentral()
-    maven {
-        url 'https://packages.jetbrains.team/maven/p/skija/maven'
-    }
-    maven {
-        name = "Chipmunk"
-        url = uri("https://maven.pkg.github.com/MyWorldLLC/Chipmunk")
-        credentials {
-            username = System.getenv("GITHUB_USER") ?: gitCredentials["username"]
-            password = System.getenv("GITHUB_TOKEN") ?: gitCredentials["password"]
-        }
-    }
-}
+def generatePlatformConfig(platformProject, skijaName, lwjglName, jfxName, obsidianName){
 
-sourceSets {
-    example {
-        compileClasspath += sourceSets.main.output
-        runtimeClasspath += sourceSets.main.output
-        java {
-            srcDir 'example/java'
-        }
-    }
-}
+    def jfxVersion = 17
 
-configurations {
-    exampleImplementation.extendsFrom(implementation)
-}
+    platformProject.apply plugin: 'java-library'
+    platformProject.apply plugin: 'maven-publish'
 
-dependencies {
-    implementation "org.openjfx:javafx-base:$jfxVersion:$platform"
-    implementation "org.openjfx:javafx-graphics:$jfxVersion:$platform"
-    implementation "org.openjfx:javafx-controls:$jfxVersion:$platform"
-    implementation "org.openjfx:javafx-web:$jfxVersion:$platform"
-    implementation "org.openjfx:javafx-media:$jfxVersion:$platform"
-
-    implementation 'org.lwjgl:lwjgl-stb:3.3.1'
-    implementation 'org.lwjgl:lwjgl-yoga:3.3.1'
-    implementation "io.github.humbleui:skija-${getSkijaPlatform()}:0.105.0"
-    implementation 'myworld:chipmunk:1.0.0-SNAPSHOT'
-
-    exampleCompileClasspath 'org.lwjgl:lwjgl:3.3.1'
-    exampleCompileClasspath 'org.lwjgl:lwjgl-glfw:3.3.1'
-    exampleCompileClasspath 'org.lwjgl:lwjgl-opengl:3.3.1'
-    exampleRuntimeOnly "org.lwjgl:lwjgl:3.3.1:natives-${getLwjglPlatform()}"
-    exampleRuntimeOnly "org.lwjgl:lwjgl-glfw:3.3.1:natives-${getLwjglPlatform()}"
-    exampleRuntimeOnly "org.lwjgl:lwjgl-yoga:3.3.1:natives-${getLwjglPlatform()}"
-    exampleRuntimeOnly "org.lwjgl:lwjgl-opengl:3.3.1:natives-${getLwjglPlatform()}"
-}
-
-java {
-    withSourcesJar()
-    withJavadocJar()
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(16)
-    }
-}
-
-publishing {
-    publications {
-        maven(MavenPublication){
-
-            groupId = project.group
-            artifactId = 'obsidian'
-            version = project.version
-
-            from components.java
-        }
-    }
-    repositories {
-        mavenLocal()
+    platformProject.repositories {
+        mavenCentral()
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/MyWorldLLC/Packages")
+            name = "Chipmunk"
+            url = uri("https://maven.pkg.github.com/MyWorldLLC/Chipmunk")
             credentials {
                 username = System.getenv("GITHUB_USER") ?: gitCredentials["username"]
                 password = System.getenv("GITHUB_TOKEN") ?: gitCredentials["password"]
             }
         }
     }
+
+    platformProject.dependencies {
+        api project(':Obsidian')
+
+        implementation "io.github.humbleui:skija-$skijaName:0.105.0"
+
+        implementation "org.lwjgl:lwjgl-yoga:3.3.1:natives-$lwjglName"
+
+        implementation "org.openjfx:javafx-base:$jfxVersion:$jfxName"
+        implementation "org.openjfx:javafx-graphics:$jfxVersion:$jfxName"
+        implementation "org.openjfx:javafx-controls:$jfxVersion:$jfxName"
+        implementation "org.openjfx:javafx-web:$jfxVersion:$jfxName"
+        implementation "org.openjfx:javafx-media:$jfxVersion:$jfxName"
+    }
+
+    platformProject.java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
+    platformProject.publishing {
+        publications {
+            maven(MavenPublication) {
+
+                groupId = project.group
+                artifactId = 'obsidian'
+                version = project.version + "-$obsidianName"
+
+                from platformProject.components.java
+            }
+        }
+        repositories {
+            mavenLocal()
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/MyWorldLLC/Packages")
+                credentials {
+                    username = System.getenv("GITHUB_USER") ?: gitCredentials["username"]
+                    password = System.getenv("GITHUB_TOKEN") ?: gitCredentials["password"]
+                }
+            }
+        }
+    }
 }
 
-task run(type: JavaExec){
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(16)
+allprojects{
+    ext{
+        jfxVersion = '16'
+        generatePlatformConfig = this.&generatePlatformConfig
     }
-    classpath = sourceSets.example.compileClasspath + sourceSets.example.runtimeClasspath
-    mainClass = 'myworld.obsidian.example.ExampleRunner'
 }

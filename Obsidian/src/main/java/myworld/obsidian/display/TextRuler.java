@@ -2,8 +2,6 @@ package myworld.obsidian.display;
 
 import io.github.humbleui.skija.Font;
 
-import java.util.Arrays;
-
 /**
  * This is safe to use within a single render pass, but should never be retained between
  * render passes as the renderer/typefaces may be cleaned between render passes (such as

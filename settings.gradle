@@ -1,2 +1,1 @@
-rootProject.name = 'obsidian'
-
+include 'Obsidian', ':Platforms:windows_x64', ':Platforms:linux_x64', ':Platforms:mac_x64', ':Platforms:mac_arm64'
