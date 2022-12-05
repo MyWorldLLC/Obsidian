@@ -82,8 +82,8 @@ def generatePlatformConfig(platformProject, skijaName, lwjglName, jfxName, obsid
             maven(MavenPublication) {
 
                 groupId = project.group
-                artifactId = 'obsidian'
-                version = project.version + "-$obsidianName"
+                artifactId = 'obsidian' + "-$obsidianName"
+                version = project.version
 
                 from platformProject.components.java
             }
