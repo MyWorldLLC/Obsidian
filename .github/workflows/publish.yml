@@ -6,8 +6,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        fetch-depth: 0 # Get all tags - necessary for Gradle versioning
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: '0' # Get all tags - necessary for Gradle versioning
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
