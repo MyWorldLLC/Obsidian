@@ -1,0 +1,44 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+dependencies {
+    implementation project(':Platforms:Obsidian:linux-x64')
+    implementation project(':Platforms:Obsidian:mac-arm64')
+    implementation project(':Platforms:Obsidian:mac-x64')
+    implementation project(':Platforms:Obsidian:windows-x64')
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(jdkVersion)
+    }
+}
+
+group = 'com.myworldvw'
+version = gitVersion
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+
+            groupId = group
+            artifactId = 'obsidian-all'
+            version = version
+
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/MyWorldLLC/Packages")
+            credentials {
+                username = gitUser
+                password = gitPassword
+            }
+        }
+    }
+}
