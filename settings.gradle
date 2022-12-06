@@ -1,1 +1,1 @@
-include 'Obsidian', ':Platforms:windows_x64', ':Platforms:linux_x64', ':Platforms:mac_x64', ':Platforms:mac_arm64'
+include 'Obsidian', 'ObsidianJFX', ':Platforms:windows_x64', ':Platforms:linux_x64', ':Platforms:mac_x64', ':Platforms:mac_arm64'
