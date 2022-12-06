@@ -1,0 +1,1 @@
+ext.generatePlatformConfig(project, 'windows', 'windows', 'jfx-windows-x64', 'win')

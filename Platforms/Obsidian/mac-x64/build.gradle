@@ -1,0 +1,1 @@
+ext.generatePlatformConfig(project, 'macos-x64', 'macos', 'mac-x64')

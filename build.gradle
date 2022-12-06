@@ -52,23 +52,25 @@ def getLwjglPlatform(){
 group = 'com.myworldvw'
 version = gitVersion
 
-def generatePlatformConfig(platformProject, skijaName, lwjglName, jfxName, obsidianName){
+def generatePlatformConfig(platformProject, skijaName, lwjglName, obsidianName, jfxName = null){
 
     platformProject.apply plugin: 'java-library'
     platformProject.apply plugin: 'maven-publish'
 
     platformProject.dependencies {
-        api project(':Obsidian')
 
-        implementation "io.github.humbleui:skija-$skijaName:0.105.0"
-
-        implementation "org.lwjgl:lwjgl-yoga:3.3.1:natives-$lwjglName"
-
-        implementation "org.openjfx:javafx-base:$jfxVersion:$jfxName"
-        implementation "org.openjfx:javafx-graphics:$jfxVersion:$jfxName"
-        implementation "org.openjfx:javafx-controls:$jfxVersion:$jfxName"
-        implementation "org.openjfx:javafx-web:$jfxVersion:$jfxName"
-        implementation "org.openjfx:javafx-media:$jfxVersion:$jfxName"
+        if(jfxName == null){
+            api project(':Obsidian')
+            implementation "io.github.humbleui:skija-$skijaName:0.105.0"
+            implementation "org.lwjgl:lwjgl-yoga:3.3.1:natives-$lwjglName"
+        }else{
+            implementation project(":Platforms:Obsidian:${obsidianName - 'jfx-'}")
+            implementation "org.openjfx:javafx-base:$jfxVersion:$jfxName"
+            implementation "org.openjfx:javafx-graphics:$jfxVersion:$jfxName"
+            implementation "org.openjfx:javafx-controls:$jfxVersion:$jfxName"
+            implementation "org.openjfx:javafx-web:$jfxVersion:$jfxName"
+            implementation "org.openjfx:javafx-media:$jfxVersion:$jfxName"
+        }
     }
 
     platformProject.java {

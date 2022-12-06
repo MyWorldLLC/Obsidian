@@ -1,0 +1,1 @@
+ext.generatePlatformConfig(project, 'linux', 'linux', 'jfx-linux-x64', 'linux')
