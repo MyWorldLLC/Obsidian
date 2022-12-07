@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    api project(':Obsidian')
     implementation project(':Platforms:Obsidian:linux-x64')
     implementation project(':Platforms:Obsidian:mac-arm64')
     implementation project(':Platforms:Obsidian:mac-x64')

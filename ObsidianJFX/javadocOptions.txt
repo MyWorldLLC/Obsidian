@@ -1,0 +1,5 @@
+--add-exports javafx.graphics/com.sun.glass.ui=myworld.obsidian.jfx
+--add-exports javafx.graphics/com.sun.javafx.cursor=myworld.obsidian.jfx
+--add-exports javafx.graphics/com.sun.javafx.embed=myworld.obsidian.jfx
+--add-exports javafx.graphics/com.sun.javafx.stage=myworld.obsidian.jfx
+--add-exports javafx.graphics/com.sun.javafx.tk=myworld.obsidian.jfx

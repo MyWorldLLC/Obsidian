@@ -1,23 +1,21 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'org.openjfx.javafxplugin' version '0.0.9'
-}
-
-javafx {
-    version = jfxVersion
-    modules = ['javafx.graphics']
-    configuration = 'compileOnly'
 }
 
 dependencies {
     api project(':Obsidian')
 
-    api "org.openjfx:javafx-base:$jfxVersion"
-    api "org.openjfx:javafx-graphics:$jfxVersion"
-    api "org.openjfx:javafx-controls:$jfxVersion"
-    api "org.openjfx:javafx-web:$jfxVersion"
-    api "org.openjfx:javafx-media:$jfxVersion"
+    // We need the platform specific jars to build, since they contain
+    // the module definitions. Note that the module definitions are
+    // cross-platform, so we can just use whichever platform we're
+    // building on. Dependencies for downstream consumers are handled
+    // by the ObsidianJFX Platform modules.
+    compileOnly "org.openjfx:javafx-base:$jfxVersion:$platform"
+    compileOnly "org.openjfx:javafx-graphics:$jfxVersion:$platform"
+    compileOnly "org.openjfx:javafx-controls:$jfxVersion:$platform"
+    compileOnly "org.openjfx:javafx-web:$jfxVersion:$platform"
+    compileOnly "org.openjfx:javafx-media:$jfxVersion:$platform"
 
 }
 
@@ -27,6 +25,20 @@ java {
     }
     withJavadocJar()
     withSourcesJar()
+}
+
+compileJava {
+    options.compilerArgs += [
+            '--add-exports', 'javafx.graphics/com.sun.glass.ui=myworld.obsidian.jfx',
+            '--add-exports', 'javafx.graphics/com.sun.javafx.cursor=myworld.obsidian.jfx',
+            '--add-exports', 'javafx.graphics/com.sun.javafx.embed=myworld.obsidian.jfx',
+            '--add-exports', 'javafx.graphics/com.sun.javafx.stage=myworld.obsidian.jfx',
+            '--add-exports', 'javafx.graphics/com.sun.javafx.tk=myworld.obsidian.jfx'
+    ]
+}
+
+javadoc {
+    options.optionFiles(file('javadocOptions.txt'))
 }
 
 group = 'com.myworldvw'

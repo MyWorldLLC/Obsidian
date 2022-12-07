@@ -64,12 +64,16 @@ def generatePlatformConfig(platformProject, skijaName, lwjglName, obsidianName, 
             implementation "io.github.humbleui:skija-$skijaName:0.105.0"
             implementation "org.lwjgl:lwjgl-yoga:3.3.1:natives-$lwjglName"
         }else{
-            implementation project(":Platforms:Obsidian:${obsidianName - 'jfx-'}")
-            implementation "org.openjfx:javafx-base:$jfxVersion:$jfxName"
-            implementation "org.openjfx:javafx-graphics:$jfxVersion:$jfxName"
-            implementation "org.openjfx:javafx-controls:$jfxVersion:$jfxName"
-            implementation "org.openjfx:javafx-web:$jfxVersion:$jfxName"
-            implementation "org.openjfx:javafx-media:$jfxVersion:$jfxName"
+            api project(':ObsidianJFX')
+            api project(":Platforms:Obsidian:${obsidianName - 'jfx-'}")
+            // These are all API so that the user can depend on this module
+            // without any separate config needed to get appropriate JFX
+            // modules.
+            api "org.openjfx:javafx-base:$jfxVersion:$jfxName"
+            api "org.openjfx:javafx-graphics:$jfxVersion:$jfxName"
+            api "org.openjfx:javafx-controls:$jfxVersion:$jfxName"
+            api "org.openjfx:javafx-web:$jfxVersion:$jfxName"
+            api "org.openjfx:javafx-media:$jfxVersion:$jfxName"
         }
     }
 
@@ -118,6 +122,7 @@ allprojects{
         gitPassword = this.gitPassword
     }
     repositories {
+        mavenLocal()
         mavenCentral()
         maven {
             name = "Chipmunk"

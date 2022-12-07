@@ -4,10 +4,13 @@ plugins {
 }
 
 dependencies {
-    implementation project(':Platforms:ObsidianJFX:linux-x64')
-    implementation project(':Platforms:ObsidianJFX:mac-arm64')
-    implementation project(':Platforms:ObsidianJFX:mac-x64')
-    implementation project(':Platforms:ObsidianJFX:windows-x64')
+    api project(':ObsidianJFX')
+    // These are API for the same reason that the platform
+    // JFX dependencies are API.
+    api project(':Platforms:ObsidianJFX:linux-x64')
+    api project(':Platforms:ObsidianJFX:mac-arm64')
+    api project(':Platforms:ObsidianJFX:mac-x64')
+    api project(':Platforms:ObsidianJFX:windows-x64')
 }
 
 java {
