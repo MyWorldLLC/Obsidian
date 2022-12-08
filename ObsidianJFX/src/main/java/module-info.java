@@ -7,4 +7,6 @@ module myworld.obsidian.jfx {
     requires javafx.web;
 
     exports myworld.obsidian.jfx;
+    exports myworld.obsidian.jfx.input;
+    exports myworld.obsidian.jfx.swapchain;
 }
