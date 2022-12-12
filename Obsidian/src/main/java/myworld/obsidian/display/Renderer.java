@@ -83,7 +83,7 @@ public class Renderer implements AutoCloseable {
         var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
         var geometry = (Object) createSkiaGeometry(boundingRect, style, renderVars, styles);
 
-        Paint fill = getFill(style, renderVars);
+        Object fill = getFill(style, renderVars);
         Paint stroke = getStroke(style, renderVars);
 
         Move position = style.rule(StyleRules.POSITION, renderVars);
@@ -140,14 +140,24 @@ public class Renderer implements AutoCloseable {
             }
 
             if (fill != null) {
-                canvas.drawPath(renderPath, fill);
+                if(fill instanceof ColorRGBA paintFill){
+                    Paint paint = new Paint();
+                    paint.setColor(paintFill.toARGB());
+                    canvas.drawPath(renderPath, paint);
+                }else if(fill instanceof SVGDOM svgFill){
+                    canvas.clipPath(renderPath, true);
+                    svgFill.render(canvas);
+                }else if(fill instanceof Image imageFill){
+                    canvas.clipPath(renderPath, true);
+                    canvas.drawImage(imageFill, boundingRect.getLeft(), boundingRect.getTop());
+                }
             }
 
             if (stroke != null) {
                 canvas.drawPath(renderPath, stroke);
             }
 
-        }if(geometry instanceof RenderableText text){
+        }else if(geometry instanceof RenderableText text){
             // Note: Because text can specify its own style class,
             // conversion of the high-level Text object to RenderableText
             // performs style class merging. This means that all styleable
@@ -336,13 +346,13 @@ public class Renderer implements AutoCloseable {
         return size.floatValue();
     }
 
-    protected static Paint getFill(StyleClass style, Variables renderVars){
-        Paint fill = null;
+    protected static Object getFill(StyleClass style, Variables renderVars){
+
         if (style.hasRule(StyleRules.COLOR)) {
-            fill = new Paint();
-            fill.setColor(style.rule(StyleRules.COLOR, renderVars, Colors.WHITE).toARGB());
+            return style.rule(StyleRules.COLOR, renderVars);
         }
-        return fill;
+
+        return Colors.WHITE;
     }
 
     protected static Paint getStroke(StyleClass style, Variables renderVars){
