@@ -21,6 +21,7 @@ import myworld.obsidian.components.Button;
 import myworld.obsidian.components.Checkbox;
 import myworld.obsidian.components.text.TextDisplay;
 import myworld.obsidian.components.text.TextField;
+import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
 import myworld.obsidian.events.input.CharacterEvent;
 import myworld.obsidian.events.input.KeyEvent;
@@ -101,6 +102,8 @@ public class ExampleRunner {
         ui.useSkin("Obsidian");
         ui.clipboard().set(new GLFWClipboard(window));
         //ui.getDisplay().enableRenderDebug(Colors.RED);
+
+        ui.clearColor().set(ColorRGBA.of("#EEEEEE"));
 
         registerInputListeners(window);
 
