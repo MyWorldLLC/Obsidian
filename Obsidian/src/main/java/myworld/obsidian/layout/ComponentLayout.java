@@ -162,9 +162,17 @@ public class ComponentLayout {
         minHeight.set(height);
     }
 
+    public void minSize(float width, float height){
+        minSize(Distance.pixels(width), Distance.pixels(height));
+    }
+
     public void maxSize(Distance width, Distance height){
         maxWidth.set(width);
         maxHeight.set(height);
+    }
+
+    public void maxSize(float width, float height){
+        maxSize(Distance.pixels(width), Distance.pixels(height));
     }
 
     public void preferredSize(Distance width, Distance height){
@@ -172,9 +180,17 @@ public class ComponentLayout {
         preferredHeight().set(height);
     }
 
+    public void preferredSize(float width, float height){
+        preferredSize(Distance.pixels(width), Distance.pixels(height));
+    }
+
     public void clampedSize(Distance width, Distance height){
         minSize(width, height);
         preferredSize(width, height);
         maxSize(width, height);
+    }
+
+    public void clampedSize(float width, float height){
+        clampedSize(Distance.pixels(width), Distance.pixels(height));
     }
 }
