@@ -306,7 +306,7 @@ public class ObsidianUI {
     }
 
     protected void mouseHoverWatcher(MouseMoveEvent evt){
-        var current = pickFirst(evt.getX(), evt.getY(), Component::isFocusable);
+        var current = pickFirst(evt.getX(), evt.getY(), Component::isHoverable);
         var former = hoveredComponent.get();
         if(current != former){
             hoveredComponent.set(current);
@@ -343,11 +343,10 @@ public class ObsidianUI {
                 var candidates = pick(child, x, y, pickable);
                 picked.addAll(candidates);
             }
-            // We didn't find a child with a tighter bound, so return this component
+            // Order this component after its child candidates, if it's pickable
             if(pickable.test(component)){
                 picked.add(component);
             }
-            //return pickable.test(component) ? List.of(component) : null;
         }
 
         return picked;

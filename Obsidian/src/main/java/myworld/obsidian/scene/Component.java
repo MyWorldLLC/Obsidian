@@ -42,6 +42,7 @@ public class Component {
     protected final ValueProperty<String> styleName;
     protected final ValueProperty<Boolean> focusable;
     protected final ValueProperty<Boolean> focused;
+    protected final ValueProperty<Boolean> hoverable;
     protected final ValueProperty<Boolean> hovered;
     protected final ValueProperty<Boolean> layoutOnly;
     protected final ValueProperty<RenderOrder> renderOrder;
@@ -62,6 +63,7 @@ public class Component {
         styleName = new ValueProperty<>(defaultStyleName(this));
         focusable = new ValueProperty<>(true);
         focused = new ValueProperty<>(false);
+        hoverable = new ValueProperty<>(true);
         hovered = new ValueProperty<>(false);
         layoutOnly = new ValueProperty<>(false);
         renderOrder = new ValueProperty<>(RenderOrder.ASCENDING);
@@ -163,12 +165,20 @@ public class Component {
         return focused;
     }
 
+    public boolean isFocusable(){
+        return focusable().get(false);
+    }
+
+    public ValueProperty<Boolean> hoverable(){
+        return hoverable;
+    }
+
     public ValueProperty<Boolean> hovered(){
         return hovered;
     }
 
-    public boolean isFocusable(){
-        return focusable().get(false);
+    public boolean isHoverable(){
+        return hoverable.get(false);
     }
 
     public ValueProperty<Boolean> layoutOnly(){

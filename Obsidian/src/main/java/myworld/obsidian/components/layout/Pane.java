@@ -23,6 +23,7 @@ public class Pane extends Component {
     public Pane(){
         layoutOnly.set(true);
         focusable.set(false);
+        hoverable.set(false);
     }
 
 }

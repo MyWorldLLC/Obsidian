@@ -32,6 +32,7 @@ public class Stack extends Component {
     public Stack(){
         layoutOnly.set(true);
         focusable.set(false);
+        hoverable.set(false);
         renderOrder.set(RenderOrder.DESCENDING);
 
         effects.add(tpf -> {
