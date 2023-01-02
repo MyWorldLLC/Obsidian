@@ -314,4 +314,16 @@ public class ListProperty<T> extends Property<ListChangeListener<T>> implements 
         }
     }
 
+    public static <T> boolean isAdd(T oldValue, T newValue){
+        return oldValue == null && newValue != null;
+    }
+
+    public static <T> boolean isRemove(T oldValue, T newValue){
+        return oldValue != null && newValue == null;
+    }
+
+    public static <T> boolean isMove(T oldValue, T newValue){
+        return oldValue == newValue && oldValue != null;
+    }
+
 }
