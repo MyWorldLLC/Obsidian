@@ -18,6 +18,6 @@ package myworld.obsidian.scene;
 
 public interface Effect {
 
-    void update(double tpf);
+    boolean update(double tpf);
 
 }
