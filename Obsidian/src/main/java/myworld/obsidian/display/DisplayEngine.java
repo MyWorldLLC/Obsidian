@@ -196,7 +196,7 @@ public class DisplayEngine implements AutoCloseable {
                 renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), style, renderVars, styleLookup);
             });
 
-            component.children().forEach((c) -> render(ui, c, uiSkin));
+            renderChildren(ui, component, uiSkin);
 
             foregroundLayers.forEach(style -> {
                 renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), style, renderVars, styleLookup);
@@ -208,9 +208,21 @@ public class DisplayEngine implements AutoCloseable {
             }else{
                 renderer.renderDebug(getCanvas(), ui.getLayout().getSceneBounds(component));
             }
-            component.children().forEach((c) -> render(ui, c, uiSkin));
+            renderChildren(ui, component, uiSkin);
         }
 
+    }
+
+    protected void renderChildren(ObsidianUI ui, Component component, UISkin uiSkin){
+        if(RenderOrder.ASCENDING.equals(component.renderOrder().get(RenderOrder.ASCENDING))){
+            for(var c : component.children()){
+                render(ui, c, uiSkin);
+            }
+        }else{
+            for(int i = component.children().size() - 1; i >= 0; i--){
+                render(ui, component.children().get(i), uiSkin);
+            }
+        }
     }
 
     protected StyleClass mixStyles(StyleClass s, Variables renderVars, StyleLookup styleLookup){

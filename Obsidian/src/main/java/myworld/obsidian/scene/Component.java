@@ -17,6 +17,7 @@
 package myworld.obsidian.scene;
 
 import myworld.obsidian.ObsidianUI;
+import myworld.obsidian.display.RenderOrder;
 import myworld.obsidian.display.skin.Variables;
 import myworld.obsidian.events.dispatch.EventDispatcher;
 import myworld.obsidian.geometry.Point2D;
@@ -43,6 +44,7 @@ public class Component {
     protected final ValueProperty<Boolean> focused;
     protected final ValueProperty<Boolean> hovered;
     protected final ValueProperty<Boolean> layoutOnly;
+    protected final ValueProperty<RenderOrder> renderOrder;
     protected final MapProperty<String, Supplier<?>> renderVars;
     protected final ListProperty<Runnable> preLayouts;
     protected final ListProperty<Runnable> preRenderers;
@@ -62,6 +64,7 @@ public class Component {
         focused = new ValueProperty<>(false);
         hovered = new ValueProperty<>(false);
         layoutOnly = new ValueProperty<>(false);
+        renderOrder = new ValueProperty<>(RenderOrder.ASCENDING);
         renderVars = new MapProperty<>();
         preLayouts = new ListProperty<>();
         preRenderers = new ListProperty<>();
@@ -174,6 +177,10 @@ public class Component {
 
     public boolean isLayoutOnly(){
         return layoutOnly.get();
+    }
+
+    public ValueProperty<RenderOrder> renderOrder(){
+        return renderOrder;
     }
 
     public MapProperty<String, Supplier<?>> renderVars(){
