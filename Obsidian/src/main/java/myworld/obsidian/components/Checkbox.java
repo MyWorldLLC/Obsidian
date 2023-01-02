@@ -28,12 +28,27 @@ public class Checkbox extends Button {
         renderVars.put(CHECKED_DATA_NAME, checked);
     }
 
-    public void addCheckListener(Consumer<CheckboxEvent> listener){
+    public Checkbox addCheckListener(Consumer<CheckboxEvent> listener){
         addCheckListener(null, listener);
+        return this;
     }
 
-    public void addCheckListener(Predicate<CheckboxEvent> filter, Consumer<CheckboxEvent> listener){
+    public Checkbox addCheckListener(Predicate<CheckboxEvent> filter, Consumer<CheckboxEvent> listener){
         dispatcher.subscribe(CheckboxEvent.class, filter, listener);
+        return this;
+    }
+
+    public Checkbox onCheck(Consumer<CheckboxEvent> listener){
+        return addCheckListener(CheckboxEvent::isChecked, listener);
+    }
+
+    public Checkbox onUncheck(Consumer<CheckboxEvent> listener){
+        return addCheckListener(CheckboxEvent::isUnchecked, listener);
+    }
+
+    public Checkbox onChange(Consumer<CheckboxEvent> listener){
+        addCheckListener(listener);
+        return this;
     }
 
     public ValueProperty<Boolean> checked(){

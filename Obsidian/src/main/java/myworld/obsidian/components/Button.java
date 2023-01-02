@@ -37,6 +37,7 @@ public class Button extends Component {
             clickStart.set(evt.getPoint());
             pressed.set(true);
             dispatcher.dispatch(new ButtonEvent(this, ButtonEvent.Type.PRESSED, evt));
+            evt.consume();
         });
 
         dispatcher.subscribe(MouseButtonEvent.class, mouseReleased(), evt -> {
@@ -48,18 +49,32 @@ public class Button extends Component {
                     dispatcher.dispatch(new ButtonEvent(this, ButtonEvent.Type.CLICKED, evt));
                 }
                 clickStart.set(null);
+                evt.consume();
             }
         });
 
         renderVars.put(PRESSED_DATA_NAME, pressed);
     }
 
-    public void addButtonListener(Consumer<ButtonEvent> listener){
-        addButtonListener(null, listener);
+    public Button addButtonListener(Consumer<ButtonEvent> listener){
+        return addButtonListener(null, listener);
     }
 
-    public void addButtonListener(Predicate<ButtonEvent> filter, Consumer<ButtonEvent> listener){
+    public Button addButtonListener(Predicate<ButtonEvent> filter, Consumer<ButtonEvent> listener){
         dispatcher.subscribe(ButtonEvent.class, filter, listener);
+        return this;
+    }
+
+    public Button onClick(Consumer<ButtonEvent> listener){
+        return addButtonListener(ButtonEvent::isClicked, listener);
+    }
+
+    public Button onPress(Consumer<ButtonEvent> listener){
+        return addButtonListener(ButtonEvent::isPressed, listener);
+    }
+
+    public Button onRelease(Consumer<ButtonEvent> listener){
+        return addButtonListener(ButtonEvent::isReleased, listener);
     }
 
     public void removeListener(Consumer<ButtonEvent> listener){

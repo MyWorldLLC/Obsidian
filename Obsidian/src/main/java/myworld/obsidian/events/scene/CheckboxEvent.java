@@ -14,4 +14,8 @@ public class CheckboxEvent extends ActionEvent {
     public boolean isChecked(){
         return checked;
     }
+
+    public boolean isUnchecked(){
+        return !isChecked();
+    }
 }
