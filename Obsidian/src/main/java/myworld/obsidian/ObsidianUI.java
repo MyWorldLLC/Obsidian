@@ -33,8 +33,11 @@ import myworld.obsidian.scene.Component;
 import myworld.obsidian.layout.LayoutEngine;
 import myworld.obsidian.properties.ValueProperty;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static myworld.obsidian.events.dispatch.EventFilters.mousePressed;
@@ -85,13 +88,16 @@ public class ObsidianUI {
                 focusNext();
             }
         });
-        root.dispatcher().subscribe(MouseButtonEvent.class, mousePressed(), evt -> {
-            var picked = pick(evt.getX(), evt.getY(), Component::isFocusable);
-            if(picked != null){
-                requestFocus(picked);
-            }else{
-                unfocus();
+        root.dispatcher().addFilter(MouseButtonEvent.class, evt -> {
+            if(mousePressed().test(evt)){
+                var picked = pickFirst(evt.getX(), evt.getY(), Component::isFocusable);
+                if(picked != null){
+                    requestFocus(picked);
+                }else{
+                    unfocus();
+                }
             }
+            return true;
         });
 
         layout = new ValueProperty<>();
@@ -177,7 +183,7 @@ public class ObsidianUI {
     }
 
     protected void updateEffects(Component component, double tpf){
-        component.effects().forEach(e -> e.update(tpf));
+        component.effects().removeIf(e -> e.update(tpf));
         component.children().forEach(c -> updateEffects(c, tpf));
     }
 
@@ -300,7 +306,7 @@ public class ObsidianUI {
     }
 
     protected void mouseHoverWatcher(MouseMoveEvent evt){
-        var current = pick(evt.getX(), evt.getY());
+        var current = pickFirst(evt.getX(), evt.getY(), Component::isFocusable);
         var former = hoveredComponent.get();
         if(current != former){
             hoveredComponent.set(current);
@@ -309,31 +315,42 @@ public class ObsidianUI {
         fireEvent(new MouseOverEvent(input.get(), evt.getX(), evt.getY(), former, current));
     }
 
-    public Component pick(int x, int y){
-        return pick(getRoot(), x, y, (c) -> true);
+    public Component pickFirst(int x, int y){
+        return pickFirst(x, y, (c) -> true);
     }
 
-    public Component pick(Component component, int x, int y){
+    public Component pickFirst(int x, int y, Predicate<Component> pickable){
+        var targets = pick(getRoot(), x, y, pickable);
+        return targets.size() > 0 ? targets.get(0) : null;
+    }
+
+    public List<Component> pick(int x, int y){
+        return pick(getRoot(), x, y);
+    }
+
+    public List<Component> pick(Component component, int x, int y){
         return pick(component, x, y, (c) -> true);
     }
 
-    public Component pick(int x, int y, Predicate<Component> pickable){
+    public List<Component> pick(int x, int y, Predicate<Component> pickable){
         return pick(getRoot(), x, y, pickable);
     }
 
-    public Component pick(Component component, int x, int y, Predicate<Component> pickable){
+    public List<Component> pick(Component component, int x, int y, Predicate<Component> pickable){
+        var picked = new ArrayList<Component>();
         if(getLayout().testSceneBounds(component, x, y)){
             for(var child : component.children()){
-                var candidate = pick(child, x, y, pickable);
-                if(candidate != null && pickable.test(candidate)){
-                    return candidate;
-                }
+                var candidates = pick(child, x, y, pickable);
+                picked.addAll(candidates);
             }
             // We didn't find a child with a tighter bound, so return this component
-            return pickable.test(component) ? component : null;
+            if(pickable.test(component)){
+                picked.add(component);
+            }
+            //return pickable.test(component) ? List.of(component) : null;
         }
 
-        return null;
+        return picked;
     }
 
     public void fireEvent(BaseEvent evt){
@@ -399,25 +416,35 @@ public class ObsidianUI {
         }else if(evt instanceof MouseButtonEvent buttonEvent){
             if(buttonEvent.isDown()){
                 var mousePos = input.get().getMousePosition();
-                var target = mousePos != null ? pick(mousePos.x(), mousePos.y()) : eventRoot;
-                buttonReceivers.put(buttonEvent.getButton(), target);
-                dispatch(evt, eventRoot, target);
+                var targets = mousePos != null ? pick(mousePos.x(), mousePos.y()) : List.of(eventRoot);
+                dispatch(evt, eventRoot, targets,
+                        (target) -> buttonReceivers.put(buttonEvent.getButton(), target));
             }else{
                 Component target = buttonReceivers.remove(buttonEvent.getButton());
                 if(target == null){
                     var mousePos = input.get().getMousePosition();
-                    target = mousePos != null ? pick(mousePos.x(), mousePos.y()) : eventRoot;
+                    target = mousePos != null ? pickFirst(mousePos.x(), mousePos.y()) : eventRoot;
                 }
                 dispatch(evt, eventRoot, target);
             }
 
         }else{
             var mousePos = input.get().getMousePosition();
-            var target = mousePos != null ? pick(mousePos.x(), mousePos.y()) : eventRoot;
-            if(target == null){
-                target = eventRoot;
+            var targets = mousePos != null ? pick(mousePos.x(), mousePos.y()) : List.of(eventRoot);
+            if(targets.isEmpty()){
+                targets = List.of(eventRoot);
             }
-            dispatch(evt, eventRoot, target);
+            dispatch(evt, eventRoot, targets, (target) -> {});
+        }
+    }
+
+    protected void dispatch(BaseEvent evt, Component root, List<Component> targets, Consumer<Component> onConsumed){
+        for(var target : targets){
+            dispatch(evt, root, target);
+            if(evt.isConsumed()){
+                onConsumed.accept(target);
+                break;
+            }
         }
     }
 
