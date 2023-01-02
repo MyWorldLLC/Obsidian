@@ -1,11 +1,12 @@
 package myworld.obsidian.example;
 
+import myworld.obsidian.components.layout.Pane;
 import myworld.obsidian.layout.Layout;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.scene.layout.Column;
 import myworld.obsidian.scene.layout.Row;
 
-public class ExampleLayout extends Component {
+public class ExampleLayout extends Pane {
 
     protected final Row primary;
     protected final Column left;
@@ -13,7 +14,6 @@ public class ExampleLayout extends Component {
     protected final Column right;
 
     public ExampleLayout(){
-        layoutOnly.set(true);
 
         primary = new Row();
         left = new Column();

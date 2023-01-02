@@ -19,8 +19,11 @@ package myworld.obsidian.example;
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.components.Button;
 import myworld.obsidian.components.Checkbox;
+import myworld.obsidian.components.layout.Pane;
+import myworld.obsidian.components.layout.Stack;
 import myworld.obsidian.components.text.TextDisplay;
 import myworld.obsidian.components.text.TextField;
+import myworld.obsidian.display.RenderOrder;
 import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
 import myworld.obsidian.events.input.CharacterEvent;
 import myworld.obsidian.events.input.KeyEvent;
@@ -145,15 +148,33 @@ public class ExampleRunner {
         layout.left().addChild(label);
 
         var button = Button.textButton(Text.styled("Hello, Buttons!", ui.getStyle("ExampleText")));
-        button.layout().margin().set(new Offsets(Distance.pixels(15)));
+        button.layout().margin().set(new Offsets(Distance.pixels(10)));
         button.addButtonListener(ButtonEvent::isPressed, evt -> System.out.println("Pressed!"));
         button.addButtonListener(ButtonEvent::isClicked, evt -> System.out.println("Clicked!"));
         button.addButtonListener(ButtonEvent::isReleased, evt -> System.out.println("Released!"));
         layout.right().addChild(button);
 
-        var checkbox = new Checkbox();
-        checkbox.addCheckListener(evt -> System.out.println("Checked: " + evt.isChecked()));
+        var checkbox = new Checkbox()
+                .onChange(evt -> System.out.println("Checked: " + evt.isChecked()));
         layout.right().addChild(checkbox);
+
+        var topPane = new Pane();
+        var topButton = Button
+                .textButton(Text.plain("Top"))
+                .onClick(e -> System.out.println("Top clicked"));
+        topPane.addChild(topButton);
+
+        var bottomPane = new Pane();
+        var bottomButton = Button
+                .textButton(Text.plain("Bottom"))
+                .onClick(e -> System.out.println("Bottom clicked"));
+        bottomPane.addChild(bottomButton);
+
+        var stack = new Stack()
+                .withChildren(topPane, bottomPane);
+        stack.layout().clampedSize(250, 250);
+
+        layout.center().addChild(stack);
 
         ui.requestFocus(textField);
 
