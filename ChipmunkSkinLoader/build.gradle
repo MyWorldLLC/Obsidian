@@ -1,0 +1,20 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+dependencies {
+    api            project(':Obsidian')
+    implementation 'myworld:chipmunk:v1.0.0-alpha1-43-g632d853'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(jdkVersion)
+    }
+    withJavadocJar()
+    withSourcesJar()
+}
+
+group = 'com.myworldvw'
+version = gitVersion

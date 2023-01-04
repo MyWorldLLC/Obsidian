@@ -1,4 +1,4 @@
-package myworld.obsidian.example;
+package example;
 
 import myworld.obsidian.input.ClipboardHandler;
 import org.lwjgl.glfw.GLFW;

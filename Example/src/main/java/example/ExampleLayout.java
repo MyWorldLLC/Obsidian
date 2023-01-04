@@ -1,8 +1,7 @@
-package myworld.obsidian.example;
+package example;
 
 import myworld.obsidian.components.layout.Pane;
 import myworld.obsidian.layout.Layout;
-import myworld.obsidian.scene.Component;
 import myworld.obsidian.scene.layout.Column;
 import myworld.obsidian.scene.layout.Row;
 

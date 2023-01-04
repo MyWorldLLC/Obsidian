@@ -1,13 +1,6 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'org.openjfx.javafxplugin' version '0.0.9'
-}
-
-javafx {
-    version = jfxVersion
-    modules = ['javafx.graphics']
-    configuration = 'compileOnly'
 }
 
 sourceSets {
@@ -29,20 +22,6 @@ dependencies {
     implementation 'org.lwjgl:lwjgl-yoga:3.3.1'
     implementation "io.github.humbleui:skija-shared:0.105.0"
     implementation 'myworld:chipmunk:1.0.0-SNAPSHOT'
-
-    exampleCompileClasspath 'org.lwjgl:lwjgl:3.3.1'
-    exampleCompileClasspath 'org.lwjgl:lwjgl-glfw:3.3.1'
-    exampleCompileClasspath 'org.lwjgl:lwjgl-opengl:3.3.1'
-    exampleRuntimeOnly "io.github.humbleui:skija-$skijaPlatform:0.105.0"
-    exampleRuntimeOnly "org.lwjgl:lwjgl:3.3.1:natives-$lwjglPlatform"
-    exampleRuntimeOnly "org.lwjgl:lwjgl-glfw:3.3.1:natives-$lwjglPlatform"
-    exampleRuntimeOnly "org.lwjgl:lwjgl-yoga:3.3.1:natives-$lwjglPlatform"
-    exampleRuntimeOnly "org.lwjgl:lwjgl-opengl:3.3.1:natives-$lwjglPlatform"
-    exampleRuntimeOnly "org.openjfx:javafx-base:$jfxVersion:$platform"
-    exampleRuntimeOnly "org.openjfx:javafx-graphics:$jfxVersion:$platform"
-    exampleRuntimeOnly "org.openjfx:javafx-controls:$jfxVersion:$platform"
-    exampleRuntimeOnly "org.openjfx:javafx-web:$jfxVersion:$platform"
-    exampleRuntimeOnly "org.openjfx:javafx-media:$jfxVersion:$platform"
 }
 
 java {
@@ -78,12 +57,4 @@ publishing {
             }
         }
     }
-}
-
-task run(type: JavaExec){
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(jdkVersion)
-    }
-    classpath = sourceSets.example.compileClasspath + sourceSets.example.runtimeClasspath
-    mainClass = 'myworld.obsidian.example.ExampleRunner'
 }

@@ -1,15 +1,14 @@
 module myworld.obsidian {
-    requires chipmunk.lang;
     requires io.github.humbleui.skija.shared;
     requires io.github.humbleui.types;
     requires org.lwjgl.yoga;
 
     exports myworld.obsidian;
     exports myworld.obsidian.components;
+    exports myworld.obsidian.components.layout;
     exports myworld.obsidian.components.text;
     exports myworld.obsidian.display;
     exports myworld.obsidian.display.skin;
-    exports myworld.obsidian.display.skin.chipmunk;
     exports myworld.obsidian.events;
     exports myworld.obsidian.events.dispatch;
     exports myworld.obsidian.events.input;
