@@ -18,3 +18,27 @@ java {
 
 group = 'com.myworldvw'
 version = gitVersion
+
+publishing {
+    publications {
+        maven(MavenPublication){
+
+            groupId = group
+            artifactId = 'obsidian-chipmunk'
+            version = version
+
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/MyWorldLLC/Packages")
+            credentials {
+                username = gitUser
+                password = gitPassword
+            }
+        }
+    }
+}

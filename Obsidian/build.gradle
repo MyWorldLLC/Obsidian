@@ -3,25 +3,9 @@ plugins {
     id 'maven-publish'
 }
 
-sourceSets {
-    example {
-        compileClasspath += sourceSets.main.output
-        runtimeClasspath += sourceSets.main.output
-        java {
-            srcDir 'example/java'
-        }
-    }
-}
-
-configurations {
-    exampleImplementation.extendsFrom(implementation)
-}
-
 dependencies {
-
     implementation 'org.lwjgl:lwjgl-yoga:3.3.1'
-    implementation "io.github.humbleui:skija-shared:0.105.0"
-    implementation 'myworld:chipmunk:1.0.0-SNAPSHOT'
+    implementation 'io.github.humbleui:skija-shared:0.105.0'
 }
 
 java {
