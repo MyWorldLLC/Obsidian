@@ -200,11 +200,11 @@ import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL32.*;
-import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class ExampleRunner {
+
+    public static final String CHIPMUNK_SKIN_EXAMPLE = "/example/chipmunk/obsidian/Skin.chp";
 
     protected long window;
 
@@ -261,7 +261,7 @@ public class ExampleRunner {
 
         ui = ObsidianUI.createForGL(getRenderWidth(), getRenderHeight(), 4, 0);
         // NOTE: demo either Chipmunk skins of Java skins by selecting one of the lines below
-        //ui.registerSkin(ChipmunkSkinLoader.loadFromClasspath(ChipmunkSkinLoader.DEFAULT_SKIN));
+        //ui.registerSkin(ChipmunkSkinLoader.loadFromClasspath(CHIPMUNK_SKIN_EXAMPLE));
         ui.registerSkin(ObsidianSkin.create());
         ui.useSkin("Obsidian");
         ui.clipboard().set(new GLFWClipboard(window));

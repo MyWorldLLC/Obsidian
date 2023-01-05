@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 
 public class ChipmunkSkinLoader {
 
-    public static final String DEFAULT_SKIN = "/myworld/obsidian/display/skin/chipmunk/obsidian/Skin.chp";
-
     public static UISkin load(String path, ResourceResolver resolver) throws Exception {
         var vm = new ChipmunkVM();
         try{
