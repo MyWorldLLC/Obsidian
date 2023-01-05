@@ -6,6 +6,7 @@ import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.UISkin;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class UISkinBuilder {
@@ -23,6 +24,16 @@ public class UISkinBuilder {
 
     public UISkinBuilder withComponents(Collection<ComponentSkin> components){
         return handleBulk(components, this::withComponent);
+    }
+
+    public UISkinBuilder withVar(String name, Object value){
+        uiSkin.variables().set(name, value);
+        return this;
+    }
+
+    public UISkinBuilder withVars(Map<String, Object> vars){
+        uiSkin.variables().set(vars);
+        return this;
     }
 
     public UISkinBuilder withStyleClass(StyleClass style){

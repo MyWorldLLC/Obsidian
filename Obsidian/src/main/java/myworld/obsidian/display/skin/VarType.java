@@ -20,7 +20,12 @@ import myworld.obsidian.ObsidianPixels;
 import myworld.obsidian.display.ColorRGBA;
 
 public enum VarType {
-    STRING(String.class), BOOLEAN(Boolean.class), COLOR(ColorRGBA.class), IMAGE(ObsidianPixels.class);
+    BOOLEAN(Boolean.class),
+    COLOR(ColorRGBA.class),
+    FLOAT(Float.class),
+    IMAGE(ObsidianPixels.class),
+    INTEGER(Integer.class),
+    STRING(String.class);
 
     private final Class<?> typeCls;
 

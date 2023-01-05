@@ -4,6 +4,7 @@ import myworld.obsidian.display.skin.ComponentInterface;
 import myworld.obsidian.display.skin.ComponentSkin;
 import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.VarType;
+import myworld.obsidian.scene.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,8 @@ public class ComponentSkinBuilder {
     protected ComponentSkinBuilder(String name){
         this.name = name;
         parameterInterface = new ComponentInterface();
+        parameterInterface.defineParameter(Component.FOCUSED_DATA_NAME, VarType.BOOLEAN);
+        parameterInterface.defineParameter(Component.HOVERED_DATA_NAME, VarType.BOOLEAN);
         styles = new ArrayList<>();
     }
 

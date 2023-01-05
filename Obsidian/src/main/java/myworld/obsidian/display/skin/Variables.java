@@ -52,6 +52,12 @@ public class Variables {
         return type.cast(value);
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T get(String name, T defaultValue){
+        var value = get(name, defaultValue.getClass());
+        return value != null ? (T) value : defaultValue;
+    }
+
     public void set(String name, Object value){
         vars.put(name, value);
     }

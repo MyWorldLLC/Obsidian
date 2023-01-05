@@ -25,6 +25,7 @@ import myworld.obsidian.components.text.TextDisplay;
 import myworld.obsidian.components.text.TextField;
 import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
+import myworld.obsidian.display.skin.obsidian.ObsidianSkin;
 import myworld.obsidian.events.input.CharacterEvent;
 import myworld.obsidian.events.input.KeyEvent;
 import myworld.obsidian.events.input.MouseOverEvent;
@@ -259,7 +260,9 @@ public class ExampleRunner {
         glfwSwapInterval(1); // Use VSync
 
         ui = ObsidianUI.createForGL(getRenderWidth(), getRenderHeight(), 4, 0);
-        ui.registerSkin(ChipmunkSkinLoader.loadFromClasspath(ChipmunkSkinLoader.DEFAULT_SKIN));
+        // NOTE: demo either Chipmunk skins of Java skins by selecting one of the lines below
+        //ui.registerSkin(ChipmunkSkinLoader.loadFromClasspath(ChipmunkSkinLoader.DEFAULT_SKIN));
+        ui.registerSkin(ObsidianSkin.create());
         ui.useSkin("Obsidian");
         ui.clipboard().set(new GLFWClipboard(window));
         //ui.getDisplay().enableRenderDebug(Colors.RED);
