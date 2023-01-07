@@ -2,10 +2,12 @@ package myworld.obsidian.display.skin.obsidian;
 
 import myworld.obsidian.components.Button;
 import myworld.obsidian.components.Checkbox;
+import myworld.obsidian.components.layout.Viewport;
 import myworld.obsidian.components.text.EditableTextDisplay;
 import myworld.obsidian.components.text.TextDisplay;
 import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
+import myworld.obsidian.display.OverflowModes;
 import myworld.obsidian.display.skin.*;
 import myworld.obsidian.display.skin.builder.ComponentSkinBuilder;
 import myworld.obsidian.display.skin.builder.RuleBuilder;
@@ -42,6 +44,7 @@ public class ObsidianSkin {
                 .withComponent(editableTextDisplay())
                 .withComponent(textField())
                 .withComponent(checkbox())
+                .withComponent(viewport())
                 .withStyleClass(
                         StyleClass.forName("ExampleText",
                                 RuleBuilder.create()
@@ -74,7 +77,7 @@ public class ObsidianSkin {
     }
 
     public static ComponentSkin checkbox(){
-        return ComponentSkinBuilder.create("Checkbox")
+        return ComponentSkinBuilder.create(Checkbox.COMPONENT_STYLE_NAME)
                 .withParameter(Checkbox.CHECKED_DATA_NAME, VarType.BOOLEAN)
                 .withStyle(
                         StyleClass.forLayer("background",
@@ -104,6 +107,19 @@ public class ObsidianSkin {
                                                 Distance.percentage(12.5f)
                                         )))
                                         .withRule(COLOR, constant(ColorRGBA.of("#00000099")))
+                                .build()
+                        )
+                )
+                .build();
+    }
+
+    public static ComponentSkin viewport(){
+        return ComponentSkinBuilder.create(Viewport.COMPONENT_STYLE_NAME)
+                .withStyle(
+                        StyleClass.forLayer("viewport",
+                                RuleBuilder.create()
+                                        .withRule(BORDER_COLOR, constant(ColorRGBA.of("#AAAAAA")))
+                                        .withRule(BORDER_WIDTH, constant(1))
                                 .build()
                         )
                 )

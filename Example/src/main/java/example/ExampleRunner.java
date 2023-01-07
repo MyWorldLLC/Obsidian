@@ -21,10 +21,10 @@ import myworld.obsidian.components.Button;
 import myworld.obsidian.components.Checkbox;
 import myworld.obsidian.components.layout.Pane;
 import myworld.obsidian.components.layout.Stack;
+import myworld.obsidian.components.layout.Viewport;
 import myworld.obsidian.components.text.TextDisplay;
 import myworld.obsidian.components.text.TextField;
 import myworld.obsidian.display.ColorRGBA;
-import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
 import myworld.obsidian.display.skin.obsidian.ObsidianSkin;
 import myworld.obsidian.events.input.CharacterEvent;
 import myworld.obsidian.events.input.KeyEvent;
@@ -40,9 +40,7 @@ import myworld.obsidian.text.Text;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
-import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
-import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
 import static org.lwjgl.glfw.GLFW.GLFW_DEPTH_BITS;
@@ -307,7 +305,6 @@ public class ExampleRunner {
         layout.center().addChild(textField);
 
         var label = new TextDisplay();
-        label.layout().preferredSize(Distance.pixels(100), Distance.pixels(100));
         label.text().set("Hello, World!");
         layout.left().addChild(label);
 
@@ -339,6 +336,17 @@ public class ExampleRunner {
         stack.layout().clampedSize(250, 250);
 
         layout.center().addChild(stack);
+
+        var bigButton = Button.textButton(Text.plain("A really big button"));
+        bigButton.layout().clampedSize(300, 300);
+
+        var viewport = new Viewport();
+        viewport.clampViewToContent().set(false);
+        viewport.setViewContent(bigButton);
+
+        viewport.layout().clampedSize(250, 250);
+
+        layout.right().addChild(viewport);
 
         ui.requestFocus(textField);
 

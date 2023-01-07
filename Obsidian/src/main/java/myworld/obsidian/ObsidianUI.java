@@ -429,7 +429,8 @@ public class ObsidianUI {
 
         }else{
             var mousePos = input.get().getMousePosition();
-            var targets = mousePos != null ? pick(mousePos.x(), mousePos.y()) : List.of(eventRoot);
+            List<Component> targets = new ArrayList<>(buttonReceivers.values());
+            targets.addAll(mousePos != null ? pick(mousePos.x(), mousePos.y()) : List.of(eventRoot));
             if(targets.isEmpty()){
                 targets = List.of(eventRoot);
             }
