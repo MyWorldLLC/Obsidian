@@ -57,8 +57,8 @@ public class LayoutEngine {
     public void layout(){
 
         var dimensions = ui.getDisplay().getDimensions().get();
-        var fWidth = (float) dimensions.width();
-        var fHeight = (float) dimensions.height();
+        var fWidth = dimensions.width();
+        var fHeight = dimensions.height();
 
         var root = ui.getRoot();
         root.apply(c -> c.preLayouts().forEach(Runnable::run));
@@ -246,6 +246,14 @@ public class LayoutEngine {
             yogaSetPadding(node, YGEdgeRight, padding.right());
             yogaSetPadding(node, YGEdgeBottom, padding.bottom());
 
+            var offsets = layout.offsets().get();
+            if(offsets != null){
+                yogaSetOffsets(node, YGEdgeLeft, offsets.left());
+                yogaSetOffsets(node, YGEdgeTop, offsets.top());
+                yogaSetOffsets(node, YGEdgeRight, offsets.right());
+                yogaSetOffsets(node, YGEdgeBottom, offsets.bottom());
+            }
+
             setDimension(layout.preferredWidth().get(),
                     () -> YGNodeStyleSetWidthAuto(node),
                     (w) -> YGNodeStyleSetWidth(node, w),
@@ -316,5 +324,13 @@ public class LayoutEngine {
                 () -> YGNodeStyleSetPadding(node, edge, 0),
                 (d) -> YGNodeStyleSetPadding(node, edge, d),
                 (d) -> YGNodeStyleSetPaddingPercent(node, edge, d));
+    }
+
+    protected void yogaSetOffsets(long node, int edge, Distance dist){
+        setDimension(dist,
+                () -> YGNodeStyleSetPosition(node, edge, 0),
+                (d) -> YGNodeStyleSetPosition(node, edge, d),
+                (d) -> YGNodeStyleSetPositionPercent(node, edge, d)
+                );
     }
 }
