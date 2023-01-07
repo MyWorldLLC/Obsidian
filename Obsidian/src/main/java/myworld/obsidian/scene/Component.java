@@ -45,6 +45,7 @@ public class Component {
     protected final ValueProperty<Boolean> hoverable;
     protected final ValueProperty<Boolean> hovered;
     protected final ValueProperty<Boolean> layoutOnly;
+    protected final ValueProperty<Boolean> clipChildren;
     protected final ValueProperty<RenderOrder> renderOrder;
     protected final MapProperty<String, Supplier<?>> renderVars;
     protected final ListProperty<Runnable> preLayouts;
@@ -66,6 +67,7 @@ public class Component {
         hoverable = new ValueProperty<>(true);
         hovered = new ValueProperty<>(false);
         layoutOnly = new ValueProperty<>(false);
+        clipChildren = new ValueProperty<>(false);
         renderOrder = new ValueProperty<>(RenderOrder.ASCENDING);
         renderVars = new MapProperty<>();
         preLayouts = new ListProperty<>();
@@ -187,6 +189,10 @@ public class Component {
 
     public boolean isLayoutOnly(){
         return layoutOnly.get();
+    }
+
+    public ValueProperty<Boolean> clipChildren(){
+        return clipChildren;
     }
 
     public ValueProperty<RenderOrder> renderOrder(){

@@ -17,9 +17,7 @@ import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextShadow;
 import myworld.obsidian.text.TextStyle;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Renderer implements AutoCloseable {
 
@@ -30,6 +28,7 @@ public class Renderer implements AutoCloseable {
     protected final Map<ResourceHandle, SVGDOM> svgs;
     protected final Map<ResourceHandle, Image> images;
 
+    protected final Deque<Bounds2D> clipRegions;
     protected final ValueProperty<ColorRGBA> debugColor;
 
     public Renderer(){
@@ -42,10 +41,36 @@ public class Renderer implements AutoCloseable {
 
         shaper = Shaper.make(FontMgr.getDefault());
 
+        clipRegions = new ArrayDeque<>();
         debugColor = new ValueProperty<>();
 
         svgs = new HashMap<>();
         images = new HashMap<>();
+    }
+
+    public void enterClippingRegion(Bounds2D clipRegion){
+        clipRegions.push(clipRegion);
+    }
+
+    public Bounds2D getCurrentClippingRegion(){
+        return clipRegions.isEmpty() ? null : clipRegions.peek();
+    }
+
+    public Rect calculateScreenClip(){
+        if(clipRegions.isEmpty()){
+            return null;
+        }
+
+        var clip = boundsToRect(clipRegions.peekLast());
+        var it = clipRegions.descendingIterator();
+        while(it.hasNext()){
+            clip = safeIntersect(clip, boundsToRect(it.next()));
+        }
+        return clip;
+    }
+
+    public void exitClippingRegion(){
+        clipRegions.pop();
     }
 
     public ValueProperty<ColorRGBA> debugBoundsColor(){
@@ -80,7 +105,14 @@ public class Renderer implements AutoCloseable {
 
         renderDebug(canvas, componentBounds);
 
+
         var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
+
+        Rect clippingRect = calculateScreenClip();
+        if(clippingRect != null){
+            canvas.clipRect(clippingRect, true);
+        }
+
         var geometry = (Object) createSkiaGeometry(boundingRect, style, renderVars, styles);
 
         Object fill = getFill(style, renderVars);
@@ -116,8 +148,11 @@ public class Renderer implements AutoCloseable {
             if (visualBounds.getWidth() > boundingRect.getWidth() || visualBounds.getHeight() > boundingRect.getHeight()) {
 
                 switch (style.rule(StyleRules.OVERFLOW_MODE, renderVars, OverflowModes.SCALE)){
-                    case OverflowModes.CLIP ->
-                            canvas.clipRect(boundingRect, true);
+                    case OverflowModes.CLIP -> {
+                        var clipTo = clippingRect != null ? safeIntersect(clippingRect, boundingRect) : boundingRect;
+                        canvas.clipRect(clipTo, true);
+                    }
+
                     case OverflowModes.SCALE_UNIFORM ->
                             transform = Matrix33.IDENTITY
                                     .makeConcat(Matrix33.makeTranslate(visualBounds.getLeft(), visualBounds.getTop()))
@@ -164,8 +199,8 @@ public class Renderer implements AutoCloseable {
             // properties used here must be assigned to the RenderableText
             // during creation, and none of the style variables (such as fill color)
             // available from the outer scopes here may be used.
-            canvas.setMatrix(transform);
-            canvas.clipRect(boundingRect, true);
+            var clipTo = clippingRect != null ? safeIntersect(clippingRect, boundingRect) : boundingRect;
+            canvas.clipRect(clipTo, true);
 
             var textColor = new Paint();
             textColor.setColor(text.color().toARGB());
@@ -306,6 +341,15 @@ public class Renderer implements AutoCloseable {
 
     public TextRuler getTextRuler(StyleClass textStyle, Variables v){
         return new TextRuler(this, getFont(textStyle, v));
+    }
+
+    protected Rect boundsToRect(Bounds2D bounds){
+        return new Rect(bounds.left() - 0.5f, bounds.top() - 0.5f, bounds.right() - 0.5f, bounds.bottom() - 0.5f);
+    }
+
+    protected Rect safeIntersect(Rect a, Rect b){
+        var i = a.intersect(b);
+        return i != null ? i : a;
     }
 
     public static PaintStrokeCap skiaCap(String cap){

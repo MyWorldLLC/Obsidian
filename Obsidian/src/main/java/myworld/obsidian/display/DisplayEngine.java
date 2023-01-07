@@ -192,14 +192,23 @@ public class DisplayEngine implements AutoCloseable {
 
             }
 
+            var componentBounds = ui.getLayout().getSceneBounds(component);
             backgroundLayers.forEach(style -> {
-                renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), style, renderVars, styleLookup);
+                renderer.render(getCanvas(), componentBounds, style, renderVars, styleLookup);
             });
+
+            if(component.clipChildren().get(false)){
+                renderer.enterClippingRegion(componentBounds);
+            }
 
             renderChildren(ui, component, uiSkin);
 
+            if(component.clipChildren().get(false)){
+                renderer.exitClippingRegion();
+            }
+
             foregroundLayers.forEach(style -> {
-                renderer.render(getCanvas(), ui.getLayout().getSceneBounds(component), style, renderVars, styleLookup);
+                renderer.render(getCanvas(), componentBounds, style, renderVars, styleLookup);
             });
 
         }else{
