@@ -20,6 +20,7 @@ import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.display.RenderOrder;
 import myworld.obsidian.display.skin.Variables;
 import myworld.obsidian.events.dispatch.EventDispatcher;
+import myworld.obsidian.geometry.Bounds2D;
 import myworld.obsidian.geometry.Point2D;
 import myworld.obsidian.layout.ComponentLayout;
 import myworld.obsidian.properties.ListProperty;
@@ -283,6 +284,20 @@ public class Component {
     public void apply(Consumer<Component> c){
         c.accept(this);
         children.forEach(child -> child.apply(c));
+    }
+
+    public Bounds2D getLocalBounds(){
+        if(!ui.isSet()){
+            throw new IllegalStateException("Component is not attached to a scene");
+        }
+        return ui.get().getLayout().getLocalBounds(this);
+    }
+
+    public Bounds2D getSceneBounds(){
+        if(!ui.isSet()){
+            throw new IllegalStateException("Component is not attached to a scene");
+        }
+        return ui.get().getLayout().getSceneBounds(this);
     }
 
     public static String defaultStyleName(Component component){

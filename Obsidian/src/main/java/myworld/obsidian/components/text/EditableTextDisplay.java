@@ -57,7 +57,7 @@ public class EditableTextDisplay extends Component {
             var widths = ruler.getWidths(s);
 
             offset = positions[limit - 1] + widths[limit - 1];
-            var bounds = ui().get().getLayout().getLocalBounds(this);
+            var bounds = this.getLocalBounds();
 
             return Math.min(offset, bounds.width());
         });
