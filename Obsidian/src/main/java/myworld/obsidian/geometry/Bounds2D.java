@@ -35,4 +35,12 @@ public record Bounds2D(Point2D origin, float width, float height) {
     public float bottom(){
         return top() + height;
     }
+
+    public Bounds2D translate(float dx, float dy){
+        return new Bounds2D(new Point2D(origin.x() + dx, origin.y() + dy), width, height);
+    }
+
+    public Bounds2D resize(float width, float height){
+        return new Bounds2D(origin, width, height);
+    }
 }
