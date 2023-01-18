@@ -34,6 +34,7 @@ import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.input.MouseWheelAxis;
+import myworld.obsidian.layout.ItemAlignment;
 import myworld.obsidian.layout.Offsets;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
@@ -339,9 +340,9 @@ public class ExampleRunner {
 
         var bigButton = Button.textButton(Text.plain("A really big button"));
         bigButton.layout().clampedSize(300, 300);
+        bigButton.layout().margin().set(Offsets.ZERO);
 
         var viewport = new Viewport();
-        viewport.clampViewToContent().set(false);
         viewport.setViewContent(bigButton);
 
         viewport.layout().clampedSize(250, 250);

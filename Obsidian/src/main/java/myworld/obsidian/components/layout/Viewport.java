@@ -1,8 +1,6 @@
 package myworld.obsidian.components.layout;
 
-import myworld.obsidian.events.dispatch.EventFilters;
 import myworld.obsidian.events.input.MouseButtonEvent;
-import myworld.obsidian.events.input.MouseMoveEvent;
 import myworld.obsidian.events.input.MouseOverEvent;
 import myworld.obsidian.geometry.Point2D;
 import myworld.obsidian.input.MouseButton;
@@ -32,7 +30,8 @@ public class Viewport extends Component {
 
             if(newValue != null){
                 addChild(newValue);
-                newValue.layout().positionType().set(PositionType.RELATIVE);
+                newValue.layout().positionType().set(PositionType.ABSOLUTE);
+                moveTo(0, 0);
             }
         });
 
@@ -43,21 +42,20 @@ public class Viewport extends Component {
         dispatcher.addFilter(MouseButtonEvent.class, evt -> {
             if(evt.isDown() && evt.getButton().equals(MouseButton.PRIMARY)){
                 dragStart.set(new Point2D(evt.getX(), evt.getY()));
-            }
-            return true;
-        });
-        dispatcher.addFilter(MouseButtonEvent.class, evt -> {
-            if(evt.isUp() && evt.getButton().equals(MouseButton.PRIMARY)){
+            }else if(evt.isUp() && evt.getButton().equals(MouseButton.PRIMARY)){
                 dragStart.set(null);
             }
             return true;
         });
-        //dispatcher.subscribe(MouseButtonEvent.class, EventFilters.mousePressed(MouseButton.PRIMARY), evt -> dragStart.set(new Point2D(evt.getX(), evt.getY())));
-        //dispatcher.subscribe(MouseButtonEvent.class, EventFilters.mouseReleased(MouseButton.PRIMARY), evt -> dragStart.set(null));
+
         dispatcher.subscribe(MouseOverEvent.class,
-                evt -> evt.getManager().isDown(MouseButton.PRIMARY),
+                evt -> evt.getManager().isDown(MouseButton.PRIMARY) && dragStart.isSet(),
                 evt -> {
-                    moveTo(evt.getX() - dragStart.get().x(), evt.getY() - dragStart.get().y());
+                    var dx = evt.getX() - dragStart.get().x();
+                    var dy = evt.getY() - dragStart.get().y();
+                    dragStart.set(new Point2D(evt.getX(), evt.getY()));
+
+                    move(dx, dy);
                 }
         );
     }
@@ -88,20 +86,36 @@ public class Viewport extends Component {
     public void move(float dx, float dy){
         viewContent.ifSet(c -> {
 
-            var shiftedX = offsets.get().x() + dx;
-            var shiftedY = offsets.get().y() + dy;
+            var offsetX = offsets.get().x() + dx;
+            var offsetY = offsets.get().y() + dy;
 
-            if(clampViewToContent.get() && ui.isSet()){
-                // TODO - this isn't correct
-                var bounds = ui.get().getLayout().getLocalBounds(c);
-                shiftedX = Range.clamp(bounds.left(), shiftedX, bounds.right());
-                shiftedY = Range.clamp(bounds.top(), shiftedY, bounds.bottom());
+            if(clampViewToContent.get(true)){
+                var constrained = constrainedOffsets(offsetX, offsetY);
+                offsetX = constrained.x();
+                offsetY = constrained.y();
             }
 
-            System.out.println("Shift dx: %f, dy: %f, X: %f, Y: %f".formatted(dx, dy, shiftedX, shiftedY));
-            c.layout().offsets().set(Offsets.shift(shiftedX, shiftedY));
-            offsets.set(new Point2D(shiftedX, shiftedY));
+            c.layout().offsets().set(Offsets.shift(offsetX, offsetY));
+            offsets.set(new Point2D(offsetX, offsetY));
         });
     }
+
+    public Point2D constrainedOffsets(float x, float y){
+        return constrainedOffsets(viewContent.get(), x, y);
+    }
+
+    public Point2D constrainedOffsets(Component c, float x, float y){
+        var bounds = c.getSceneBounds();
+        var viewBounds = this.getSceneBounds();
+
+        var rangeX = Math.abs(bounds.width() - viewBounds.width());
+        x = Range.clamp(-rangeX, x, 0);
+
+        var rangeY = Math.abs(bounds.height() - viewBounds.height());
+        y = Range.clamp(-rangeY, y, 0);
+
+        return new Point2D(x, y);
+    }
+
 
 }
