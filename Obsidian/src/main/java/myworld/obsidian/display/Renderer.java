@@ -132,8 +132,8 @@ public class Renderer implements AutoCloseable {
         if(position != null){
             transform = Matrix33.makeTranslate(
                             // The shift by 0.5f aligns pixels so that they make a crisp line rather than a blurred one
-                            toPixels(position.x(), componentBounds.width()) - 0.5f,
-                            toPixels(position.y(), componentBounds.height()) - 0.5f)
+                            position.x().toPixels(componentBounds.width()) - 0.5f,
+                            position.y().toPixels(componentBounds.height()) - 0.5f)
                     .makeConcat(transform);
         }
 
@@ -224,8 +224,8 @@ public class Renderer implements AutoCloseable {
                     shadowPaint.setColor(shadow.color().toARGB());
                     shadowPaint.setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, shadow.blurSigma(), false));
                     renderDecoratedText(canvas, text.text(), text.decorations(),
-                            toPixels(shadow.offset().x(), boundingRect.getWidth()) + boundingRect.getLeft(),
-                            toPixels(shadow.offset().y(), boundingRect.getHeight()) + boundingRect.getTop(),
+                            shadow.offset().x().toPixels(boundingRect.getWidth()) + boundingRect.getLeft(),
+                            shadow.offset().y().toPixels(boundingRect.getHeight()) + boundingRect.getTop(),
                             shadowPaint);
                 }
             }
@@ -371,18 +371,11 @@ public class Renderer implements AutoCloseable {
     }
 
     protected static float pixelWidth(Distance distance, Rect bounds){
-        return toPixels(distance, bounds.getWidth());
+        return distance.toPixels(bounds.getWidth());
     }
 
     protected static float pixelHeight(Distance distance, Rect bounds){
-        return toPixels(distance, bounds.getHeight());
-    }
-
-    protected static float toPixels(Distance distance, float size){
-        return switch (distance.unit()){
-            case PIXELS -> distance.asInt();
-            case PERCENTAGE -> distance.asFloat() / 100f * size;
-        };
+        return distance.toPixels(bounds.getHeight());
     }
 
     protected static float getFontSize(StyleClass style, Variables renderVars){

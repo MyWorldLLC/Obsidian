@@ -38,6 +38,13 @@ public record Distance(Number value, Unit unit) {
         return value.floatValue();
     }
 
+    public float toPixels(float size){
+        return switch (unit){
+            case PIXELS -> value.floatValue();
+            case PERCENTAGE -> value.floatValue() / 100f * size;
+        };
+    }
+
     public Distance multiply(Number value){
         return new Distance(this.value.floatValue() * value.floatValue(), unit);
     }
