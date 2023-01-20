@@ -19,6 +19,7 @@ package example;
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.components.Button;
 import myworld.obsidian.components.Checkbox;
+import myworld.obsidian.components.Slider;
 import myworld.obsidian.components.layout.Pane;
 import myworld.obsidian.components.layout.Stack;
 import myworld.obsidian.components.layout.Viewport;
@@ -348,6 +349,18 @@ public class ExampleRunner {
         viewport.layout().clampedSize(250, 250);
 
         layout.right().addChild(viewport);
+
+        var hSlider = new Slider();
+        hSlider.orientation().set(Slider.Orientation.HORIZONTAL);
+        hSlider.layout().clampedSize(150, 10);
+
+        layout.right().addChild(hSlider);
+
+        var vSlider = new Slider();
+        vSlider.orientation().set(Slider.Orientation.VERTICAL);
+        vSlider.layout().clampedSize(10, 150);
+
+        layout.right().addChild(vSlider);
 
         ui.requestFocus(textField);
 

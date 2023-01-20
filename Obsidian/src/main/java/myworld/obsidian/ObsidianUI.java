@@ -419,12 +419,14 @@ public class ObsidianUI {
                 dispatch(evt, eventRoot, targets,
                         (target) -> buttonReceivers.put(buttonEvent.getButton(), target));
             }else{
+                var targets = new ArrayList<Component>();
                 Component target = buttonReceivers.remove(buttonEvent.getButton());
-                if(target == null){
-                    var mousePos = input.get().getMousePosition();
-                    target = mousePos != null ? pickFirst(mousePos.x(), mousePos.y()) : eventRoot;
+                if(target != null){
+                    targets.add(target);
                 }
-                dispatch(evt, eventRoot, target);
+                var mousePos = input.get().getMousePosition();
+                targets.addAll(mousePos != null ? pick(mousePos.x(), mousePos.y()) : List.of(eventRoot));
+                dispatch(evt, eventRoot, targets);
             }
 
         }else{
@@ -434,8 +436,12 @@ public class ObsidianUI {
             if(targets.isEmpty()){
                 targets = List.of(eventRoot);
             }
-            dispatch(evt, eventRoot, targets, (target) -> {});
+            dispatch(evt, eventRoot, targets);
         }
+    }
+
+    protected void dispatch(BaseEvent evt, Component root, List<Component> targets){
+        dispatch(evt, root, targets, (target) -> {});
     }
 
     protected void dispatch(BaseEvent evt, Component root, List<Component> targets, Consumer<Component> onConsumed){

@@ -17,4 +17,12 @@
 package myworld.obsidian.geometry;
 
 public record Move(Distance x, Distance y) {
+
+    public static Move horizontal(Distance x){
+        return new Move(x, Distance.pixels(0));
+    }
+
+    public static Move vertical(Distance y){
+        return new Move(Distance.pixels(0), y);
+    }
 }

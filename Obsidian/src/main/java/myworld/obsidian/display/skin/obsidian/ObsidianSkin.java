@@ -2,12 +2,12 @@ package myworld.obsidian.display.skin.obsidian;
 
 import myworld.obsidian.components.Button;
 import myworld.obsidian.components.Checkbox;
+import myworld.obsidian.components.Slider;
 import myworld.obsidian.components.layout.Viewport;
 import myworld.obsidian.components.text.EditableTextDisplay;
 import myworld.obsidian.components.text.TextDisplay;
 import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
-import myworld.obsidian.display.OverflowModes;
 import myworld.obsidian.display.skin.*;
 import myworld.obsidian.display.skin.builder.ComponentSkinBuilder;
 import myworld.obsidian.display.skin.builder.RuleBuilder;
@@ -31,6 +31,8 @@ public class ObsidianSkin {
     public static final ColorRGBA HIGHLIGHT_COLOR = ColorRGBA.of("#25EFF988");
     public static final ColorRGBA FOCUS_COLOR = ColorRGBA.of("#4CCAF4");
 
+    public static final ColorRGBA SLATE_GRAY = ColorRGBA.of("#666666FF");
+
     public static UISkin create(){
         return create(ObsidianSkin.class::getResourceAsStream);
     }
@@ -45,6 +47,7 @@ public class ObsidianSkin {
                 .withComponent(textField())
                 .withComponent(checkbox())
                 .withComponent(viewport())
+                .withComponent(slider())
                 .withStyleClass(
                         StyleClass.forName("ExampleText",
                                 RuleBuilder.create()
@@ -73,6 +76,54 @@ public class ObsidianSkin {
                         "/myworld/obsidian/skin/fonts/clear-sans/ClearSans-Regular.ttf",
                         "/myworld/obsidian/skin/fonts/clear-sans/ClearSans-Thin.ttf"
                 ))
+                .build();
+    }
+
+    public static ComponentSkin slider(){
+        return ComponentSkinBuilder.create(Slider.COMPONENT_STYLE_NAME)
+                .withParameter(Slider.ENABLED_DATA_NAME, VarType.BOOLEAN)
+                .withParameter(Slider.HORIZONTAL_DATA_NAME, VarType.BOOLEAN)
+                .withParameter(Slider.VERTICAL_DATA_NAME, VarType.BOOLEAN)
+                .withParameter(Slider.WIDTH_DATA_NAME, VarType.FLOAT)
+                .withStyle(
+                        StyleClass.forLayer("background",
+                                RuleBuilder.create()
+                                        .withRule(GEOMETRY, constant(new Rectangle(Distance.percentage(100), Distance.percentage(100))))
+                                        .withRule(BORDER_COLOR, constant(ColorRGBA.of("#AAAAAA")))
+                                        .withRule(BORDER_WIDTH, constant(1))
+                                .build()
+                        )
+                )
+                .withStyle(
+                        StyleClass.forLayer("slider",
+                                RuleBuilder.create()
+                                        .withRule(COLOR, constant(SLATE_GRAY))
+                                        .build()
+                        )
+                )
+                .withStyle(
+                        StyleClass.forLayerState("slider", Slider.HORIZONTAL_DATA_NAME,
+                                RuleBuilder.create()
+                                        .withRule(GEOMETRY, of(v -> new Rectangle(v.get(Slider.WIDTH_DATA_NAME, Distance.class), Distance.percentage(100))))
+                                        .withRule(POSITION, of(v -> Move.horizontal(Distance.percentage(v.get(Slider.OFFSET_DATA_NAME, Float.class)))))
+                                        .build()
+                        )
+                )
+                .withStyle(
+                        StyleClass.forLayerState("slider", Slider.VERTICAL_DATA_NAME,
+                                RuleBuilder.create()
+                                        .withRule(GEOMETRY, of(v -> new Rectangle(Distance.percentage(100), v.get(Slider.WIDTH_DATA_NAME, Distance.class))))
+                                        .withRule(POSITION, of(v -> Move.vertical(Distance.percentage(v.get(Slider.OFFSET_DATA_NAME, Float.class)))))
+                                        .build()
+                        )
+                )
+                .withStyle(
+                        StyleClass.forLayerState("slider", Component.FOCUSED_DATA_NAME,
+                                RuleBuilder.create()
+                                        .withRule(BORDER_COLOR, constant(FOCUS_COLOR))
+                                        .build()
+                        )
+                )
                 .build();
     }
 
