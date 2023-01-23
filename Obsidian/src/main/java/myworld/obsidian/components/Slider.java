@@ -57,11 +57,11 @@ public class Slider extends Component {
         });
 
         var startPos = new ValueProperty<Integer>();
-        dispatcher.subscribe(MouseButtonEvent.class, EventFilters.mousePressed(MouseButton.PRIMARY), evt -> {
+        dispatcher.subscribe(MouseButtonEvent.class, evt -> evt.getManager().isDown(MouseButton.PRIMARY) && enabled.get(), evt -> {
             startPos.set(primaryAxisValue(evt));
             evt.consume();
         });
-        dispatcher.subscribe(MouseMoveEvent.class, evt -> evt.getManager().isDown(MouseButton.PRIMARY) && startPos.isSet(), evt -> {
+        dispatcher.subscribe(MouseMoveEvent.class, evt -> evt.getManager().isDown(MouseButton.PRIMARY) && startPos.isSet() && enabled.get(), evt -> {
             var mouseDelta = primaryAxisDelta(evt);
             var mouseCoord = primaryAxisValue(evt);
 
@@ -75,11 +75,11 @@ public class Slider extends Component {
                 evt.consume();
             }
         });
-        dispatcher.subscribe(MouseButtonEvent.class, EventFilters.mouseReleased(MouseButton.PRIMARY), evt -> {
+        dispatcher.subscribe(MouseButtonEvent.class, evt -> !evt.getManager().isDown(MouseButton.PRIMARY) && enabled.get(), evt -> {
             startPos.set(null);
             evt.consume();
         });
-        dispatcher.subscribe(MouseWheelEvent.class, evt -> {
+        dispatcher.subscribe(MouseWheelEvent.class, evt -> enabled.get(), evt -> {
             move(pixelDeltaToValueDelta(wheelIncrement.get() * -primaryAxisScroll(evt)));
             evt.consume();
         });
