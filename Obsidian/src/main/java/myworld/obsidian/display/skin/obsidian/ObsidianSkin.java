@@ -105,7 +105,7 @@ public class ObsidianSkin {
                         StyleClass.forLayerState("slider", Slider.HORIZONTAL_DATA_NAME,
                                 RuleBuilder.create()
                                         .withRule(GEOMETRY, of(v -> new Rectangle(v.get(Slider.WIDTH_DATA_NAME, Distance.class), Distance.percentage(100))))
-                                        .withRule(POSITION, of(v -> Move.horizontal(Distance.percentage(v.get(Slider.OFFSET_DATA_NAME, Float.class)))))
+                                        .withRule(POSITION, of(v -> Move.horizontal(Distance.pixels(v.get(Slider.OFFSET_DATA_NAME, Float.class)))))
                                         .build()
                         )
                 )
@@ -113,7 +113,7 @@ public class ObsidianSkin {
                         StyleClass.forLayerState("slider", Slider.VERTICAL_DATA_NAME,
                                 RuleBuilder.create()
                                         .withRule(GEOMETRY, of(v -> new Rectangle(Distance.percentage(100), v.get(Slider.WIDTH_DATA_NAME, Distance.class))))
-                                        .withRule(POSITION, of(v -> Move.vertical(Distance.percentage(v.get(Slider.OFFSET_DATA_NAME, Float.class)))))
+                                        .withRule(POSITION, of(v -> Move.vertical(Distance.pixels(v.get(Slider.OFFSET_DATA_NAME, Float.class)))))
                                         .build()
                         )
                 )

@@ -1,7 +1,7 @@
 package myworld.obsidian.components;
 
-import myworld.obsidian.events.BaseEvent;
 import myworld.obsidian.events.dispatch.EventFilters;
+import myworld.obsidian.events.input.BaseMouseEvent;
 import myworld.obsidian.events.input.MouseButtonEvent;
 import myworld.obsidian.events.input.MouseMoveEvent;
 import myworld.obsidian.geometry.Distance;
@@ -45,41 +45,63 @@ public class Slider extends Component {
         renderVars.put(HORIZONTAL_DATA_NAME, () -> orientation.get().equals(Orientation.HORIZONTAL));
         renderVars.put(VERTICAL_DATA_NAME, () -> orientation.get().equals(Orientation.VERTICAL));
         renderVars.put(WIDTH_DATA_NAME, width);
-        renderVars.put(OFFSET_DATA_NAME, this::calculateVisualOffsetPercentage);
+        renderVars.put(OFFSET_DATA_NAME, this::visualOffset);
 
         enabled.addListener((prop, oldValue, newValue) -> {
             focusable.set(newValue);
             hoverable.set(newValue);
         });
 
-        dispatcher.subscribe(MouseButtonEvent.class, EventFilters.mousePressed(MouseButton.PRIMARY), BaseEvent::consume);
-        dispatcher.subscribe(MouseMoveEvent.class, evt -> evt.getManager().isDown(MouseButton.PRIMARY), evt -> {
-            var delta = calculateVisualDeltaValue(primaryAxisDelta(evt));
-            move(delta);
-            System.out.println("Offset: " + calculateVisualOffsetPercentage());
-            System.out.println("Value: " + value.get());
+        var startPos = new ValueProperty<Integer>();
+        dispatcher.subscribe(MouseButtonEvent.class, EventFilters.mousePressed(MouseButton.PRIMARY), evt -> {
+            startPos.set(primaryAxisValue(evt));
+            evt.consume();
         });
-        dispatcher.subscribe(MouseButtonEvent.class, EventFilters.mouseReleased(MouseButton.PRIMARY), BaseEvent::consume);
+        dispatcher.subscribe(MouseMoveEvent.class, evt -> evt.getManager().isDown(MouseButton.PRIMARY) && startPos.isSet(), evt -> {
+            var mouseDelta = primaryAxisDelta(evt);
+            var mouseCoord = primaryAxisValue(evt);
+
+            if(mouseDelta > 0 && mouseCoord > startPos.get()
+                || mouseDelta < 0 && mouseCoord < startPos.get()){
+
+                if(move(pixelDeltaToValueDelta(mouseDelta))){
+                    startPos.set(mouseCoord);
+                }
+
+                evt.consume();
+            }
+        });
+        dispatcher.subscribe(MouseButtonEvent.class, EventFilters.mouseReleased(MouseButton.PRIMARY), evt -> {
+            startPos.set(null);
+            evt.consume();
+        });
     }
 
-    protected float rangeVariance(){
+    protected float rangeWidth(){
         return range.get().end() - range.get().start();
     }
 
-    protected float calculateVisualOffsetPercentage(){
-        return value.get() / rangeVariance() * (100f - width.get().toPercentage(primaryAxisWidth()));
+    protected float effectiveWidth(){
+        return primaryAxisWidth() - width.get().toPixels(primaryAxisWidth());
     }
 
-    protected float calculateVisualDeltaValue(float pixelDelta){
-        var valuePerPixel = rangeVariance() / (primaryAxisWidth() - width.get().toPixels(primaryAxisWidth()));
-        return pixelDelta * valuePerPixel;
+    protected float pixelsPerValue(){
+        return effectiveWidth() / rangeWidth();
+    }
+
+    protected float visualOffset(){
+        return value.get() * pixelsPerValue();
+    }
+
+    protected float pixelDeltaToValueDelta(float pixelDelta){
+        return pixelDelta / pixelsPerValue();
     }
 
     public ValueProperty<Boolean> enabled(){
         return enabled;
     }
 
-    public ValueProperty<Range<Float>> allowedRange(){
+    public ValueProperty<Range<Float>> valueRange(){
         return range;
     }
 
@@ -103,12 +125,19 @@ public class Slider extends Component {
         return orientation.get().equals(Orientation.VERTICAL);
     }
 
-    public void move(float amount){
-        value.setWith(current -> Range.clamp(range.get().start(), current + amount, range.get().end()));
+    public boolean move(float amount){
+        var current = value.get();
+        var clamped = Range.clamp(range.get().start(), current + amount, range.get().end());
+        value.set(clamped);
+        return clamped == current + amount;
     }
 
     public int primaryAxisDelta(MouseMoveEvent evt){
         return isHorizontal() ? evt.getDeltaX() : evt.getDeltaY();
+    }
+
+    public int primaryAxisValue(BaseMouseEvent evt){
+        return isHorizontal() ? evt.getX() : evt.getY();
     }
 
     public float primaryAxisWidth(){
