@@ -80,6 +80,10 @@ public class UISkin {
         return componentSkins;
     }
 
+    public void setStyle(String name, StyleClass style){
+        styles.put(name, style);
+    }
+
     public Map<String, StyleClass> styles(){
         return styles;
     }
