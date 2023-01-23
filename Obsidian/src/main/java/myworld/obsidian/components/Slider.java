@@ -35,7 +35,7 @@ public class Slider extends Component {
 
         enabled = new ValueProperty<>(true);
 
-        range = new ValueProperty<>(new Range<>(0f, 100f));
+        range = new ValueProperty<>(new Range<>(0f, 1000f));
         value = new ValueProperty<>(0f);
         orientation = new ValueProperty<>(Orientation.HORIZONTAL);
 
@@ -45,9 +45,7 @@ public class Slider extends Component {
         renderVars.put(HORIZONTAL_DATA_NAME, () -> orientation.get().equals(Orientation.HORIZONTAL));
         renderVars.put(VERTICAL_DATA_NAME, () -> orientation.get().equals(Orientation.VERTICAL));
         renderVars.put(WIDTH_DATA_NAME, width);
-        renderVars.put(OFFSET_DATA_NAME, () -> {
-            return value.get();
-        });
+        renderVars.put(OFFSET_DATA_NAME, this::calculateVisualOffsetPercentage);
 
         enabled.addListener((prop, oldValue, newValue) -> {
             focusable.set(newValue);
@@ -56,12 +54,25 @@ public class Slider extends Component {
 
         dispatcher.subscribe(MouseButtonEvent.class, EventFilters.mousePressed(MouseButton.PRIMARY), BaseEvent::consume);
         dispatcher.subscribe(MouseMoveEvent.class, evt -> evt.getManager().isDown(MouseButton.PRIMARY), evt -> {
-            // TODO - convert pixel delta to proportion of the available range,
-            //  which is the "width" of the track along the primary axis (horizontal or vertical) minus the width of the slider
-            var delta = (primaryAxisDelta(evt) / (primaryAxisWidth() - width.get().toPixels(primaryAxisWidth()))) * (allowedRange().get().end() - allowedRange().get().start());
+            var delta = calculateVisualDeltaValue(primaryAxisDelta(evt));
             move(delta);
+            System.out.println("Offset: " + calculateVisualOffsetPercentage());
+            System.out.println("Value: " + value.get());
         });
         dispatcher.subscribe(MouseButtonEvent.class, EventFilters.mouseReleased(MouseButton.PRIMARY), BaseEvent::consume);
+    }
+
+    protected float rangeVariance(){
+        return range.get().end() - range.get().start();
+    }
+
+    protected float calculateVisualOffsetPercentage(){
+        return value.get() / rangeVariance() * (100f - width.get().toPercentage(primaryAxisWidth()));
+    }
+
+    protected float calculateVisualDeltaValue(float pixelDelta){
+        var valuePerPixel = rangeVariance() / (primaryAxisWidth() - width.get().toPixels(primaryAxisWidth()));
+        return pixelDelta * valuePerPixel;
     }
 
     public ValueProperty<Boolean> enabled(){
@@ -93,7 +104,7 @@ public class Slider extends Component {
     }
 
     public void move(float amount){
-        value.setWith(current -> Range.clamp(allowedRange().get().start(), current + amount, allowedRange().get().end()));
+        value.setWith(current -> Range.clamp(range.get().start(), current + amount, range.get().end()));
     }
 
     public int primaryAxisDelta(MouseMoveEvent evt){

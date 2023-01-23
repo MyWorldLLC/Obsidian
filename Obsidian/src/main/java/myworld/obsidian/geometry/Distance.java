@@ -45,6 +45,13 @@ public record Distance(Number value, Unit unit) {
         };
     }
 
+    public float toPercentage(float size){
+        return switch (unit){
+            case PIXELS -> value.floatValue() / size * 100f;
+            case PERCENTAGE -> value.floatValue();
+        };
+    }
+
     public Distance multiply(Number value){
         return new Distance(this.value.floatValue() * value.floatValue(), unit);
     }
