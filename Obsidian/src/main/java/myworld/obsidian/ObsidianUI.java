@@ -33,9 +33,7 @@ import myworld.obsidian.scene.Component;
 import myworld.obsidian.layout.LayoutEngine;
 import myworld.obsidian.properties.ValueProperty;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -445,9 +443,15 @@ public class ObsidianUI {
     }
 
     protected void dispatch(BaseEvent evt, Component root, List<Component> targets, Consumer<Component> onConsumed){
+        // De-duplicate events to collections of receivers so that each receiver can only receive the event once.
+        // There are multiple possible conditions whereby a receiver could be duplicated in a multi-dispatch list.
+        var dedup = new HashSet<Component>();
         for(var target : targets){
+            if(!dedup.add(target)){
+                continue;
+            }
             dispatch(evt, root, target);
-            if(evt.isConsumed()){
+            if(evt.isConsumed()) {
                 onConsumed.accept(target);
                 break;
             }
