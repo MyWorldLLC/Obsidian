@@ -4,8 +4,10 @@ import myworld.obsidian.events.dispatch.EventFilters;
 import myworld.obsidian.events.input.BaseMouseEvent;
 import myworld.obsidian.events.input.MouseButtonEvent;
 import myworld.obsidian.events.input.MouseMoveEvent;
+import myworld.obsidian.events.input.MouseWheelEvent;
 import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.MouseButton;
+import myworld.obsidian.input.MouseWheelAxis;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.util.Range;
@@ -27,6 +29,7 @@ public class Slider extends Component {
     protected final ValueProperty<Boolean> enabled;
     protected final ValueProperty<Range<Float>> range;
     protected final ValueProperty<Float> value;
+    protected final ValueProperty<Integer> wheelIncrement;
     protected final ValueProperty<Orientation> orientation;
     protected final ValueProperty<Distance> width;
 
@@ -37,6 +40,7 @@ public class Slider extends Component {
 
         range = new ValueProperty<>(new Range<>(0f, 1000f));
         value = new ValueProperty<>(0f);
+        wheelIncrement = new ValueProperty<>(15);
         orientation = new ValueProperty<>(Orientation.HORIZONTAL);
 
         width = new ValueProperty<>(Distance.percentage(10));
@@ -75,6 +79,10 @@ public class Slider extends Component {
             startPos.set(null);
             evt.consume();
         });
+        dispatcher.subscribe(MouseWheelEvent.class, evt -> {
+            move(pixelDeltaToValueDelta(wheelIncrement.get() * -primaryAxisScroll(evt)));
+            evt.consume();
+        });
     }
 
     protected float rangeWidth(){
@@ -109,6 +117,10 @@ public class Slider extends Component {
         return value;
     }
 
+    public ValueProperty<Integer> wheelIncrement(){
+        return wheelIncrement;
+    }
+
     public ValueProperty<Orientation> orientation(){
         return orientation;
     }
@@ -130,6 +142,14 @@ public class Slider extends Component {
         var clamped = Range.clamp(range.get().start(), current + amount, range.get().end());
         value.set(clamped);
         return clamped == current + amount;
+    }
+
+    public float primaryAxisScroll(MouseWheelEvent evt){
+        if(isHorizontal() && evt.getAxis().equals(MouseWheelAxis.HORIZONTAL)
+            || isVertical() && evt.getAxis().equals(MouseWheelAxis.VERTICAL)){
+            return evt.getScrollDelta();
+        }
+        return 0f;
     }
 
     public int primaryAxisDelta(MouseMoveEvent evt){
