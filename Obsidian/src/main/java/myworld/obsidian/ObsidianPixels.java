@@ -25,10 +25,15 @@ public class ObsidianPixels {
         RGBA8, ARGB8, BGRA8_PRE
     }
 
+    public enum ColorSpace {
+        SRGB, LINEAR
+    }
+
     protected final ByteBuffer buff;
     protected final IntBuffer intBuff;
 
     protected final Format format;
+    protected final ColorSpace colorSpace;
     protected final int vPixels;
     protected final int wPixels;
 
@@ -37,7 +42,12 @@ public class ObsidianPixels {
     }
 
     public ObsidianPixels(Format format, int wPixels, int vPixels){
+        this(format, ColorSpace.SRGB, wPixels, vPixels);
+    }
+
+    public ObsidianPixels(Format format, ColorSpace colorSpace, int wPixels, int vPixels){
         this.format = format;
+        this.colorSpace = colorSpace;
         this.wPixels = wPixels;
         this.vPixels = vPixels;
 
@@ -59,5 +69,8 @@ public class ObsidianPixels {
     }
     public Format getFormat(){
         return format;
+    }
+    public ColorSpace getColorSpace(){
+        return colorSpace;
     }
 }

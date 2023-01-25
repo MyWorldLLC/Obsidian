@@ -25,7 +25,8 @@ public class ObsidianImage {
 
     public static ObsidianImage fromPixels(ObsidianPixels pixels){
         var format = pixels.getFormat();
-        var colorInfo = new ColorInfo(skiaColorType(format), skiaAlphaType(format), null);
+        var colorSpace = pixels.getColorSpace();
+        var colorInfo = new ColorInfo(skiaColorType(format), skiaAlphaType(format), skiaColorSpace(colorSpace));
         var info = new ImageInfo(colorInfo, pixels.getWPixels(), pixels.getVPixels());
         var image = Image.makeRaster(info, pixels.rawBuffer().array(), 4L * pixels.getWPixels());
         return new ObsidianImage(image);
@@ -44,6 +45,13 @@ public class ObsidianImage {
             case RGBA8 -> ColorAlphaType.UNPREMUL;
             case BGRA8_PRE -> ColorAlphaType.PREMUL;
             default -> throw new IllegalArgumentException("Unsupported format: " + format);
+        };
+    }
+
+    protected static ColorSpace skiaColorSpace(ObsidianPixels.ColorSpace colorSpace){
+        return switch (colorSpace){
+            case SRGB -> ColorSpace.getSRGB();
+            case LINEAR -> ColorSpace.getSRGBLinear();
         };
     }
 }
