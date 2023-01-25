@@ -17,9 +17,7 @@
 package example;
 
 import myworld.obsidian.ObsidianUI;
-import myworld.obsidian.components.Button;
-import myworld.obsidian.components.Checkbox;
-import myworld.obsidian.components.Slider;
+import myworld.obsidian.components.*;
 import myworld.obsidian.components.layout.Pane;
 import myworld.obsidian.components.layout.Stack;
 import myworld.obsidian.components.layout.Viewport;
@@ -35,12 +33,13 @@ import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.input.MouseWheelAxis;
-import myworld.obsidian.layout.ItemAlignment;
 import myworld.obsidian.layout.Offsets;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+
+import java.util.List;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
@@ -262,7 +261,10 @@ public class ExampleRunner {
         ui = ObsidianUI.createForGL(getRenderWidth(), getRenderHeight(), 4, 0);
         // NOTE: demo either Chipmunk skins of Java skins by selecting one of the lines below
         //ui.registerSkin(ChipmunkSkinLoader.loadFromClasspath(CHIPMUNK_SKIN_EXAMPLE));
-        ui.registerSkin(ObsidianSkin.create());
+        var skin = ObsidianSkin.create();
+        skin.addSvgs(List.of("/example/svg/cancel.svg"));
+        skin.addImages(List.of("/example/16px/cancel.png"));
+        ui.registerSkin(skin);
         ui.useSkin("Obsidian");
         ui.clipboard().set(new GLFWClipboard(window));
         //ui.getDisplay().enableRenderDebug(Colors.RED);
@@ -361,6 +363,18 @@ public class ExampleRunner {
         vSlider.layout().clampedSize(10, 150);
 
         layout.right().addChild(vSlider);
+
+        var svgView = new SvgView();
+        svgView.svg().set(skin.getCachedSvg("/example/svg/cancel.svg"));
+        svgView.layout().clampedSize(50, 50);
+
+        layout.center().addChild(svgView);
+
+        var imageView = new ImageView();
+        imageView.image().set(skin.getCachedImage("/example/16px/cancel.png"));
+        imageView.layout().clampedSize(16, 16);
+
+        layout.center().addChild(imageView);
 
         ui.requestFocus(textField);
 

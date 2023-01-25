@@ -1,3 +1,15 @@
 package myworld.obsidian.display;
 
-public record ResourceHandle(String skinName, String path) {}
+public record ResourceHandle(Type type, String path) {
+    public enum Type {
+        IMAGE, SVG
+    }
+
+    public static ResourceHandle image(String path){
+        return new ResourceHandle(Type.IMAGE, path);
+    }
+
+    public static ResourceHandle svg(String path){
+        return new ResourceHandle(Type.SVG, path);
+    }
+}

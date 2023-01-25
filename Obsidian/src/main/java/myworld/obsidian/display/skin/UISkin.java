@@ -1,5 +1,9 @@
 package myworld.obsidian.display.skin;
 
+import myworld.obsidian.display.ObsidianImage;
+import myworld.obsidian.display.Svg;
+import myworld.obsidian.util.ResourceCache;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,6 +19,8 @@ public class UISkin {
     protected final List<String> fonts;
     protected final List<String> svgs;
     protected final List<String> images;
+    protected final ResourceCache<String, ObsidianImage> imageCache;
+    protected final ResourceCache<String, Svg> svgCache;
     protected final ResourceResolver resolver;
 
     public UISkin(String name, ResourceResolver resolver){
@@ -26,6 +32,8 @@ public class UISkin {
         fonts = new CopyOnWriteArrayList<>();
         svgs = new CopyOnWriteArrayList<>();
         images = new CopyOnWriteArrayList<>();
+        imageCache = new ResourceCache<>();
+        svgCache = new ResourceCache<>();
     }
 
     public String getName(){
@@ -98,6 +106,35 @@ public class UISkin {
 
     public List<String> svgs(){
         return svgs;
+    }
+
+    public void cache(String path, Svg svg){
+        svgCache.cache(path, svg);
+    }
+
+    public void cache(String path, ObsidianImage image){
+        imageCache.cache(path, image);
+    }
+
+    public Svg getCachedSvg(String path){
+        return svgCache.get(path);
+    }
+
+    public ObsidianImage getCachedImage(String path){
+        return imageCache.get(path);
+    }
+
+    public void clearCachedSvg(String path){
+        svgCache.remove(path);
+    }
+
+    public void clearCachedImage(String path){
+        imageCache.remove(path);
+    }
+
+    public void clearCachedResources(){
+        svgCache.clear();
+        imageCache.clear();
     }
 
 }

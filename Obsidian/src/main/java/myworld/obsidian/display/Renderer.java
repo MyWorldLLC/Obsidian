@@ -4,18 +4,18 @@ import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.paragraph.*;
 import io.github.humbleui.skija.shaper.Shaper;
 import io.github.humbleui.skija.svg.SVGDOM;
+import io.github.humbleui.skija.svg.SVGLengthContext;
+import io.github.humbleui.skija.svg.SVGLengthType;
 import io.github.humbleui.types.Point;
 import io.github.humbleui.types.Rect;
-import myworld.obsidian.display.skin.StyleClass;
-import myworld.obsidian.display.skin.StyleLookup;
-import myworld.obsidian.display.skin.StyleRules;
-import myworld.obsidian.display.skin.Variables;
+import myworld.obsidian.display.skin.*;
 import myworld.obsidian.geometry.*;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.text.Text;
 import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextShadow;
 import myworld.obsidian.text.TextStyle;
+import myworld.obsidian.util.ResourceCache;
 
 import java.util.*;
 
@@ -25,8 +25,7 @@ public class Renderer implements AutoCloseable {
     protected final TypefaceFontProvider typeProvider;
     protected final Shaper shaper;
 
-    protected final Map<ResourceHandle, SVGDOM> svgs;
-    protected final Map<ResourceHandle, Image> images;
+    protected UISkin activeSkin;
 
     protected final Deque<Bounds2D> clipRegions;
     protected final ValueProperty<ColorRGBA> debugColor;
@@ -43,9 +42,10 @@ public class Renderer implements AutoCloseable {
 
         clipRegions = new ArrayDeque<>();
         debugColor = new ValueProperty<>();
+    }
 
-        svgs = new HashMap<>();
-        images = new HashMap<>();
+    protected void setActiveSkin(UISkin skin){
+        activeSkin = skin;
     }
 
     public void enterClippingRegion(Bounds2D clipRegion){
@@ -81,13 +81,6 @@ public class Renderer implements AutoCloseable {
         typeProvider.registerTypeface(typeface);
     }
 
-    public void registerImage(ResourceHandle handle, Image image){
-        images.put(handle, image);
-    }
-
-    public void registerSvg(ResourceHandle handle, SVGDOM svg){
-        svgs.put(handle, svg);
-    }
 
     public void renderDebug(Canvas canvas, Bounds2D componentBounds){
         if(debugColor.get() != null){
@@ -179,12 +172,25 @@ public class Renderer implements AutoCloseable {
                     Paint paint = new Paint();
                     paint.setColor(paintFill.toARGB());
                     canvas.drawPath(renderPath, paint);
-                }else if(fill instanceof SVGDOM svgFill){
+                }else if(fill instanceof ResourceHandle handle){
                     canvas.clipPath(renderPath, true);
-                    svgFill.render(canvas);
-                }else if(fill instanceof Image imageFill){
+                    if(handle.type().equals(ResourceHandle.Type.SVG)){
+                        var svg = activeSkin.getCachedSvg(handle.path());
+                        if(svg != null){
+                            renderSvg(canvas, svg, componentBounds);
+                        }
+                    }else if(handle.type().equals(ResourceHandle.Type.IMAGE)){
+                        var image = activeSkin.getCachedImage(handle.path());
+                        if(image != null){
+                            renderImage(canvas, image, boundingRect.getLeft(), boundingRect.getTop());
+                        }
+                    }
+                }else if(fill instanceof Svg svgFill){
                     canvas.clipPath(renderPath, true);
-                    canvas.drawImage(imageFill, boundingRect.getLeft(), boundingRect.getTop());
+                    renderSvg(canvas, svgFill, componentBounds);
+                }else if(fill instanceof ObsidianImage imageFill){
+                    canvas.clipPath(renderPath, true);
+                    renderImage(canvas, imageFill, boundingRect.getLeft(), boundingRect.getTop());
                 }
             }
 
@@ -250,7 +256,37 @@ public class Renderer implements AutoCloseable {
             }
         }
 
+    }
 
+    protected void renderSvg(Canvas canvas, Svg svg, Bounds2D bounds){
+        if(svg.getDom() != null){
+            try(var svgRoot = svg.getDom().getRoot()){
+                canvas.save();
+                canvas.resetMatrix();
+                canvas.translate(bounds.left(), bounds.top());
+
+                // Scale to stretch SVG to fit the given bounds
+                var svgBounds = new Point(bounds.width(), bounds.height());
+                var lengthContext = new SVGLengthContext(svgBounds);
+
+                var svgWidth = lengthContext.resolve(svgRoot.getWidth(), SVGLengthType.HORIZONTAL);
+                var svgHeight = lengthContext.resolve(svgRoot.getHeight(), SVGLengthType.VERTICAL);
+
+                // Offset by 1 to fit the clipping rectangle
+                var hScale = (bounds.width() - 1) / svgWidth;
+                var vScale = (bounds.height() - 1) / svgHeight;
+
+                canvas.scale(hScale, vScale);
+
+                svg.getDom().setContainerSize(bounds.width(), bounds.height());
+                svg.getDom().render(canvas);
+                canvas.restore();
+            }
+        }
+    }
+
+    protected void renderImage(Canvas canvas, ObsidianImage image, float left, float top){
+        canvas.drawImage(image.getImage(), left, top);
     }
 
     public Object createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars, StyleLookup styles){
@@ -275,7 +311,7 @@ public class Renderer implements AutoCloseable {
         }else if(geometry instanceof SvgPath svg){
             var svgPath = Path.makeFromSVGString(svg.path())
                     .transform(Matrix33.makeTranslate(boundingRect.getLeft(), boundingRect.getTop()));
-            if(svgPath.isValid()) {
+            if(svgPath.isValid()){
                 path.addPath(svgPath);
             }else{
                 path.addRect(boundingRect);
@@ -453,8 +489,5 @@ public class Renderer implements AutoCloseable {
         fontCollection.close();
         typeProvider.close();
         shaper.close();
-
-        images.forEach((h, i) -> i.close());
-        svgs.forEach((h, s) -> s.close());
     }
 }

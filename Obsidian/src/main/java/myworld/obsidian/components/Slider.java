@@ -1,6 +1,5 @@
 package myworld.obsidian.components;
 
-import myworld.obsidian.events.dispatch.EventFilters;
 import myworld.obsidian.events.input.BaseMouseEvent;
 import myworld.obsidian.events.input.MouseButtonEvent;
 import myworld.obsidian.events.input.MouseMoveEvent;

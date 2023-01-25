@@ -1,13 +1,10 @@
 package myworld.obsidian.display.skin.obsidian;
 
-import myworld.obsidian.components.Button;
-import myworld.obsidian.components.Checkbox;
-import myworld.obsidian.components.Slider;
+import myworld.obsidian.components.*;
 import myworld.obsidian.components.layout.Viewport;
 import myworld.obsidian.components.text.EditableTextDisplay;
 import myworld.obsidian.components.text.TextDisplay;
-import myworld.obsidian.display.ColorRGBA;
-import myworld.obsidian.display.Colors;
+import myworld.obsidian.display.*;
 import myworld.obsidian.display.skin.*;
 import myworld.obsidian.display.skin.builder.ComponentSkinBuilder;
 import myworld.obsidian.display.skin.builder.RuleBuilder;
@@ -48,6 +45,8 @@ public class ObsidianSkin {
                 .withComponent(checkbox())
                 .withComponent(viewport())
                 .withComponent(slider())
+                .withComponent(svgView())
+                .withComponent(imageView())
                 .withStyleClass(
                         StyleClass.forName("ExampleText",
                                 RuleBuilder.create()
@@ -353,6 +352,34 @@ public class ObsidianSkin {
                         StyleClass.forLayerState("text", Component.HOVERED_DATA_NAME,
                                 RuleBuilder.create()
                                         .withRule(COLOR, constant(Colors.GREEN))
+                                        .build()
+                        )
+                )
+                .build();
+    }
+
+    public static ComponentSkin svgView(){
+        return ComponentSkinBuilder.create(SvgView.COMPONENT_STYLE_NAME)
+                .withParameter(SvgView.SVG_DATA_NAME, VarType.SVG)
+                .withStyle(
+                        StyleClass.forLayer("background",
+                                RuleBuilder.create()
+                                        .withRule(GEOMETRY, constant(new Rectangle(Distance.percentage(100), Distance.percentage(100))))
+                                        .withRule(COLOR, of(v -> v.get(SvgView.SVG_DATA_NAME, Svg.class)))
+                                        .build()
+                        )
+                )
+                .build();
+    }
+
+    public static ComponentSkin imageView(){
+        return ComponentSkinBuilder.create(ImageView.COMPONENT_STYLE_NAME)
+                .withParameter(ImageView.IMAGE_DATA_NAME, VarType.IMAGE)
+                .withStyle(
+                        StyleClass.forLayer("background",
+                                RuleBuilder.create()
+                                        .withRule(GEOMETRY, constant(new Rectangle(Distance.percentage(100), Distance.percentage(100))))
+                                        .withRule(COLOR, of(v -> v.get(ImageView.IMAGE_DATA_NAME, ObsidianImage.class)))
                                         .build()
                         )
                 )

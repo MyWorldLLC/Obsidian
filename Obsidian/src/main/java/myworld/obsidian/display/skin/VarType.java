@@ -16,14 +16,16 @@
 
 package myworld.obsidian.display.skin;
 
-import myworld.obsidian.ObsidianPixels;
 import myworld.obsidian.display.ColorRGBA;
+import myworld.obsidian.display.ObsidianImage;
+import myworld.obsidian.display.Svg;
 
 public enum VarType {
     BOOLEAN(Boolean.class),
     COLOR(ColorRGBA.class),
     FLOAT(Float.class),
-    IMAGE(ObsidianPixels.class),
+    IMAGE(ObsidianImage.class),
+    SVG(Svg.class),
     INTEGER(Integer.class),
     STRING(String.class);
 

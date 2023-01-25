@@ -222,7 +222,12 @@ public class Component {
 
     public Variables generateRenderVars(){
         var variables = new Variables();
-        renderVars.forEach((k, s) -> variables.set(k, s.get()));
+        renderVars.forEach((k, s) -> {
+            var v = s.get();
+            if(v != null){
+                variables.set(k, s.get());
+            }
+        });
         return variables;
     }
 

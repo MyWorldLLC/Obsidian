@@ -153,6 +153,8 @@ public class DisplayEngine implements AutoCloseable {
 
     public void render(ObsidianUI ui, Component component, UISkin uiSkin){
 
+        renderer.setActiveSkin(uiSkin);
+
         var skin = uiSkin.getComponentSkin(component.styleName().get());
 
         component.preRenderers().forEach(Runnable::run);
@@ -283,14 +285,22 @@ public class DisplayEngine implements AutoCloseable {
         }
     }
 
+    public ObsidianImage loadImage(UISkin skin, String path){
+        try(var is = skin.getResolver().resolve(path)){
+            return new ObsidianImage(Image.makeFromEncoded(is.readAllBytes()));
+        }catch (Exception e){
+            log.log(Level.WARNING, "Failed to load image {0} for skin {1}: {2}. Check that the file exists and is not corrupt.", path, skin.getName(), e);
+            return null;
+        }
+    }
+
     protected void loadImages(UISkin skin){
-        for(var path : skin.images()){
-            try(var is = skin.getResolver().resolve(path)){
-                var image = Image.makeFromEncoded(is.readAllBytes());
-                renderer.registerImage(new ResourceHandle(skin.getName(), path), image);
-            }catch(Exception e){
-                log.log(Level.WARNING, "Failed to load image {0} for skin {1}: {2}", path, skin.getName(), e);
+        for (var path : skin.images()) {
+            var image = loadImage(skin, path);
+            if (image == null) {
+                continue;
             }
+            skin.cache(path, image);
         }
     }
 
@@ -298,15 +308,24 @@ public class DisplayEngine implements AutoCloseable {
         return surfaceManager.getSurface();
     }
 
+    public Svg loadSvg(UISkin skin, String path){
+        try(var is = skin.getResolver().resolve(path);
+            var data = Data.makeFromBytes(is.readAllBytes())){
+            var svg = new SVGDOM(data);
+            return new Svg(svg);
+        }catch(Exception e){
+            log.log(Level.WARNING, "Failed to load svg {0} for skin {1}: {2}. Check that the file exists and is not corrupt.", path, skin.getName(), e);
+            return null;
+        }
+    }
+
     protected void loadSvgs(UISkin skin){
         for(var path : skin.svgs()){
-            try(var is = skin.getResolver().resolve(path);
-                var data = Data.makeFromBytes(is.readAllBytes())){
-                var svg = new SVGDOM(data);
-                renderer.registerSvg(new ResourceHandle(skin.getName(), path), svg);
-            }catch(Exception e){
-                log.log(Level.WARNING, "Failed to load svg {0} for skin {1}: {2}", path, skin.getName(), e);
+            var svg = loadSvg(skin, path);
+            if(svg == null){
+                continue;
             }
+            skin.cache(path, svg);
         }
     }
 
