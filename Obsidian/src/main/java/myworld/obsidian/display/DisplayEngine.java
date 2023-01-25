@@ -31,6 +31,7 @@ import io.github.humbleui.skija.impl.Library;
 import myworld.obsidian.text.TextStyle;
 import myworld.obsidian.text.Typeset;
 
+import java.io.InputStream;
 import java.util.*;
 import java.lang.System.Logger.Level;
 
@@ -285,9 +286,13 @@ public class DisplayEngine implements AutoCloseable {
         }
     }
 
+    public ObsidianImage loadImage(InputStream is) throws Exception {
+        return new ObsidianImage(Image.makeFromEncoded(is.readAllBytes()));
+    }
+
     public ObsidianImage loadImage(UISkin skin, String path){
         try(var is = skin.getResolver().resolve(path)){
-            return new ObsidianImage(Image.makeFromEncoded(is.readAllBytes()));
+            return loadImage(is);
         }catch (Exception e){
             log.log(Level.WARNING, "Failed to load image {0} for skin {1}: {2}. Check that the file exists and is not corrupt.", path, skin.getName(), e);
             return null;
@@ -308,11 +313,15 @@ public class DisplayEngine implements AutoCloseable {
         return surfaceManager.getSurface();
     }
 
+    public ObsidianSvg loadSvg(InputStream is) throws Exception {
+        try(var data = Data.makeFromBytes(is.readAllBytes())){
+            return new ObsidianSvg(new SVGDOM(data));
+        }
+    }
+
     public ObsidianSvg loadSvg(UISkin skin, String path){
-        try(var is = skin.getResolver().resolve(path);
-            var data = Data.makeFromBytes(is.readAllBytes())){
-            var svg = new SVGDOM(data);
-            return new ObsidianSvg(svg);
+        try(var is = skin.getResolver().resolve(path)){
+            return loadSvg(is);
         }catch(Exception e){
             log.log(Level.WARNING, "Failed to load svg {0} for skin {1}: {2}. Check that the file exists and is not corrupt.", path, skin.getName(), e);
             return null;

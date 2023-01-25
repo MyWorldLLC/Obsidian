@@ -175,20 +175,20 @@ public class Renderer implements AutoCloseable {
                     if(handle.type().equals(ResourceHandle.Type.SVG)){
                         var svg = activeSkin.getCachedSvg(handle.path());
                         if(svg != null){
-                            renderSvg(canvas, svg, componentBounds);
+                            renderSvg(canvas, svg, visualBounds);
                         }
                     }else if(handle.type().equals(ResourceHandle.Type.IMAGE)){
                         var image = activeSkin.getCachedImage(handle.path());
                         if(image != null){
-                            renderImage(canvas, image, boundingRect.getLeft(), boundingRect.getTop());
+                            renderImage(canvas, image, visualBounds);
                         }
                     }
                 }else if(fill instanceof ObsidianSvg svgFill){
                     canvas.clipPath(renderPath, true);
-                    renderSvg(canvas, svgFill, componentBounds);
+                    renderSvg(canvas, svgFill, visualBounds);
                 }else if(fill instanceof ObsidianImage imageFill){
                     canvas.clipPath(renderPath, true);
-                    renderImage(canvas, imageFill, boundingRect.getLeft(), boundingRect.getTop());
+                    renderImage(canvas, imageFill, visualBounds);
                 }
             }
 
@@ -256,35 +256,42 @@ public class Renderer implements AutoCloseable {
 
     }
 
-    protected void renderSvg(Canvas canvas, ObsidianSvg svg, Bounds2D bounds){
+    protected void renderSvg(Canvas canvas, ObsidianSvg svg, Rect bounds){
         if(svg.getDom() != null){
             try(var svgRoot = svg.getDom().getRoot()){
                 canvas.save();
                 canvas.resetMatrix();
-                canvas.translate(bounds.left(), bounds.top());
+                canvas.translate(bounds.getLeft(), bounds.getTop());
 
                 // Scale to stretch SVG to fit the given bounds
-                var svgBounds = new Point(bounds.width(), bounds.height());
+                var svgBounds = new Point(bounds.getWidth(), bounds.getHeight());
                 var lengthContext = new SVGLengthContext(svgBounds);
 
                 var svgWidth = lengthContext.resolve(svgRoot.getWidth(), SVGLengthType.HORIZONTAL);
                 var svgHeight = lengthContext.resolve(svgRoot.getHeight(), SVGLengthType.VERTICAL);
 
                 // Offset by 1 to fit the clipping rectangle
-                var hScale = (bounds.width() - 1) / svgWidth;
-                var vScale = (bounds.height() - 1) / svgHeight;
+                var hScale = (bounds.getWidth() - 1) / svgWidth;
+                var vScale = (bounds.getHeight() - 1) / svgHeight;
 
                 canvas.scale(hScale, vScale);
 
-                svg.getDom().setContainerSize(bounds.width(), bounds.height());
+                svg.getDom().setContainerSize(bounds.getWidth(), bounds.getHeight());
                 svg.getDom().render(canvas);
                 canvas.restore();
             }
         }
     }
 
-    protected void renderImage(Canvas canvas, ObsidianImage image, float left, float top){
-        canvas.drawImage(image.getImage(), left, top);
+    protected void renderImage(Canvas canvas, ObsidianImage image, Rect bounds){
+        canvas.save();
+        canvas.resetMatrix();
+        canvas.translate(bounds.getLeft(), bounds.getTop());
+        canvas.scale((bounds.getWidth() - 1) / image.width(),
+                (bounds.getHeight() - 1) / image.height());
+
+        canvas.drawImage(image.getImage(), 0, 0);
+        canvas.restore();
     }
 
     public Object createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars, StyleLookup styles){

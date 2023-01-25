@@ -15,7 +15,15 @@ public class ObsidianImage {
         return image;
     }
 
-    public ObsidianPixels getPixels(){
+    public int height(){
+        return image.getHeight();
+    }
+
+    public int width(){
+        return image.getWidth();
+    }
+
+    public ObsidianPixels toPixels(){
         return null; // TODO - read Skia pixels to ObsidianPixels
     }
 

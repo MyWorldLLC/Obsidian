@@ -39,6 +39,8 @@ import myworld.obsidian.text.Text;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -372,7 +374,7 @@ public class ExampleRunner {
 
         var imageView = new ImageView();
         imageView.image().set(skin.getCachedImage("/example/16px/cancel.png"));
-        imageView.layout().clampedSize(16, 16);
+        imageView.layout().clampedSize(18, 18);
 
         layout.center().addChild(imageView);
 
