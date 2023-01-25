@@ -308,11 +308,11 @@ public class DisplayEngine implements AutoCloseable {
         return surfaceManager.getSurface();
     }
 
-    public Svg loadSvg(UISkin skin, String path){
+    public ObsidianSvg loadSvg(UISkin skin, String path){
         try(var is = skin.getResolver().resolve(path);
             var data = Data.makeFromBytes(is.readAllBytes())){
             var svg = new SVGDOM(data);
-            return new Svg(svg);
+            return new ObsidianSvg(svg);
         }catch(Exception e){
             log.log(Level.WARNING, "Failed to load svg {0} for skin {1}: {2}. Check that the file exists and is not corrupt.", path, skin.getName(), e);
             return null;

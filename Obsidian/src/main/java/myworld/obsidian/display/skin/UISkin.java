@@ -1,7 +1,7 @@
 package myworld.obsidian.display.skin;
 
 import myworld.obsidian.display.ObsidianImage;
-import myworld.obsidian.display.Svg;
+import myworld.obsidian.display.ObsidianSvg;
 import myworld.obsidian.util.ResourceCache;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class UISkin {
     protected final List<String> svgs;
     protected final List<String> images;
     protected final ResourceCache<String, ObsidianImage> imageCache;
-    protected final ResourceCache<String, Svg> svgCache;
+    protected final ResourceCache<String, ObsidianSvg> svgCache;
     protected final ResourceResolver resolver;
 
     public UISkin(String name, ResourceResolver resolver){
@@ -108,7 +108,7 @@ public class UISkin {
         return svgs;
     }
 
-    public void cache(String path, Svg svg){
+    public void cache(String path, ObsidianSvg svg){
         svgCache.cache(path, svg);
     }
 
@@ -116,7 +116,7 @@ public class UISkin {
         imageCache.cache(path, image);
     }
 
-    public Svg getCachedSvg(String path){
+    public ObsidianSvg getCachedSvg(String path){
         return svgCache.get(path);
     }
 

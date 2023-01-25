@@ -1,7 +1,6 @@
 package myworld.obsidian.components;
 
 import myworld.obsidian.display.ObsidianImage;
-import myworld.obsidian.display.Svg;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 

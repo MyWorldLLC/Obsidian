@@ -365,7 +365,7 @@ public class ObsidianSkin {
                         StyleClass.forLayer("background",
                                 RuleBuilder.create()
                                         .withRule(GEOMETRY, constant(new Rectangle(Distance.percentage(100), Distance.percentage(100))))
-                                        .withRule(COLOR, of(v -> v.get(SvgView.SVG_DATA_NAME, Svg.class)))
+                                        .withRule(COLOR, of(v -> v.get(SvgView.SVG_DATA_NAME, ObsidianSvg.class)))
                                         .build()
                         )
                 )

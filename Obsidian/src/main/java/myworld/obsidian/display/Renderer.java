@@ -3,7 +3,6 @@ package myworld.obsidian.display;
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.paragraph.*;
 import io.github.humbleui.skija.shaper.Shaper;
-import io.github.humbleui.skija.svg.SVGDOM;
 import io.github.humbleui.skija.svg.SVGLengthContext;
 import io.github.humbleui.skija.svg.SVGLengthType;
 import io.github.humbleui.types.Point;
@@ -15,7 +14,6 @@ import myworld.obsidian.text.Text;
 import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextShadow;
 import myworld.obsidian.text.TextStyle;
-import myworld.obsidian.util.ResourceCache;
 
 import java.util.*;
 
@@ -185,7 +183,7 @@ public class Renderer implements AutoCloseable {
                             renderImage(canvas, image, boundingRect.getLeft(), boundingRect.getTop());
                         }
                     }
-                }else if(fill instanceof Svg svgFill){
+                }else if(fill instanceof ObsidianSvg svgFill){
                     canvas.clipPath(renderPath, true);
                     renderSvg(canvas, svgFill, componentBounds);
                 }else if(fill instanceof ObsidianImage imageFill){
@@ -258,7 +256,7 @@ public class Renderer implements AutoCloseable {
 
     }
 
-    protected void renderSvg(Canvas canvas, Svg svg, Bounds2D bounds){
+    protected void renderSvg(Canvas canvas, ObsidianSvg svg, Bounds2D bounds){
         if(svg.getDom() != null){
             try(var svgRoot = svg.getDom().getRoot()){
                 canvas.save();
