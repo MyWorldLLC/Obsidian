@@ -18,8 +18,7 @@ package myworld.obsidian.display.skin.chipmunk;
 
 import chipmunk.runtime.ChipmunkModule;
 import chipmunk.vm.invoke.security.AllowChipmunkLinkage;
-import myworld.obsidian.display.ColorRGBA;
-import myworld.obsidian.display.Colors;
+import myworld.obsidian.display.*;
 import myworld.obsidian.display.skin.StyleRule;
 import myworld.obsidian.geometry.*;
 import myworld.obsidian.text.TextDecoration;
@@ -88,6 +87,26 @@ public class GraphicsModule implements ChipmunkModule {
     @AllowChipmunkLinkage
     public StyleRule color(Object hexColor){
         return StyleRule.of(v -> ColorRGBA.of(evaluate(hexColor, v)));
+    }
+
+    @AllowChipmunkLinkage
+    public StyleRule svg(String varName){
+        return StyleRule.of(v -> v.get(varName, ObsidianSvg.class));
+    }
+
+    @AllowChipmunkLinkage
+    public StyleRule svgResource(String path){
+        return StyleRule.constant(ResourceHandle.svg(path));
+    }
+
+    @AllowChipmunkLinkage
+    public StyleRule image(String varName){
+        return StyleRule.of(v -> v.get(varName, ObsidianImage.class));
+    }
+
+    @AllowChipmunkLinkage
+    public StyleRule imageResource(String path){
+        return StyleRule.constant(ResourceHandle.image(path));
     }
 
     @AllowChipmunkLinkage
