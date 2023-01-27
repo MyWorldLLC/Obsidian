@@ -330,7 +330,7 @@ public class Renderer implements AutoCloseable {
 
             var font = getFont(style, renderVars);
 
-            TextBlob blob = shaper.shape(text.text(), font, boundingRect.getWidth());
+            TextBlob blob = shaper.shape(text.text(), font, boundingRect.getWidth() + 1);
 
             var color = style.rule(StyleRules.COLOR, renderVars, Colors.BLACK);
             ColorRGBA backgroundColor = null;
