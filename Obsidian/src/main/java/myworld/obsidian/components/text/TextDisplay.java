@@ -192,7 +192,12 @@ public class TextDisplay extends Component {
     }
 
     protected TextStyle renderedFontStyle(StyleClass renderStyle, Variables renderVars){
-        return renderStyle.rule(StyleRules.FONT_STYLE, renderVars);
+        var value = renderStyle.rule(StyleRules.FONT_STYLE, renderVars);
+        if(value instanceof TextStyle){
+            return (TextStyle) value;
+        }else{
+            return TextStyle.valueOf((String) value);
+        }
     }
 
 }
