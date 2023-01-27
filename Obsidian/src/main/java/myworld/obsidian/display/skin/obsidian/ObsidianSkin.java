@@ -15,6 +15,7 @@ import myworld.obsidian.geometry.Move;
 import myworld.obsidian.geometry.Rectangle;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.TextShadow;
+import myworld.obsidian.text.TextStyle;
 
 import static myworld.obsidian.display.skin.StyleRules.*;
 import static myworld.obsidian.display.skin.StyleRule.*;
@@ -37,7 +38,6 @@ public class ObsidianSkin {
     public static UISkin create(ResourceResolver resolver){
         return UISkinBuilder.create(OBSIDIAN_SKIN_NAME, resolver)
                 .withComponent(root())
-                .withComponent(example())
                 .withComponent(button())
                 .withComponent(textDisplay())
                 .withComponent(editableTextDisplay())
@@ -47,13 +47,6 @@ public class ObsidianSkin {
                 .withComponent(slider())
                 .withComponent(svgView())
                 .withComponent(imageView())
-                .withStyleClass(
-                        StyleClass.forName("ExampleText",
-                                RuleBuilder.create()
-                                        .withRule(COLOR, constant(ColorRGBA.of("#00FF00")))
-                                        .build()
-                        )
-                )
                 .withStyleClass(
                         StyleClass.forName("DefaultFocus",
                                 RuleBuilder.create()
@@ -253,13 +246,13 @@ public class ObsidianSkin {
                         )
                 )
                 .withStyle(
-                        StyleClass.forLayer("text",
+                        StyleClass.forLayer(TextDisplay.TEXT_LAYER_STYLE_NAME,
                                 RuleBuilder.create()
                                         .withRule(GEOMETRY, constant(TextDisplay.TEXT_DATA_NAME))
                                         .withRule(COLOR, of(v -> v.get(TextDisplay.TEXT_COLOR_DATA_NAME, Colors.BLACK)))
                                         .withRule(FONT_FAMILY, of(v -> v.get(TextDisplay.FONT_FAMILY_DATA_NAME, "Clear Sans")))
-                                        .withRule(FONT_STYLE, of(v -> v.get(TextDisplay.FONT_STYLE_DATA_NAME, "NORMAL")))
-                                        .withRule(FONT_SIZE, of(v -> v.get(TextDisplay.FONT_SIZE_DATA_NAME, 14)))
+                                        .withRule(FONT_STYLE, of(v -> v.get(TextDisplay.FONT_STYLE_DATA_NAME, TextStyle.NORMAL)))
+                                        .withRule(FONT_SIZE, of(v -> v.get(TextDisplay.FONT_SIZE_DATA_NAME, 14f)))
                                         .build()
                         )
                 )
@@ -305,54 +298,6 @@ public class ObsidianSkin {
                                 RuleBuilder.create()
                                 .withRule(COLOR, constant(Colors.TRANSPARENT))
                                 .build()
-                        )
-                )
-                .build();
-    }
-
-    public static ComponentSkin example(){
-        return ComponentSkinBuilder.create("Example")
-                .withParameter("text", VarType.STRING)
-                .withStyle(
-                        StyleClass.forLayer("background",
-                                RuleBuilder.create()
-                                        .withRule(GEOMETRY, constant(new Rectangle(Distance.percentage(100), Distance.percentage(100))))
-                                        .withRule(COLOR, constant(ColorRGBA.of("#FFFFFF")))
-                                        .withRule(BORDER_COLOR, constant(ColorRGBA.of("#666666FF")))
-                                        .withRule(BORDER_WIDTH, constant(5))
-                                        .withRule(BORDER_JOIN, constant("round"))
-                                        .withRule(BORDER_CAP, constant("round"))
-                                        .build()
-                        )
-                )
-                .withStyle(
-                        StyleClass.forLayerState("background", Component.FOCUSED_DATA_NAME,
-                                RuleBuilder.create()
-                                        .withRule(COLOR, constant(ColorRGBA.of("#AAAAAA")))
-                                        .build()
-                        )
-                )
-                .withStyle(
-                        StyleClass.forLayer("text",
-                                RuleBuilder.create()
-                                        .withRule(GEOMETRY, constant("text"))
-                                        .withRule(COLOR, constant(Colors.WHITE))
-                                        .withRule(FONT_FAMILY, constant("Clear Sans"))
-                                        .withRule(FONT_SIZE, constant(14))
-                                        .withRule(TEXT_SHADOW, constant(
-                                                new TextShadow(
-                                                    new Move(Distance.pixels(-1), Distance.pixels(1)),
-                                                    ColorRGBA.of("#000000"),
-                                                1f)
-                                        ))
-                                        .build()
-                        )
-                )
-                .withStyle(
-                        StyleClass.forLayerState("text", Component.HOVERED_DATA_NAME,
-                                RuleBuilder.create()
-                                        .withRule(COLOR, constant(Colors.GREEN))
-                                        .build()
                         )
                 )
                 .build();

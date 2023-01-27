@@ -4,20 +4,22 @@ import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.TextRuler;
 import myworld.obsidian.display.skin.StyleClass;
+import myworld.obsidian.display.skin.StyleRule;
+import myworld.obsidian.display.skin.StyleRules;
+import myworld.obsidian.display.skin.Variables;
+import myworld.obsidian.display.skin.builder.RuleBuilder;
 import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
+import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextStyle;
 import myworld.obsidian.util.Range;
 
 public class TextDisplay extends Component {
 
     public static final String COMPONENT_STYLE_NAME = "TextDisplay";
-    public static final String DEFAULT_FONT_FAMILY = "Clear Sans";
-    public static final TextStyle DEFAULT_FONT_STYLE = TextStyle.NORMAL;
-    public static final Float DEFAULT_FONT_SIZE = 14f;
-    public static final ColorRGBA DEFAULT_TEXT_COLOR = Colors.BLACK;
+    public static final String TEXT_LAYER_STYLE_NAME = "text";
     public static final ColorRGBA DEFAULT_SELECTION_COLOR = ColorRGBA.of("#25EFF988");
 
     public static final String TEXT_DATA_NAME = "text";
@@ -36,6 +38,8 @@ public class TextDisplay extends Component {
     protected final ValueProperty<TextStyle> fontStyle;
     protected final ValueProperty<Float> fontSize;
     protected final ValueProperty<ColorRGBA> color;
+    protected final ValueProperty<TextDecoration> decoration;
+
     protected final ValueProperty<StyleClass> style;
 
     protected final ValueProperty<Boolean> selectable;
@@ -61,10 +65,11 @@ public class TextDisplay extends Component {
         this.text = new ValueProperty<>();
         this.style = new ValueProperty<>();
 
-        fontFamily = new ValueProperty<>(DEFAULT_FONT_FAMILY);
-        fontStyle = new ValueProperty<>(DEFAULT_FONT_STYLE);
-        fontSize = new ValueProperty<>(DEFAULT_FONT_SIZE);
-        color = new ValueProperty<>(DEFAULT_TEXT_COLOR);
+        fontFamily = new ValueProperty<>();
+        fontStyle = new ValueProperty<>();
+        fontSize = new ValueProperty<>();
+        color = new ValueProperty<>();
+        decoration = new ValueProperty<>();
 
         selectable = new ValueProperty<>(true);
         selection = new ValueProperty<>();
@@ -146,11 +151,48 @@ public class TextDisplay extends Component {
     }
 
     public TextRuler getRuler(){
-        return ui.get().getDisplay().getTextRuler(fontFamily.get(), fontStyle.get(), fontSize.get());
+
+        var renderVars = new Variables();
+        fontFamily.ifSet(f -> renderVars.set(FONT_FAMILY_DATA_NAME, f));
+        fontStyle.ifSet(s -> renderVars.set(FONT_STYLE_DATA_NAME, s));
+        fontSize.ifSet(s -> renderVars.set(FONT_SIZE_DATA_NAME, s));
+
+        var renderedStyle = renderedStyle(renderVars);
+
+        return ui.get().getDisplay().getTextRuler(
+                renderedFontFamily(renderedStyle, renderVars),
+                renderedFontStyle(renderedStyle, renderVars),
+                renderedFontSize(renderedStyle, renderVars));
+    }
+
+    protected StyleClass renderedStyle(Variables renderVars){
+        var skin = ui.get().getSelectedSkin();
+        var componentSkin = skin.getComponentSkin(COMPONENT_STYLE_NAME);
+        var textLayers = componentSkin.activeForLayer(TextDisplay.TEXT_LAYER_STYLE_NAME, renderVars);
+        var textLayer = ui.get().getDisplay().resolveStyles(textLayers, this, renderVars, skin);
+
+        StyleClass style = textLayer;
+        if(style().isSet()){
+            style = textLayer != null ? StyleClass.merge(style().get(), textLayer) : style().get();
+        }
+        return ui.get().getDisplay().resolveStyle(style, this, renderVars, skin);
     }
 
     protected int clampedStringIndex(int index){
         return Range.clamp(0, index, Math.max(0, text().get().length() - 1));
+    }
+
+    protected String renderedFontFamily(StyleClass renderStyle, Variables renderVars){
+        return renderStyle.rule(StyleRules.FONT_FAMILY, renderVars);
+    }
+
+    protected float renderedFontSize(StyleClass renderStyle, Variables renderVars){
+        Number size = renderStyle.rule(StyleRules.FONT_SIZE, renderVars);
+        return size != null ? size.floatValue() : 0f;
+    }
+
+    protected TextStyle renderedFontStyle(StyleClass renderStyle, Variables renderVars){
+        return renderStyle.rule(StyleRules.FONT_STYLE, renderVars);
     }
 
 }

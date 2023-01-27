@@ -36,11 +36,10 @@ import myworld.obsidian.input.MouseWheelAxis;
 import myworld.obsidian.layout.Offsets;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
+import myworld.obsidian.text.TextStyle;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -266,6 +265,7 @@ public class ExampleRunner {
         var skin = ObsidianSkin.create();
         skin.addSvgs(List.of("/example/svg/cancel.svg"));
         skin.addImages(List.of("/example/16px/cancel.png"));
+        skin.addComponentSkin(ExampleComponentSkin.create());
         ui.registerSkin(skin);
         ui.useSkin("Obsidian");
         ui.clipboard().set(new GLFWClipboard(window));
@@ -315,7 +315,9 @@ public class ExampleRunner {
         layout.left().addChild(label);
 
         var button = Button.textButton(Text.styled("Hello, Buttons!", ui.getStyle("ExampleText")));
-        button.layout().margin().set(new Offsets(Distance.pixels(10)));
+        //((TextDisplay)button.children().get(0)).fontSize().set(24f);
+        ((TextDisplay)button.children().get(0)).fontFamily().set("Fira Sans Heavy");
+        //button.layout().margin().set(new Offsets(Distance.pixels(10)));
         button.addButtonListener(ButtonEvent::isPressed, evt -> System.out.println("Pressed!"));
         button.addButtonListener(ButtonEvent::isClicked, evt -> System.out.println("Clicked!"));
         button.addButtonListener(ButtonEvent::isReleased, evt -> System.out.println("Released!"));

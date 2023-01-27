@@ -237,6 +237,22 @@ public class DisplayEngine implements AutoCloseable {
         }
     }
 
+    public StyleClass resolveStyle(StyleClass style, Component component, UISkin uiSkin){
+        return resolveStyle(style, component, component.generateRenderVars(), uiSkin);
+    }
+
+    public StyleClass resolveStyle(StyleClass style, Component component, Variables renderVars, UISkin uiSkin){
+        return mixStyles(style, renderVars, new StyleLookup(uiSkin.getComponentSkin(component.styleName().get()), uiSkin));
+    }
+
+    public StyleClass resolveStyles(Collection<StyleClass> styles, Component component, UISkin uiSkin){
+        return resolveStyle(StyleClass.merge(styles), component, component.generateRenderVars(), uiSkin);
+    }
+
+    public StyleClass resolveStyles(Collection<StyleClass> styles, Component component, Variables renderVars, UISkin uiSkin){
+        return mixStyles(StyleClass.merge(styles), renderVars, new StyleLookup(uiSkin.getComponentSkin(component.styleName().get()), uiSkin));
+    }
+
     protected StyleClass mixStyles(StyleClass s, Variables renderVars, StyleLookup styleLookup){
         List<String> mixStyles = s.rule(StyleRules.STYLES, renderVars);
         var result = s;

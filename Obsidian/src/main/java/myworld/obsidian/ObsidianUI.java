@@ -203,6 +203,14 @@ public class ObsidianUI {
         selectedSkin.set(name);
     }
 
+    public ValueProperty<String> selectedSkin(){
+        return selectedSkin;
+    }
+
+    public UISkin getSelectedSkin(){
+        return getSkin(selectedSkin.get());
+    }
+
     public StyleClass getStyle(String name){
         var skin = getSkin(selectedSkin.get());
         if(skin != null){
