@@ -370,7 +370,7 @@ public class Renderer implements AutoCloseable {
         }
 
         var font = new Font(typeface);
-        font.setHinting(FontHinting.NORMAL);
+        font.setHinting(FontHinting.FULL);
         font.setSize(size);
         font.setSubpixel(true);
         return font;

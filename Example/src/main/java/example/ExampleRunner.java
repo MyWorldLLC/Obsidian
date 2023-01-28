@@ -316,7 +316,7 @@ public class ExampleRunner {
 
         var button = Button.textButton(Text.styled("Hello, Buttons!", ui.getStyle("ExampleText")));
         //((TextDisplay)button.children().get(0)).fontSize().set(24f);
-        ((TextDisplay)button.children().get(0)).fontFamily().set("Fira Sans Heavy");
+        ((TextDisplay)button.children().get(0)).fontFamily().set("Clear Sans");
         //button.layout().margin().set(new Offsets(Distance.pixels(10)));
         button.addButtonListener(ButtonEvent::isPressed, evt -> System.out.println("Pressed!"));
         button.addButtonListener(ButtonEvent::isClicked, evt -> System.out.println("Clicked!"));
