@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     api            project(':Obsidian')
-    implementation 'myworld:chipmunk:v1.0.0-alpha1-43-g632d853'
+    implementation 'myworld:chipmunk:v1.0.0-alpha1-44-g4e12e53'
 }
 
 java {
