@@ -6,6 +6,7 @@ import io.github.humbleui.skija.shaper.Shaper;
 import io.github.humbleui.skija.svg.SVGLengthContext;
 import io.github.humbleui.skija.svg.SVGLengthType;
 import io.github.humbleui.types.Point;
+import io.github.humbleui.types.RRect;
 import io.github.humbleui.types.Rect;
 import myworld.obsidian.display.skin.*;
 import myworld.obsidian.geometry.*;
@@ -15,9 +16,14 @@ import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextShadow;
 import myworld.obsidian.text.TextStyle;
 
+import static java.lang.System.Logger.Level;
+
 import java.util.*;
 
 public class Renderer implements AutoCloseable {
+
+
+    private static final System.Logger log = System.getLogger(Renderer.class.getName());
 
     protected final FontCollection fontCollection;
     protected final TypefaceFontProvider typeProvider;
@@ -28,7 +34,7 @@ public class Renderer implements AutoCloseable {
     protected final Deque<Bounds2D> clipRegions;
     protected final ValueProperty<ColorRGBA> debugColor;
 
-    public Renderer(){
+    public Renderer() {
         fontCollection = new FontCollection();
         fontCollection.setDefaultFontManager(FontMgr.getDefault());
 
@@ -42,46 +48,46 @@ public class Renderer implements AutoCloseable {
         debugColor = new ValueProperty<>();
     }
 
-    protected void setActiveSkin(UISkin skin){
+    protected void setActiveSkin(UISkin skin) {
         activeSkin = skin;
     }
 
-    public void enterClippingRegion(Bounds2D clipRegion){
+    public void enterClippingRegion(Bounds2D clipRegion) {
         clipRegions.push(clipRegion);
     }
 
-    public Bounds2D getCurrentClippingRegion(){
+    public Bounds2D getCurrentClippingRegion() {
         return clipRegions.isEmpty() ? null : clipRegions.peek();
     }
 
-    public Rect calculateScreenClip(){
-        if(clipRegions.isEmpty()){
+    public Rect calculateScreenClip() {
+        if (clipRegions.isEmpty()) {
             return null;
         }
 
         var clip = boundsToRect(clipRegions.peekLast());
         var it = clipRegions.descendingIterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             clip = safeIntersect(clip, boundsToRect(it.next()));
         }
         return clip;
     }
 
-    public void exitClippingRegion(){
+    public void exitClippingRegion() {
         clipRegions.pop();
     }
 
-    public ValueProperty<ColorRGBA> debugBoundsColor(){
+    public ValueProperty<ColorRGBA> debugBoundsColor() {
         return debugColor;
     }
 
-    public void registerFont(Typeface typeface){
+    public void registerFont(Typeface typeface) {
         typeProvider.registerTypeface(typeface);
     }
 
 
-    public void renderDebug(Canvas canvas, Bounds2D componentBounds){
-        if(debugColor.get() != null){
+    public void renderDebug(Canvas canvas, Bounds2D componentBounds) {
+        if (debugColor.get() != null) {
             var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
             var debugPaint = new Paint();
             debugPaint.setColor(debugColor.get().toARGB());
@@ -91,164 +97,170 @@ public class Renderer implements AutoCloseable {
         }
     }
 
-    public void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars, StyleLookup styles){
-        canvas.save();
+    public void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars, StyleLookup styles) {
+        try {
 
-        renderDebug(canvas, componentBounds);
+            canvas.save();
+
+            renderDebug(canvas, componentBounds);
 
 
-        var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
+            var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
 
-        Rect clippingRect = calculateScreenClip();
-        if(clippingRect != null){
-            canvas.clipRect(clippingRect, true);
-        }
+            Rect clippingRect = calculateScreenClip();
+            if (clippingRect != null) {
+                canvas.clipRect(clippingRect, true);
+            }
 
-        var geometry = (Object) createSkiaGeometry(boundingRect, style, renderVars, styles);
+            var geometry = (Object) createSkiaGeometry(boundingRect, style, renderVars, styles);
 
-        Object fill = getFill(style, renderVars);
-        Paint stroke = getStroke(style, renderVars);
+            Object fill = getFill(style, renderVars);
+            Paint stroke = getStroke(style, renderVars);
+            stroke.setAntiAlias(true);
 
-        Move position = style.rule(StyleRules.POSITION, renderVars);
-        Rotate rotation = style.rule(StyleRules.ROTATION, renderVars);
+            Move position = style.rule(StyleRules.POSITION, renderVars);
+            Rotate rotation = style.rule(StyleRules.ROTATION, renderVars);
 
-        Matrix33 transform = Matrix33.IDENTITY;
-        if(rotation != null) {
-            transform = Matrix33.makeRotate(-rotation.angle(),
-                            new Point(componentBounds.left() + componentBounds.width() / 2f,
-                                    componentBounds.top() + componentBounds.height() / 2f))
-                    .makeConcat(transform);
-        }
+            Matrix33 transform = Matrix33.IDENTITY;
+            if (rotation != null) {
+                transform = Matrix33.makeRotate(-rotation.angle(),
+                                new Point(componentBounds.left() + componentBounds.width() / 2f,
+                                        componentBounds.top() + componentBounds.height() / 2f))
+                        .makeConcat(transform);
+            }
 
-        if(position != null){
-            transform = Matrix33.makeTranslate(
-                            // The shift by 0.5f aligns pixels so that they make a crisp line rather than a blurred one
-                            position.x().toPixels(componentBounds.width()) - 0.5f,
-                            position.y().toPixels(componentBounds.height()) - 0.5f)
-                    .makeConcat(transform);
-        }
+            if (position != null) {
+                transform = Matrix33.makeTranslate(
+                                // The shift by 0.5f aligns pixels so that they make a crisp line rather than a blurred one
+                                position.x().toPixels(componentBounds.width()) - 0.5f,
+                                position.y().toPixels(componentBounds.height()) - 0.5f)
+                        .makeConcat(transform);
+            }
 
-        if(geometry instanceof Path p){
-            Path renderPath = new Path();
+            if (geometry instanceof Path p) {
+                Path renderPath = new Path();
 
-            renderPath.addPath(p);
-
-            renderPath.transform(transform);
-
-            var visualBounds = renderPath.getBounds();
-            if (visualBounds.getWidth() > boundingRect.getWidth() || visualBounds.getHeight() > boundingRect.getHeight()) {
-
-                switch (style.rule(StyleRules.OVERFLOW_MODE, renderVars, OverflowModes.SCALE)){
-                    case OverflowModes.CLIP -> {
-                        var clipTo = clippingRect != null ? safeIntersect(clippingRect, boundingRect) : boundingRect;
-                        canvas.clipRect(clipTo, true);
-                    }
-
-                    case OverflowModes.SCALE_UNIFORM ->
-                            transform = Matrix33.IDENTITY
-                                    .makeConcat(Matrix33.makeTranslate(visualBounds.getLeft(), visualBounds.getTop()))
-                                    .makeConcat(Matrix33.makeScale(
-                                            Math.min(
-                                                    boundingRect.getWidth() / visualBounds.getWidth(),
-                                                    boundingRect.getHeight() / visualBounds.getHeight()
-                                            )))
-                                    .makeConcat(Matrix33.makeTranslate(-visualBounds.getLeft(), -visualBounds.getTop()));
-                    case OverflowModes.SCALE ->
-                            transform = Matrix33.IDENTITY
-                                    .makeConcat(Matrix33.makeTranslate(visualBounds.getLeft(), visualBounds.getTop()))
-                                    .makeConcat(Matrix33.makeScale(
-                                            boundingRect.getWidth() / visualBounds.getWidth(),
-                                            boundingRect.getHeight() / visualBounds.getHeight()))
-                                    .makeConcat(Matrix33.makeTranslate(-visualBounds.getLeft(), -visualBounds.getTop()));
-                }
+                renderPath.addPath(p);
 
                 renderPath.transform(transform);
-            }
 
-            if (fill != null) {
-                if(fill instanceof ColorRGBA paintFill){
-                    Paint paint = new Paint();
-                    paint.setColor(paintFill.toARGB());
-                    canvas.drawPath(renderPath, paint);
-                }else if(fill instanceof ResourceHandle handle){
-                    canvas.clipPath(renderPath, true);
-                    if(handle.type().equals(ResourceHandle.Type.SVG)){
-                        var svg = activeSkin.getCachedSvg(handle.path());
-                        if(svg != null){
-                            renderSvg(canvas, svg, visualBounds);
+                var visualBounds = renderPath.getBounds();
+                if (visualBounds.getWidth() > boundingRect.getWidth() || visualBounds.getHeight() > boundingRect.getHeight()) {
+
+                    switch (style.rule(StyleRules.OVERFLOW_MODE, renderVars, OverflowModes.SCALE)) {
+                        case OverflowModes.CLIP -> {
+                            var clipTo = clippingRect != null ? safeIntersect(clippingRect, boundingRect) : boundingRect;
+                            canvas.clipRect(clipTo, true);
                         }
-                    }else if(handle.type().equals(ResourceHandle.Type.IMAGE)){
-                        var image = activeSkin.getCachedImage(handle.path());
-                        if(image != null){
-                            renderImage(canvas, image, visualBounds);
-                        }
+
+                        case OverflowModes.SCALE_UNIFORM -> transform = Matrix33.IDENTITY
+                                .makeConcat(Matrix33.makeTranslate(visualBounds.getLeft(), visualBounds.getTop()))
+                                .makeConcat(Matrix33.makeScale(
+                                        Math.min(
+                                                boundingRect.getWidth() / visualBounds.getWidth(),
+                                                boundingRect.getHeight() / visualBounds.getHeight()
+                                        )))
+                                .makeConcat(Matrix33.makeTranslate(-visualBounds.getLeft(), -visualBounds.getTop()));
+                        case OverflowModes.SCALE -> transform = Matrix33.IDENTITY
+                                .makeConcat(Matrix33.makeTranslate(visualBounds.getLeft(), visualBounds.getTop()))
+                                .makeConcat(Matrix33.makeScale(
+                                        boundingRect.getWidth() / visualBounds.getWidth(),
+                                        boundingRect.getHeight() / visualBounds.getHeight()))
+                                .makeConcat(Matrix33.makeTranslate(-visualBounds.getLeft(), -visualBounds.getTop()));
                     }
-                }else if(fill instanceof ObsidianSvg svgFill){
-                    canvas.clipPath(renderPath, true);
-                    renderSvg(canvas, svgFill, visualBounds);
-                }else if(fill instanceof ObsidianImage imageFill){
-                    canvas.clipPath(renderPath, true);
-                    renderImage(canvas, imageFill, visualBounds);
+
+                    renderPath.transform(transform);
                 }
-            }
 
-            if (stroke != null) {
-                canvas.drawPath(renderPath, stroke);
-            }
-
-        }else if(geometry instanceof RenderableText text){
-            // Note: Because text can specify its own style class,
-            // conversion of the high-level Text object to RenderableText
-            // performs style class merging. This means that all styleable
-            // properties used here must be assigned to the RenderableText
-            // during creation, and none of the style variables (such as fill color)
-            // available from the outer scopes here may be used.
-            var clipTo = clippingRect != null ? safeIntersect(clippingRect, boundingRect) : boundingRect;
-            canvas.clipRect(clipTo, true);
-
-            var textColor = new Paint();
-            textColor.setColor(text.color().toARGB());
-
-            if(text.backgroundColor() != null){
-                var backgroundPaint = new Paint();
-                backgroundPaint.setColor(text.backgroundColor().toARGB());
-                var background = new Rect(
-                        boundingRect.getLeft(),
-                        boundingRect.getTop(),
-                        boundingRect.getLeft() + text.text().getBlockBounds().getWidth(),
-                        boundingRect.getTop() + text.text().getBlockBounds().getHeight()
-                );
-
-                canvas.drawRect(background, backgroundPaint);
-            }
-
-            if(text.shadows() != null){
-                var shadowPaint = new Paint();
-                for(var shadow : text.shadows()){
-                    shadowPaint.setColor(shadow.color().toARGB());
-                    shadowPaint.setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, shadow.blurSigma(), false));
-                    renderDecoratedText(canvas, text.text(), text.decorations(),
-                            shadow.offset().x().toPixels(boundingRect.getWidth()) + boundingRect.getLeft(),
-                            shadow.offset().y().toPixels(boundingRect.getHeight()) + boundingRect.getTop(),
-                            shadowPaint);
+                if (fill != null) {
+                    if (fill instanceof ColorRGBA paintFill) {
+                        Paint paint = new Paint();
+                        paint.setColor(paintFill.toARGB());
+                        paint.setAntiAlias(true);
+                        canvas.drawPath(renderPath, paint);
+                    } else if (fill instanceof ResourceHandle handle) {
+                        canvas.clipPath(renderPath, true);
+                        if (handle.type().equals(ResourceHandle.Type.SVG)) {
+                            var svg = activeSkin.getCachedSvg(handle.path());
+                            if (svg != null) {
+                                renderSvg(canvas, svg, visualBounds);
+                            }
+                        } else if (handle.type().equals(ResourceHandle.Type.IMAGE)) {
+                            var image = activeSkin.getCachedImage(handle.path());
+                            if (image != null) {
+                                renderImage(canvas, image, visualBounds);
+                            }
+                        }
+                    } else if (fill instanceof ObsidianSvg svgFill) {
+                        canvas.clipPath(renderPath, true);
+                        renderSvg(canvas, svgFill, visualBounds);
+                    } else if (fill instanceof ObsidianImage imageFill) {
+                        canvas.clipPath(renderPath, true);
+                        renderImage(canvas, imageFill, visualBounds);
+                    }
                 }
+
+                if (stroke != null) {
+                    canvas.drawPath(renderPath, stroke);
+                }
+
+            } else if (geometry instanceof RenderableText text) {
+                // Note: Because text can specify its own style class,
+                // conversion of the high-level Text object to RenderableText
+                // performs style class merging. This means that all styleable
+                // properties used here must be assigned to the RenderableText
+                // during creation, and none of the style variables (such as fill color)
+                // available from the outer scopes here may be used.
+                var clipTo = clippingRect != null ? safeIntersect(clippingRect, boundingRect) : boundingRect;
+                canvas.clipRect(clipTo, true);
+
+                var textColor = new Paint();
+                textColor.setColor(text.color().toARGB());
+
+                if (text.backgroundColor() != null) {
+                    var backgroundPaint = new Paint();
+                    backgroundPaint.setColor(text.backgroundColor().toARGB());
+                    var background = new Rect(
+                            boundingRect.getLeft(),
+                            boundingRect.getTop(),
+                            boundingRect.getLeft() + text.text().getBlockBounds().getWidth(),
+                            boundingRect.getTop() + text.text().getBlockBounds().getHeight()
+                    );
+
+                    canvas.drawRect(background, backgroundPaint);
+                }
+
+                if (text.shadows() != null) {
+                    var shadowPaint = new Paint();
+                    for (var shadow : text.shadows()) {
+                        shadowPaint.setColor(shadow.color().toARGB());
+                        shadowPaint.setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, shadow.blurSigma(), false));
+                        renderDecoratedText(canvas, text.text(), text.decorations(),
+                                shadow.offset().x().toPixels(boundingRect.getWidth()) + boundingRect.getLeft(),
+                                shadow.offset().y().toPixels(boundingRect.getHeight()) + boundingRect.getTop(),
+                                shadowPaint);
+                    }
+                }
+
+                renderDecoratedText(canvas, text.text(), text.decorations(), text.bounds().getLeft(), text.bounds().getTop(), textColor);
             }
 
-            renderDecoratedText(canvas, text.text(), text.decorations(), text.bounds().getLeft(), text.bounds().getTop(), textColor);
+        } catch (Exception e) {
+            log.log(Level.INFO, "Error rendering style ", e);
+        } finally {
+            canvas.restore();
         }
-
-        canvas.restore();
     }
 
-    protected void renderDecoratedText(Canvas canvas, TextBlob text, TextDecoration decor, float x, float y, Paint fill){
+    protected void renderDecoratedText(Canvas canvas, TextBlob text, TextDecoration decor, float x, float y, Paint fill) {
         canvas.drawTextBlob(text, x, y, fill);
 
-        if(decor != null){
-            if(decor.underline()){
+        if (decor != null) {
+            if (decor.underline()) {
                 float underlineY = Math.round(y + text.getTightBounds().getBottom()) - 0.5f;
                 canvas.drawLine(x, underlineY, x + text.getBlockBounds().getWidth(), underlineY, fill);
             }
-            if(decor.strikethrough()){
+            if (decor.strikethrough()) {
                 float strikeY = Math.round(y + (text.getTightBounds().getTop() + text.getTightBounds().getBottom()) / 2.0f) - 0.5f;
                 canvas.drawLine(x, strikeY, x + text.getBlockBounds().getWidth(), strikeY, fill);
             }
@@ -256,9 +268,9 @@ public class Renderer implements AutoCloseable {
 
     }
 
-    protected void renderSvg(Canvas canvas, ObsidianSvg svg, Rect bounds){
-        if(svg.getDom() != null){
-            try(var svgRoot = svg.getDom().getRoot()){
+    protected void renderSvg(Canvas canvas, ObsidianSvg svg, Rect bounds) {
+        if (svg.getDom() != null) {
+            try (var svgRoot = svg.getDom().getRoot()) {
                 canvas.save();
                 canvas.resetMatrix();
                 canvas.translate(bounds.getLeft(), bounds.getTop());
@@ -283,7 +295,7 @@ public class Renderer implements AutoCloseable {
         }
     }
 
-    protected void renderImage(Canvas canvas, ObsidianImage image, Rect bounds){
+    protected void renderImage(Canvas canvas, ObsidianImage image, Rect bounds) {
         canvas.save();
         canvas.resetMatrix();
         canvas.translate(bounds.getLeft(), bounds.getTop());
@@ -294,18 +306,32 @@ public class Renderer implements AutoCloseable {
         canvas.restore();
     }
 
-    public Object createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars, StyleLookup styles){
+    public Object createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars, StyleLookup styles) {
         Object geometry = style.rule(StyleRules.GEOMETRY, renderVars);
         var path = new Path();
-        if(geometry instanceof Rectangle r){
-           path.addRect(
-                   new Rect(
-                           boundingRect.getLeft(),
-                           boundingRect.getTop(),
-                           boundingRect.getLeft() + pixelWidth(r.width(), boundingRect),
-                           boundingRect.getTop() + pixelHeight(r.height(), boundingRect)
-                   ));
-        }else if(geometry instanceof Ellipse ellipse){
+        if (geometry instanceof Rectangle r) {
+            path.addRect(
+                    new Rect(
+                            boundingRect.getLeft(),
+                            boundingRect.getTop(),
+                            boundingRect.getLeft() + pixelWidth(r.width(), boundingRect),
+                            boundingRect.getTop() + pixelHeight(r.height(), boundingRect)
+                    ));
+        } else if (geometry instanceof RoundedRectangle r) {
+            path.addRRect(
+                    RRect.makeNinePatchLTRB(
+                            boundingRect.getLeft(),
+                            boundingRect.getTop(),
+                            boundingRect.getLeft() + pixelWidth(r.rectangle().width(), boundingRect),
+                            boundingRect.getTop() + pixelHeight(r.rectangle().height(), boundingRect),
+
+                            // Radii
+                            pixelWidth(r.leftRadius(), boundingRect),
+                            pixelHeight(r.topRadius(), boundingRect),
+                            pixelWidth(r.rightRadius(), boundingRect),
+                            pixelHeight(r.bottomRadius(), boundingRect)
+                    ));
+        } else if (geometry instanceof Ellipse ellipse) {
             path.addOval(
                     new Rect(
                             boundingRect.getLeft(),
@@ -313,18 +339,18 @@ public class Renderer implements AutoCloseable {
                             boundingRect.getLeft() + pixelWidth(ellipse.width(), boundingRect),
                             boundingRect.getTop() + pixelHeight(ellipse.height(), boundingRect)
                     ));
-        }else if(geometry instanceof SvgPath svg){
-            var svgPath = Path.makeFromSVGString(svg.path())
+        } else if (geometry instanceof SvgPath svg) {
+            var svgPath = Path.makeFromSVGString(svg.interpolate(boundingRect.getWidth(), boundingRect.getHeight()))
                     .transform(Matrix33.makeTranslate(boundingRect.getLeft(), boundingRect.getTop()));
-            if(svgPath.isValid()){
+            if (svgPath.isValid()) {
                 path.addPath(svgPath);
-            }else{
+            } else {
                 path.addRect(boundingRect);
             }
-        }else if(geometry instanceof String varName){
+        } else if (geometry instanceof String varName) {
             Text text = renderVars.get(varName, Text.class);
 
-            if(text.hasStyle()){
+            if (text.hasStyle()) {
                 style = StyleClass.merge(text.style(), style);
             }
 
@@ -334,13 +360,13 @@ public class Renderer implements AutoCloseable {
 
             var color = style.rule(StyleRules.COLOR, renderVars, Colors.BLACK);
             ColorRGBA backgroundColor = null;
-            if(style.hasRule(StyleRules.TEXT_BACKGROUND_COLOR)){
+            if (style.hasRule(StyleRules.TEXT_BACKGROUND_COLOR)) {
                 backgroundColor = style.rule(StyleRules.TEXT_BACKGROUND_COLOR, renderVars);
             }
 
             return new RenderableText(blob, font, boundingRect, color, backgroundColor, getTextDecoration(style, renderVars), getShadows(style, renderVars));
 
-        }else{
+        } else {
             // Default to filling in the componentBounds as a rectangle
             path.addRect(boundingRect);
         }
@@ -348,24 +374,24 @@ public class Renderer implements AutoCloseable {
         return path;
     }
 
-    public Font getFont(StyleClass style){
+    public Font getFont(StyleClass style) {
         return getFont(style, Variables.empty());
     }
 
-    public Font getFont(StyleClass style, Variables renderVars){
+    public Font getFont(StyleClass style, Variables renderVars) {
         return getFont(style.rule(StyleRules.FONT_FAMILY, renderVars), getFontStyle(style, renderVars), getFontSize(style, renderVars));
     }
 
-    public Font getFont(String family, TextStyle style, float size){
+    public Font getFont(String family, TextStyle style, float size) {
         return getFont(family, getFontStyle(style), size);
     }
 
-    public Font getFont(String family, FontStyle style, float size){
+    public Font getFont(String family, FontStyle style, float size) {
         Typeface typeface;
-        if(style != null){
+        if (style != null) {
             Typeface[] typefaces = fontCollection.findTypefaces(new String[]{family}, style);
             typeface = typefaces != null && typefaces.length > 0 ? typefaces[0] : fontCollection.defaultFallback();
-        }else{
+        } else {
             typeface = fontCollection.defaultFallback();
         }
 
@@ -377,25 +403,25 @@ public class Renderer implements AutoCloseable {
         return font;
     }
 
-    public TextRuler getTextRuler(String fontFamily, TextStyle style, float size){
+    public TextRuler getTextRuler(String fontFamily, TextStyle style, float size) {
         return new TextRuler(this, getFont(fontFamily, style, size));
     }
 
-    public TextRuler getTextRuler(StyleClass textStyle, Variables v){
+    public TextRuler getTextRuler(StyleClass textStyle, Variables v) {
         return new TextRuler(this, getFont(textStyle, v));
     }
 
-    protected Rect boundsToRect(Bounds2D bounds){
+    protected Rect boundsToRect(Bounds2D bounds) {
         return new Rect(bounds.left() - 0.5f, bounds.top() - 0.5f, bounds.right() - 0.5f, bounds.bottom() - 0.5f);
     }
 
-    protected Rect safeIntersect(Rect a, Rect b){
+    protected Rect safeIntersect(Rect a, Rect b) {
         var i = a.intersect(b);
         return i != null ? i : a;
     }
 
-    public static PaintStrokeCap skiaCap(String cap){
-        return switch (cap){
+    public static PaintStrokeCap skiaCap(String cap) {
+        return switch (cap) {
             case Borders.CAP_BUTT -> PaintStrokeCap.BUTT;
             case Borders.CAP_ROUND -> PaintStrokeCap.ROUND;
             case Borders.CAP_SQUARE -> PaintStrokeCap.SQUARE;
@@ -403,8 +429,8 @@ public class Renderer implements AutoCloseable {
         };
     }
 
-    public static PaintStrokeJoin skiaJoin(String join){
-        return switch (join){
+    public static PaintStrokeJoin skiaJoin(String join) {
+        return switch (join) {
             case Borders.JOIN_BEVEL -> PaintStrokeJoin.BEVEL;
             case Borders.JOIN_ROUND -> PaintStrokeJoin.ROUND;
             case Borders.JOIN_MITER -> PaintStrokeJoin.MITER;
@@ -412,20 +438,20 @@ public class Renderer implements AutoCloseable {
         };
     }
 
-    protected static float pixelWidth(Distance distance, Rect bounds){
+    protected static float pixelWidth(Distance distance, Rect bounds) {
         return distance.toPixels(bounds.getWidth());
     }
 
-    protected static float pixelHeight(Distance distance, Rect bounds){
+    protected static float pixelHeight(Distance distance, Rect bounds) {
         return distance.toPixels(bounds.getHeight());
     }
 
-    protected static float getFontSize(StyleClass style, Variables renderVars){
+    protected static float getFontSize(StyleClass style, Variables renderVars) {
         Number size = style.rule(StyleRules.FONT_SIZE, renderVars, 12f);
         return size.floatValue();
     }
 
-    protected static Object getFill(StyleClass style, Variables renderVars){
+    protected static Object getFill(StyleClass style, Variables renderVars) {
 
         if (style.hasRule(StyleRules.COLOR)) {
             return style.rule(StyleRules.COLOR, renderVars);
@@ -434,7 +460,7 @@ public class Renderer implements AutoCloseable {
         return Colors.WHITE;
     }
 
-    protected static Paint getStroke(StyleClass style, Variables renderVars){
+    protected static Paint getStroke(StyleClass style, Variables renderVars) {
         Paint stroke = null;
         if (style.hasAny(StyleRules.BORDER_CAP, StyleRules.BORDER_COLOR, StyleRules.BORDER_JOIN,
                 StyleRules.BORDER_MITER, StyleRules.BORDER_WIDTH)) {
@@ -455,10 +481,10 @@ public class Renderer implements AutoCloseable {
 
     protected static FontStyle getFontStyle(StyleClass style, Variables renderVars) {
         var value = style.rule(StyleRules.FONT_STYLE, renderVars);
-        if(value == null){
+        if (value == null) {
             value = TextStyle.NORMAL;
         }
-        if(value instanceof String s){
+        if (value instanceof String s) {
             return getFontStyle(TextStyle.valueOf(s));
         }
         return getFontStyle((TextStyle) value);
@@ -473,17 +499,17 @@ public class Renderer implements AutoCloseable {
         };
     }
 
-    protected static TextDecoration getTextDecoration(StyleClass style, Variables renderVars){
+    protected static TextDecoration getTextDecoration(StyleClass style, Variables renderVars) {
         return style.rule(StyleRules.TEXT_DECORATION, renderVars);
     }
 
     @SuppressWarnings("unchecked")
-    protected static TextShadow[] getShadows(StyleClass style, Variables renderVars){
-        if(style.hasRule(StyleRules.TEXT_SHADOW)){
+    protected static TextShadow[] getShadows(StyleClass style, Variables renderVars) {
+        if (style.hasRule(StyleRules.TEXT_SHADOW)) {
             var shadows = style.rule(StyleRules.TEXT_SHADOW, renderVars);
-            if(shadows instanceof List shadowList){
+            if (shadows instanceof List shadowList) {
                 return ((List<TextShadow>) shadowList).toArray(new TextShadow[]{});
-            }else if(shadows instanceof TextShadow shadow){
+            } else if (shadows instanceof TextShadow shadow) {
                 return new TextShadow[]{shadow};
             }
         }

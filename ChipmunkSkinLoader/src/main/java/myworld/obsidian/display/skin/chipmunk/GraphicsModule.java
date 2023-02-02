@@ -130,6 +130,40 @@ public class GraphicsModule implements ChipmunkModule {
     }
 
     @AllowChipmunkLinkage
+    public StyleRule roundedRectangle(Object width, Object height, Object radius){
+        return StyleRule.of(v ->RoundedRectangle.uniform(
+                new Rectangle(
+                        coerceDistance(evaluate(width, v)),
+                        coerceDistance(evaluate(height, v))
+                ),
+                coerceDistance(evaluate(radius, v))));
+    }
+    @AllowChipmunkLinkage
+    public StyleRule roundedRectangle(Object width, Object height, Object sideRadius, Object topRadius){
+        return StyleRule.of(v ->new RoundedRectangle(
+                new Rectangle(
+                        coerceDistance(evaluate(width, v)),
+                        coerceDistance(evaluate(height, v))
+                ),
+                coerceDistance(evaluate(sideRadius, v)),
+                coerceDistance(evaluate(topRadius, v)),
+                coerceDistance(evaluate(sideRadius, v)),
+                coerceDistance(evaluate(topRadius, v))));
+    }
+    @AllowChipmunkLinkage
+    public StyleRule roundedRectangle(Object width, Object height, Object leftRadius, Object topRadius, Object rightRadius, Object bottomRadius){
+        return StyleRule.of(v ->new RoundedRectangle(
+                new Rectangle(
+                        coerceDistance(evaluate(width, v)),
+                        coerceDistance(evaluate(height, v))
+                ),
+                coerceDistance(evaluate(leftRadius, v)),
+                coerceDistance(evaluate(topRadius, v)),
+                coerceDistance(evaluate(rightRadius, v)),
+                coerceDistance(evaluate(bottomRadius, v))));
+    }
+
+    @AllowChipmunkLinkage
     public StyleRule square(Object s){
         return StyleRule.of(v -> Rectangle.square(coerceDistance(evaluate(s, v))));
     }

@@ -7,9 +7,7 @@ import myworld.obsidian.display.skin.StyleClass;
 import myworld.obsidian.display.skin.VarType;
 import myworld.obsidian.display.skin.builder.ComponentSkinBuilder;
 import myworld.obsidian.display.skin.builder.RuleBuilder;
-import myworld.obsidian.geometry.Distance;
-import myworld.obsidian.geometry.Move;
-import myworld.obsidian.geometry.Rectangle;
+import myworld.obsidian.geometry.*;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.TextShadow;
 
@@ -24,7 +22,11 @@ public class ExampleComponentSkin {
                 .withStyle(
                         StyleClass.forLayer("background",
                                 RuleBuilder.create()
-                                        .withRule(GEOMETRY, constant(new Rectangle(Distance.percentage(100), Distance.percentage(100))))
+                                        .withRule(GEOMETRY, constant(
+                                                RoundedRectangle.uniform(
+                                                    new Rectangle(Distance.percentage(100), Distance.percentage(100)),
+                                                    Distance.pixels(5)
+                                                )))
                                         .withRule(COLOR, constant(ColorRGBA.of("#FFFFFF")))
                                         .withRule(BORDER_COLOR, constant(ColorRGBA.of("#666666FF")))
                                         .withRule(BORDER_WIDTH, constant(5))
@@ -37,6 +39,26 @@ public class ExampleComponentSkin {
                         StyleClass.forLayerState("background", Component.FOCUSED_DATA_NAME,
                                 RuleBuilder.create()
                                         .withRule(COLOR, constant(ColorRGBA.of("#AAAAAA")))
+                                        .build()
+                        )
+                )
+                .withStyle(
+                        StyleClass.forLayer("svg",
+                                RuleBuilder.create()
+                                        .withRule(GEOMETRY, constant(
+                                                new SvgPath(
+                                                        "M % % H % V % H % L % %",
+                                                        SvgDist.horizontal(Distance.percentage(10)),
+                                                        SvgDist.vertical(Distance.percentage(20)),
+                                                        SvgDist.horizontal(Distance.percentage(90)),
+                                                        SvgDist.vertical(Distance.percentage(90)),
+                                                        SvgDist.horizontal(Distance.percentage(10)),
+                                                        SvgDist.horizontal(Distance.percentage(10)),
+                                                        SvgDist.vertical(Distance.percentage(20))
+                                                )
+                                        ))
+                                        .withRule(BORDER_COLOR, constant(Colors.BLUE))
+                                        .withRule(BORDER_WIDTH, constant(1))
                                         .build()
                         )
                 )
