@@ -43,15 +43,6 @@ public class LayoutEngine {
     public LayoutEngine(ObsidianUI ui){
         this.ui = ui;
         listener = this::onComponentChange;
-        ui.getRoot().children().addListener(this::onComponentChange);
-    }
-
-    public void enable(){
-        ui.getRoot().children().addListener(listener);
-    }
-
-    public void disable(){
-        ui.getRoot().children().removeListener(listener);
     }
 
     public void layout(){
@@ -65,37 +56,37 @@ public class LayoutEngine {
         root.layout().clampedSize(Distance.pixels(fWidth), Distance.pixels(fHeight));
         syncLayoutProperties(root);
 
-        var yogaTag = root.getTag(YogaTag.class);
-        if(yogaTag != null){
-            YGNodeCalculateLayout(yogaTag.node(), fWidth, fHeight, YGDirectionLTR);
+        var node = getYogaNode(root);
+        if(node != null){
+            YGNodeCalculateLayout(node, fWidth, fHeight, YGDirectionLTR);
         }
     }
 
     public float getWidth(Component component){
-        var tag = component.getTag(YogaTag.class);
-        if(tag != null){
-            return YGNodeLayoutGetWidth(tag.node());
+        var node = getYogaNode(component);
+        if(node != null){
+            return YGNodeLayoutGetWidth(node);
         }
         return LAYOUT_UNDEFINED;
     }
 
     public float getHeight(Component component){
-        var tag = component.getTag(YogaTag.class);
-        if(tag != null){
-            return YGNodeLayoutGetHeight(tag.node());
+        var node = getYogaNode(component);
+        if(node != null){
+            return YGNodeLayoutGetHeight(node);
         }
         return LAYOUT_UNDEFINED;
     }
 
     public Bounds2D getLocalBounds(Component component){
-        var tag = component.getTag(YogaTag.class);
-        if(tag != null){
+        var node = getYogaNode(component);
+        if(node != null){
             return new Bounds2D(
                     new Point2D(
-                            YGNodeLayoutGetLeft(tag.node()),
-                            YGNodeLayoutGetTop(tag.node())),
-                    YGNodeLayoutGetWidth(tag.node()),
-                    YGNodeLayoutGetHeight(tag.node())
+                            YGNodeLayoutGetLeft(node),
+                            YGNodeLayoutGetTop(node)),
+                    YGNodeLayoutGetWidth(node),
+                    YGNodeLayoutGetHeight(node)
             );
         }
         return Bounds2D.UNDEFINED;
@@ -123,8 +114,8 @@ public class LayoutEngine {
         return bounds.left() <= x && bounds.right() >= x && bounds.bottom() >= y && bounds.top() <= y;
     }
 
-    public void registerRoot(Component component){
-        addLayout(component);
+    public void registerRoot(Component root){
+        addLayout(root);
     }
 
     public void unregisterRoot(Component root){
@@ -135,18 +126,18 @@ public class LayoutEngine {
         if(oldValue != null && newValue == null){
             removeLayout(oldValue);
         }else if(oldValue == null && newValue != null){
-            addLayout(newValue);
+             addLayout(newValue);
         }
     }
 
     protected void addLayout(Component component){
+
         component.children().addListener(listener);
-        var tag = new YogaTag(YGNodeNew());
-        component.tag(tag);
+        var node = setYogaNode(component);
 
         if(component.hasParent()){
-            var parent = component.getParent().getTag(YogaTag.class);
-            YGNodeInsertChild(parent.node(), tag.node(), YGNodeGetChildCount(parent.node()));
+            var parent = getYogaNode(component.getParent());
+            YGNodeInsertChild(parent, node, YGNodeGetChildCount(parent));
         }
 
         component.children().forEach(this::addLayout);
@@ -156,20 +147,19 @@ public class LayoutEngine {
         component.children().removeListener(listener);
         component.children().forEach(this::removeLayout);
 
-        var tag = component.getTag(YogaTag.class);
+        var node = getYogaNode(component);
         if(component.hasParent()){
-            var parent = component.getParent().getTag(YogaTag.class);
-            YGNodeRemoveChild(parent.node(), tag.node());
+            var parent = getYogaNode(component.getParent());
+            YGNodeRemoveChild(parent, node);
         }
 
-        YGNodeFree(tag.node());
-        component.removeTag(YogaTag.class);
+        YGNodeFree(node);
+        removeYogaNode(component);
     }
 
     protected void ensureYogaNode(Component component){
         if(component.layout().node().get() == null){
-            long node = YGNodeNew();
-            component.layout().node().set(node);
+            var node = setYogaNode(component);
             component.children().forEach(child -> {
                 YGNodeInsertChild(node, child.layout().node().get(), YGNodeGetChildCount(node));
             });
@@ -177,9 +167,8 @@ public class LayoutEngine {
     }
 
     protected void syncLayoutProperties(Component component){
-        var yogaTag = component.getTag(YogaTag.class);
-        if(yogaTag != null){
-            var node = yogaTag.node();
+        var node = getYogaNode(component);
+        if(node != null){
             var layout = component.layout();
 
             YGNodeStyleSetPositionType(node,
@@ -286,6 +275,23 @@ public class LayoutEngine {
 
             component.children().forEach(this::syncLayoutProperties);
         }
+    }
+
+    protected Long getYogaNode(Component c){
+        return c.layout().node().get();
+    }
+
+    protected Long setYogaNode(Component c){
+        var node = getYogaNode(c);
+        if(node == null){
+            node = YGNodeNew();
+            c.layout().node().set(node);
+        }
+        return node;
+    }
+
+    protected void removeYogaNode(Component c){
+        c.layout().node().set(null);
     }
 
     protected int yogaAlignment(ItemAlignment alignment){

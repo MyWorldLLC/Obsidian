@@ -34,6 +34,7 @@ import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.input.MouseWheelAxis;
 import myworld.obsidian.layout.Offsets;
+import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.text.Text;
 import myworld.obsidian.text.TextStyle;

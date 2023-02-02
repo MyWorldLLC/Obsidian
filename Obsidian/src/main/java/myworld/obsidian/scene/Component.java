@@ -91,12 +91,12 @@ public class Component {
     }
 
     public void addChild(Component child){
-        if(isChild(child)){
+        if(child.hasParent()){
             throw new IllegalStateException("Component has already been added as a child");
         }
         child.parent().set(this);
-        child.onAttach();
         children.add(child);
+        child.onAttach();
     }
 
     public void addChildren(Component... children){

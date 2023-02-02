@@ -100,6 +100,10 @@ public class ObsidianUI {
 
         layout = new ValueProperty<>();
         layout.addListener((prop, oldValue, newValue) -> {
+            if(oldValue != null){
+                oldValue.unregisterRoot(root);
+            }
+
             if(newValue != null){
                 newValue.registerRoot(root);
             }
