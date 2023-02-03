@@ -307,7 +307,7 @@ public class ExampleRunner {
         });
 
         var textField = TextField.password('*');
-        textField.layout().preferredSize(Distance.pixels(100), Distance.pixels(50));
+        //textField.layout().preferredSize(Distance.pixels(100), Distance.pixels(50));
         textField.insert("Foo");
         layout.center().addChild(textField);
 

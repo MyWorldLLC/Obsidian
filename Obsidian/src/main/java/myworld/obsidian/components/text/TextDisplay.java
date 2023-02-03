@@ -78,10 +78,7 @@ public class TextDisplay extends Component {
         this.text.set(text);
         this.style.set(style);
 
-        preLayout(() -> {
-            var ruler = getRuler();
-            layout.preferredSize(Distance.pixels(ruler.getWidth(text().get())), Distance.pixels(ruler.getLineHeight()));
-        });
+        preLayout(this::calculatePreferredSize);
 
         renderVars.put(TEXT_DATA_NAME, () -> Text.styled(this.text.get(), this.style.get()));
         renderVars.put(FONT_FAMILY_DATA_NAME, fontFamily);
@@ -163,6 +160,11 @@ public class TextDisplay extends Component {
                 renderedFontFamily(renderedStyle, renderVars),
                 renderedFontStyle(renderedStyle, renderVars),
                 renderedFontSize(renderedStyle, renderVars));
+    }
+
+    public void calculatePreferredSize(){
+        var ruler = getRuler();
+        layout.preferredSize(Distance.pixels(ruler.getWidth(text().get())), Distance.pixels(ruler.getLineHeight()));
     }
 
     protected StyleClass renderedStyle(Variables renderVars){

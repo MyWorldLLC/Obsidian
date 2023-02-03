@@ -5,8 +5,10 @@ import myworld.obsidian.events.input.KeyEvent;
 import myworld.obsidian.events.input.MouseButtonEvent;
 import myworld.obsidian.events.input.MouseMoveEvent;
 import myworld.obsidian.events.scene.FocusEvent;
+import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.input.Key;
 import myworld.obsidian.input.MouseButton;
+import myworld.obsidian.layout.*;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 
@@ -36,6 +38,14 @@ public class TextField extends Component {
         mask = new ValueProperty<>();
         text.editor().set(new TextFieldEditor(mask));
         text.focusable().set(false);
+
+        // Take up all available width - height will fit the line of
+        // text if not overridden by user
+        layout.preferredWidth().set(Distance.percentage(100));
+
+        layout.justifyContent().set(ItemJustification.FLEX_START);
+        layout.padding().set(new Offsets(Distance.pixels(2), Layout.ZERO, Distance.pixels(2), Layout.ZERO));
+        clipChildren.set(true);
 
         dispatcher.subscribe(CharacterEvent.class, e -> text.editable().get() && !e.getManager().isControlDown(),
                 evt -> text.insert(evt.getCharacters()));

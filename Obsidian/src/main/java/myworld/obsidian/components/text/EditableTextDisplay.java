@@ -32,8 +32,12 @@ public class EditableTextDisplay extends Component {
         styleName.set(COMPONENT_STYLE_NAME);
         focusable.set(false);
         label = new TextDisplay("", style);
-        label.layout().clampedSize(Distance.percentage(100), Distance.percentage(100));
         addChild(label);
+
+        preLayout(() -> {
+            label.calculatePreferredSize();
+            layout.clampedSize(label.layout().preferredWidth().get(), label.layout().preferredHeight().get());
+        });
 
         editor = new ValueProperty<>();
         editable = new ValueProperty<>(true);

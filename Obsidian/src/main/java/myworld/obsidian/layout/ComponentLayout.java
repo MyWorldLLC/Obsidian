@@ -56,7 +56,7 @@ public class ComponentLayout {
         justifyContent = new ValueProperty<>(ItemJustification.FLEX_START);
         layoutDirection = new ValueProperty<>(LayoutDirection.INHERIT);
 
-        margin = new ValueProperty<>(Offsets.AUTO);
+        margin = new ValueProperty<>(Offsets.ZERO);
         padding = new ValueProperty<>(Offsets.ZERO);
 
         width = new ValueProperty<>(Layout.AUTO);
