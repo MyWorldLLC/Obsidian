@@ -93,6 +93,10 @@ public class TextField extends Component {
         text.delete();
     }
 
+    public String getValue(){
+        return text.getValue();
+    }
+
     protected static class TextFieldEditor implements Editor {
 
         protected final ValueProperty<Character> mask;

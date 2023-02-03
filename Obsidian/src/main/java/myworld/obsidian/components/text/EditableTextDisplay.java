@@ -279,6 +279,10 @@ public class EditableTextDisplay extends Component {
         cursorPos.set(pos);
     }
 
+    public String getValue(){
+        return editor.get().toString();
+    }
+
     protected void positionCursor(int screenX){
         moveCursor(calculateCursorIndex(label.localizeX(screenX)));
     }
