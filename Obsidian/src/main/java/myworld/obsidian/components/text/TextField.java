@@ -39,9 +39,8 @@ public class TextField extends Component {
         text.editor().set(new TextFieldEditor(mask));
         text.focusable().set(false);
 
-        // Take up all available width - height will fit the line of
-        // text if not overridden by user
-        layout.preferredWidth().set(Distance.percentage(100));
+        // Default minimum width to 100px.
+        layout.minWidth().set(Distance.pixels(100));
 
         layout.justifyContent().set(ItemJustification.FLEX_START);
         layout.padding().set(new Offsets(Distance.pixels(2), Layout.ZERO, Distance.pixels(2), Layout.ZERO));
