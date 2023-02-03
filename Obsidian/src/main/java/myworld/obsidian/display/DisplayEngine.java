@@ -265,9 +265,12 @@ public class DisplayEngine implements AutoCloseable {
             for(String mixName : mixStyles){
                 var mixStyle = styleLookup.getStyle(mixName);
 
-                if(mixStyle != null){
-                    combined = StyleClass.merge(combined, mixStyle);
+                if(mixStyle == null){
+                    log.log(Level.WARNING, "Could not find style %s", mixName);
+                    continue;
                 }
+
+                combined = StyleClass.merge(combined, mixStyles(mixStyle, renderVars, styleLookup));
             }
 
             // Note that local class rules override mixed-in style rules
