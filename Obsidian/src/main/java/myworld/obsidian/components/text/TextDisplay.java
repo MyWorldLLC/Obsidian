@@ -91,13 +91,13 @@ public class TextDisplay extends Component {
         renderVars.put(SHOW_HIGHLIGHT_DATA_NAME, () -> selectable.get() && selection.get() != null);
         renderVars.put(HIGHLIGHT_COLOR_DATA_NAME, selectionColor);
         renderVars.put(HIGHLIGHT_POS_DATA_NAME, () -> {
-            if(selection.get() != null){
+            if(canHighlight()){
                 return getRuler().getXPositions(text().get())[clampedStringIndex(selection.get().start())];
             }
             return 0f;
         });
         renderVars.put(HIGHLIGHT_WIDTH_DATA_NAME, () -> {
-            if(selection.get() != null){
+            if(canHighlight()){
                 if(selection.get().end().equals(selection.get().start())){
                     return 0f;
                 }
@@ -198,6 +198,10 @@ public class TextDisplay extends Component {
         }else{
             return TextStyle.valueOf((String) value);
         }
+    }
+
+    protected boolean canHighlight(){
+        return selection.get() != null && text.get("").length() > 0;
     }
 
 }

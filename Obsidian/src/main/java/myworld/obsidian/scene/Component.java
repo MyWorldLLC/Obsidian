@@ -291,6 +291,11 @@ public class Component {
         children.forEach(child -> child.apply(c));
     }
 
+    public Component with(Consumer<Component> c){
+        c.accept(this);
+        return this;
+    }
+
     public Bounds2D getLocalBounds(){
         if(!ui.isSet()){
             throw new IllegalStateException("Component is not attached to a scene");
