@@ -290,20 +290,26 @@ public class Renderer implements AutoCloseable {
 
                 svg.getDom().setContainerSize(bounds.getWidth(), bounds.getHeight());
                 svg.getDom().render(canvas);
+
+            }finally{
                 canvas.restore();
             }
         }
     }
 
     protected void renderImage(Canvas canvas, ObsidianImage image, Rect bounds) {
-        canvas.save();
-        canvas.resetMatrix();
-        canvas.translate(bounds.getLeft(), bounds.getTop());
-        canvas.scale((bounds.getWidth() - 1) / image.width(),
-                (bounds.getHeight() - 1) / image.height());
+        try{
+            canvas.save();
+            canvas.resetMatrix();
+            canvas.translate(bounds.getLeft(), bounds.getTop());
+            canvas.scale((bounds.getWidth() - 1) / image.width(),
+                    (bounds.getHeight() - 1) / image.height());
 
-        canvas.drawImage(image.getImage(), 0, 0);
-        canvas.restore();
+            canvas.drawImage(image.getImage(), 0, 0);
+        }finally{
+            canvas.restore();
+        }
+
     }
 
     public Object createSkiaGeometry(Rect boundingRect, StyleClass style, Variables renderVars, StyleLookup styles) {
