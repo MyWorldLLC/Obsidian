@@ -58,7 +58,12 @@ public class EditableTextDisplay extends Component {
             blink.reset();
         });
 
-        renderVars.put(CURSOR_VISIBLE_VAR_NAME, () -> editable().get() && dragStart.get() == null && blink.on().get(true));
+        renderVars.put(CURSOR_VISIBLE_VAR_NAME, () ->
+                focused.get(false) &&
+                editable().get() &&
+                dragStart.get() == null &&
+                blink.on().get(true));
+
         renderVars.put(CURSOR_OFFSET_VAR_NAME, () -> {
             var ruler = label.getRuler();
 
