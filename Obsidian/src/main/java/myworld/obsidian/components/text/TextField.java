@@ -37,6 +37,7 @@ public class TextField extends Component {
 
         mask = new ValueProperty<>();
         text.editor().set(new TextFieldEditor(mask));
+        text.editable().set(false); // Start uneditable, until we get focus
         text.focusable().set(false);
 
         // Default minimum width to 100px.
