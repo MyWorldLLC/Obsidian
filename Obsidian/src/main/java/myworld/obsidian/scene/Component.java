@@ -286,6 +286,14 @@ public class Component {
         return localize(0, y).y();
     }
 
+    public void addEffect(Effect effect){
+        effects.add(effect);
+    }
+
+    public void removeEffect(Effect effect){
+        effects.remove(effect);
+    }
+
     public void apply(Consumer<Component> c){
         c.accept(this);
         children.forEach(child -> child.apply(c));

@@ -35,7 +35,7 @@ public class Stack extends Component {
         hoverable.set(false);
         renderOrder.set(RenderOrder.DESCENDING);
 
-        effects.add(tpf -> {
+        effects.add((done, tpf) -> {
             ui.ifSet(ui -> {
                var size = ui.getLayout().getSceneBounds(this);
                children.forEach(child -> {
@@ -44,7 +44,6 @@ public class Stack extends Component {
                    }
                });
             });
-            return false;
         });
 
         children.addListener(this::childListener);

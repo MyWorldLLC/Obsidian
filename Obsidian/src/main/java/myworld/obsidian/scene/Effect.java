@@ -16,8 +16,10 @@
 
 package myworld.obsidian.scene;
 
+import java.util.function.Consumer;
+
 public interface Effect {
 
-    boolean update(double tpf);
+    void update(Consumer<Effect> done, double tpf);
 
 }

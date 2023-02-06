@@ -33,6 +33,7 @@ import myworld.obsidian.properties.MapProperty;
 import myworld.obsidian.scene.Component;
 import myworld.obsidian.layout.LayoutEngine;
 import myworld.obsidian.properties.ValueProperty;
+import myworld.obsidian.scene.Effect;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -186,7 +187,9 @@ public class ObsidianUI {
     }
 
     protected void updateEffects(Component component, double tpf){
-        component.effects().removeIf(e -> e.update(tpf));
+        var toRemove = new ArrayList<Effect>(0);
+        component.effects().forEach(e -> e.update(toRemove::add, tpf));
+        toRemove.forEach(component.effects()::remove);
         component.children().forEach(c -> updateEffects(c, tpf));
     }
 

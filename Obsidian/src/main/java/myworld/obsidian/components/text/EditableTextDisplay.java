@@ -7,6 +7,7 @@ import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.geometry.Point2D;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
+import myworld.obsidian.scene.effects.BlinkEffect;
 import myworld.obsidian.text.TextStyle;
 import myworld.obsidian.util.Range;
 
@@ -24,6 +25,8 @@ public class EditableTextDisplay extends Component {
     protected final ValueProperty<Integer> cursorPos;
     protected final ValueProperty<Point2D> dragStart;
 
+    protected final BlinkEffect blink;
+
     public EditableTextDisplay(){
         this(null);
     }
@@ -32,11 +35,13 @@ public class EditableTextDisplay extends Component {
         styleName.set(COMPONENT_STYLE_NAME);
         focusable.set(false);
         label = new TextDisplay("", style);
+        // Always leave a few pixels to display a cursor for an empty text area
+        layout.minWidth().set(Distance.pixels(5));
         addChild(label);
 
         preLayout(() -> {
             label.calculatePreferredSize();
-            layout.clampedSize(label.layout().preferredWidth().get(), label.layout().preferredHeight().get());
+            layout.preferredSize(label.layout().preferredWidth().get(), label.layout().preferredHeight().get());
         });
 
         editor = new ValueProperty<>();
@@ -44,7 +49,16 @@ public class EditableTextDisplay extends Component {
         cursorPos = new ValueProperty<>(0);
         dragStart = new ValueProperty<>();
 
-        renderVars.put(CURSOR_VISIBLE_VAR_NAME, () -> editable().get() && dragStart.get() == null);
+        blink = new BlinkEffect();
+        blink.period().set(0.75);
+        addEffect(blink);
+        // Keep cursor on as long as it's moving
+        cursorPos.addListener((prop, oldValue, newValue) -> {
+            blink.on().set(true);
+            blink.reset();
+        });
+
+        renderVars.put(CURSOR_VISIBLE_VAR_NAME, () -> editable().get() && dragStart.get() == null && blink.on().get(true));
         renderVars.put(CURSOR_OFFSET_VAR_NAME, () -> {
             var ruler = label.getRuler();
 
@@ -69,6 +83,7 @@ public class EditableTextDisplay extends Component {
                 .getLineHeight());
 
         preRender(() -> label.text().set(editor().get().toString()));
+
     }
 
     public ValueProperty<StyleClass> style(){
@@ -109,6 +124,10 @@ public class EditableTextDisplay extends Component {
 
     public ValueProperty<ColorRGBA> selectionColor(){
         return label.selectionColor();
+    }
+
+    public BlinkEffect blink(){
+        return blink;
     }
 
     public TextRuler getRuler(){

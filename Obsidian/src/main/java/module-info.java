@@ -11,6 +11,7 @@ module myworld.obsidian {
     exports myworld.obsidian.display.skin;
     exports myworld.obsidian.display.skin.builder;
     exports myworld.obsidian.display.skin.obsidian;
+    exports myworld.obsidian.scene.effects;
     exports myworld.obsidian.events;
     exports myworld.obsidian.events.dispatch;
     exports myworld.obsidian.events.input;
