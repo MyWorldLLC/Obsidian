@@ -59,7 +59,6 @@ public class EditableTextDisplay extends Component {
         });
 
         renderVars.put(CURSOR_VISIBLE_VAR_NAME, () ->
-                focused.get(false) &&
                 editable().get() &&
                 dragStart.get() == null &&
                 blink.on().get(true));

@@ -64,17 +64,27 @@ public class TextField extends Component {
 
         dispatcher.subscribe(MouseButtonEvent.class, mousePressed(), evt ->{
             text.startPointerSelect(evt.getX());
+            evt.consume();
         });
 
         dispatcher.subscribe(MouseMoveEvent.class, e -> e.getManager().isDown(MouseButton.PRIMARY), evt -> {
+            if(!focused().get()){
+                ui.get().requestFocus(this);
+            }
             text.midPointerSelect(evt.getX(), evt.getY());
+            evt.consume();
         });
 
         dispatcher.subscribe(MouseButtonEvent.class, mouseReleased(), evt -> {
             text.endPointerSelect(evt.getX());
+            evt.consume();
         });
 
-        dispatcher.subscribe(FocusEvent.class, e -> e.lostFocus(this), evt -> text.clearSelection());
+        dispatcher.subscribe(FocusEvent.class, e -> e.gainedFocus(this), evt -> text.editable().set(true));
+        dispatcher.subscribe(FocusEvent.class, e -> e.lostFocus(this), evt -> {
+            text.editable().set(false);
+            text.clearSelection();
+        });
     }
 
     public ValueProperty<Character> mask(){
