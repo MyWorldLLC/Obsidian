@@ -20,35 +20,28 @@ public class Button extends Component {
 
     public static final String COMPONENT_STYLE_NAME = "Button";
     public static final String PRESSED_DATA_NAME = "pressed";
-
-    protected final ValueProperty<Point2D> clickStart;
-    protected final ValueProperty<Integer> mouseMoveThreshhold;
     protected final ValueProperty<Boolean> pressed;
 
     public Button(){
         styleName.set(COMPONENT_STYLE_NAME);
         layout.margin().set(new Offsets(Distance.pixels(10)));
 
-        clickStart = new ValueProperty<>();
-        mouseMoveThreshhold = new ValueProperty<>(5);
         pressed = new ValueProperty<>(false);
 
         dispatcher.subscribe(MouseButtonEvent.class, mousePressed(), evt -> {
-            clickStart.set(evt.getPoint());
             pressed.set(true);
             dispatcher.dispatch(new ButtonEvent(this, ButtonEvent.Type.PRESSED, evt));
             evt.consume();
         });
 
         dispatcher.subscribe(MouseButtonEvent.class, mouseReleased(), evt -> {
-            if(clickStart.isSet()){
+            if(pressed.get(false)){
                 pressed.set(false);
                 dispatcher.dispatch(new ButtonEvent(this, ButtonEvent.Type.RELEASED, evt));
 
-                if(clickStart.get().distance(evt.getPoint()) <= mouseMoveThreshhold().get().floatValue()){
+                if(ui.get().isOver(evt.getPoint(), this)){
                     dispatcher.dispatch(new ButtonEvent(this, ButtonEvent.Type.CLICKED, evt));
                 }
-                clickStart.set(null);
                 evt.consume();
             }
         });
@@ -79,10 +72,6 @@ public class Button extends Component {
 
     public void removeListener(Consumer<ButtonEvent> listener){
         dispatcher.unsubscribe(ButtonEvent.class, listener);
-    }
-
-    public ValueProperty<Integer> mouseMoveThreshhold(){
-        return mouseMoveThreshhold;
     }
 
     public ValueProperty<Boolean> pressed(){

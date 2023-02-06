@@ -24,6 +24,7 @@ import myworld.obsidian.display.skin.UISkin;
 import myworld.obsidian.events.*;
 import myworld.obsidian.events.input.*;
 import myworld.obsidian.events.scene.FocusEvent;
+import myworld.obsidian.geometry.Point2D;
 import myworld.obsidian.input.ClipboardHandler;
 import myworld.obsidian.input.InputManager;
 import myworld.obsidian.input.Key;
@@ -360,6 +361,14 @@ public class ObsidianUI {
         }
 
         return picked;
+    }
+
+    public boolean isOver(Point2D p, Component c){
+        return isOver((int)p.x(), (int)p.y(), c);
+    }
+
+    public boolean isOver(int x, int y, Component c){
+        return pick(x, y).contains(c);
     }
 
     public void fireEvent(BaseEvent evt){
