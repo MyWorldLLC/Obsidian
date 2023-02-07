@@ -22,7 +22,6 @@ import java.util.*;
 
 public class Renderer implements AutoCloseable {
 
-
     private static final System.Logger log = System.getLogger(Renderer.class.getName());
 
     protected final FontCollection fontCollection;
@@ -33,8 +32,9 @@ public class Renderer implements AutoCloseable {
 
     protected final Deque<Bounds2D> clipRegions;
     protected final ValueProperty<ColorRGBA> debugColor;
+    protected final ValueProperty<Dimension2D> renderDimensions;
 
-    public Renderer() {
+    public Renderer(ValueProperty<Dimension2D> dimensions) {
         fontCollection = new FontCollection();
         fontCollection.setDefaultFontManager(FontMgr.getDefault());
 
@@ -46,6 +46,7 @@ public class Renderer implements AutoCloseable {
 
         clipRegions = new ArrayDeque<>();
         debugColor = new ValueProperty<>();
+        renderDimensions = dimensions;
     }
 
     protected void setActiveSkin(UISkin skin) {
@@ -62,7 +63,7 @@ public class Renderer implements AutoCloseable {
 
     public Rect calculateScreenClip() {
         if (clipRegions.isEmpty()) {
-            return null;
+            return new Rect(0, 0, renderDimensions.get().width(), renderDimensions.get().height());
         }
 
         var clip = boundsToRect(clipRegions.peekLast());
@@ -108,9 +109,7 @@ public class Renderer implements AutoCloseable {
             var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
 
             Rect clippingRect = calculateScreenClip();
-            if (clippingRect != null) {
-                canvas.clipRect(clippingRect, true);
-            }
+            canvas.clipRect(clippingRect, true);
 
             var geometry = (Object) createSkiaGeometry(boundingRect, style, renderVars, styles);
 
@@ -149,8 +148,7 @@ public class Renderer implements AutoCloseable {
 
                     switch (style.rule(StyleRules.OVERFLOW_MODE, renderVars, OverflowModes.SCALE)) {
                         case OverflowModes.CLIP -> {
-                            var clipTo = clippingRect != null ? safeIntersect(clippingRect, boundingRect) : boundingRect;
-                            canvas.clipRect(clipTo, true);
+                            canvas.clipRect(safeIntersect(clippingRect, boundingRect), true);
                         }
 
                         case OverflowModes.SCALE_UNIFORM -> transform = Matrix33.IDENTITY
@@ -211,8 +209,7 @@ public class Renderer implements AutoCloseable {
                 // properties used here must be assigned to the RenderableText
                 // during creation, and none of the style variables (such as fill color)
                 // available from the outer scopes here may be used.
-                var clipTo = clippingRect != null ? safeIntersect(clippingRect, boundingRect) : boundingRect;
-                canvas.clipRect(clipTo, true);
+                canvas.clipRect(safeIntersect(clippingRect, boundingRect), true);
 
                 var textColor = new Paint();
                 textColor.setColor(text.color().toARGB());

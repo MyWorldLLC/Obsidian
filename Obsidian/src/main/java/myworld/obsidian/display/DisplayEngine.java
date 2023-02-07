@@ -70,7 +70,7 @@ public class DisplayEngine implements AutoCloseable {
         sceneListener = this::onSceneChange;
 
         fonts = new Typeset();
-        renderer = new Renderer();
+        renderer = new Renderer(dimensions);
     }
 
     public ValueProperty<Dimension2D> getDimensions(){

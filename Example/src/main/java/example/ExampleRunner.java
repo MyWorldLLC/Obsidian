@@ -36,12 +36,14 @@ import myworld.obsidian.input.MouseWheelAxis;
 import myworld.obsidian.layout.Offsets;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.scene.Component;
+import myworld.obsidian.scene.layout.Column;
 import myworld.obsidian.text.Text;
 import myworld.obsidian.text.TextStyle;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
 import java.util.List;
+import java.util.function.Function;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
