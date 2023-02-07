@@ -340,8 +340,9 @@ public class ExampleRunner {
                 .onClick(e -> System.out.println("Bottom clicked"));
         bottomPane.addChild(bottomButton);
 
-        var stack = new Stack()
-                .withChildren(topPane, bottomPane);
+        var stack = new Stack();
+        stack.push(bottomPane);
+        stack.push(topPane);
         stack.layout().clampedSize(250, 250);
 
         layout.center().addChild(stack);

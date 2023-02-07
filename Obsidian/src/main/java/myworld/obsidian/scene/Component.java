@@ -26,9 +26,12 @@ import myworld.obsidian.layout.ComponentLayout;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.properties.MapProperty;
 import myworld.obsidian.properties.ValueProperty;
+import myworld.obsidian.util.ReverseListIterator;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import static myworld.obsidian.display.RenderOrder.ASCENDING;
 
 public class Component {
 
@@ -69,7 +72,7 @@ public class Component {
         hovered = new ValueProperty<>(false);
         layoutOnly = new ValueProperty<>(false);
         clipChildren = new ValueProperty<>(false);
-        renderOrder = new ValueProperty<>(RenderOrder.ASCENDING);
+        renderOrder = new ValueProperty<>(ASCENDING);
         renderVars = new MapProperty<>();
         preLayouts = new ListProperty<>();
         preRenderers = new ListProperty<>();
@@ -91,11 +94,15 @@ public class Component {
     }
 
     public void addChild(Component child){
+        addChild(children.size(), child);
+    }
+
+    public void addChild(int index, Component child){
         if(child.hasParent()){
             throw new IllegalStateException("Component has already been added as a child");
         }
         child.parent().set(this);
-        children.add(child);
+        children.add(index, child);
         child.onAttach();
     }
 
@@ -142,6 +149,13 @@ public class Component {
 
     public ListProperty<Component> children(){
         return children;
+    }
+
+    public Iterable<Component> childrenInRenderedOrder(){
+        return switch (renderOrder.get()){
+            case ASCENDING -> children;
+            case DESCENDING -> () -> new ReverseListIterator<>(children.listIterator(children.size()));
+        };
     }
 
     public ComponentLayout layout(){

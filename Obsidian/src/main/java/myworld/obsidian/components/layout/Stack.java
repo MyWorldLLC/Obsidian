@@ -49,6 +49,18 @@ public class Stack extends Component {
         children.addListener(this::childListener);
     }
 
+    public void push(Component child){
+        addChild(0, child);
+    }
+
+    public void pop(){
+        removeChild(peek());
+    }
+
+    public Component peek(){
+        return children.get(0);
+    }
+
     protected void childListener(ListProperty<Component> prop, int index, Component oldValue, Component newValue){
         if(ListProperty.isAdd(oldValue, newValue)){
             newValue.layout().positionType().set(PositionType.ABSOLUTE);
