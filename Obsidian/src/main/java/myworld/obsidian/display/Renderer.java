@@ -209,37 +209,43 @@ public class Renderer implements AutoCloseable {
                 // properties used here must be assigned to the RenderableText
                 // during creation, and none of the style variables (such as fill color)
                 // available from the outer scopes here may be used.
-                canvas.clipRect(safeIntersect(clippingRect, boundingRect), true);
+                try{
+                    canvas.save();
 
-                var textColor = new Paint();
-                textColor.setColor(text.color().toARGB());
+                    canvas.clipRect(safeIntersect(clippingRect, boundingRect), true);
 
-                if (text.backgroundColor() != null) {
-                    var backgroundPaint = new Paint();
-                    backgroundPaint.setColor(text.backgroundColor().toARGB());
-                    var background = new Rect(
-                            boundingRect.getLeft(),
-                            boundingRect.getTop(),
-                            boundingRect.getLeft() + text.text().getBlockBounds().getWidth(),
-                            boundingRect.getTop() + text.text().getBlockBounds().getHeight()
-                    );
+                    var textColor = new Paint();
+                    textColor.setColor(text.color().toARGB());
 
-                    canvas.drawRect(background, backgroundPaint);
-                }
+                    if (text.backgroundColor() != null) {
+                        var backgroundPaint = new Paint();
+                        backgroundPaint.setColor(text.backgroundColor().toARGB());
+                        var background = new Rect(
+                                boundingRect.getLeft(),
+                                boundingRect.getTop(),
+                                boundingRect.getLeft() + text.text().getBlockBounds().getWidth(),
+                                boundingRect.getTop() + text.text().getBlockBounds().getHeight()
+                        );
 
-                if (text.shadows() != null) {
-                    var shadowPaint = new Paint();
-                    for (var shadow : text.shadows()) {
-                        shadowPaint.setColor(shadow.color().toARGB());
-                        shadowPaint.setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, shadow.blurSigma(), false));
-                        renderDecoratedText(canvas, text.text(), text.decorations(),
-                                shadow.offset().x().toPixels(boundingRect.getWidth()) + boundingRect.getLeft(),
-                                shadow.offset().y().toPixels(boundingRect.getHeight()) + boundingRect.getTop(),
-                                shadowPaint);
+                        canvas.drawRect(background, backgroundPaint);
                     }
-                }
 
-                renderDecoratedText(canvas, text.text(), text.decorations(), text.bounds().getLeft(), text.bounds().getTop(), textColor);
+                    if (text.shadows() != null) {
+                        var shadowPaint = new Paint();
+                        for (var shadow : text.shadows()) {
+                            shadowPaint.setColor(shadow.color().toARGB());
+                            shadowPaint.setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, shadow.blurSigma(), false));
+                            renderDecoratedText(canvas, text.text(), text.decorations(),
+                                    shadow.offset().x().toPixels(boundingRect.getWidth()) + boundingRect.getLeft(),
+                                    shadow.offset().y().toPixels(boundingRect.getHeight()) + boundingRect.getTop(),
+                                    shadowPaint);
+                        }
+                    }
+
+                    renderDecoratedText(canvas, text.text(), text.decorations(), text.bounds().getLeft(), text.bounds().getTop(), textColor);
+                } finally {
+                    canvas.restore();
+                }
             }
 
         } catch (Exception e) {
