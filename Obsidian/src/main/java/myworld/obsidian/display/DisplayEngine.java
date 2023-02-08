@@ -30,14 +30,19 @@ import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.impl.Library;
 import myworld.obsidian.text.TextStyle;
 import myworld.obsidian.text.Typeset;
+import myworld.obsidian.util.LogUtil;
 
 import java.io.InputStream;
 import java.util.*;
-import java.lang.System.Logger.Level;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.WARNING;
+
 
 public class DisplayEngine implements AutoCloseable {
 
-    private static final System.Logger log = System.getLogger(DisplayEngine.class.getName());
+    private static final Logger log = LogUtil.loggerFor(DisplayEngine.class);
 
     static {
         if("false".equals(System.getProperty("skija.staticLoad"))){
@@ -201,12 +206,14 @@ public class DisplayEngine implements AutoCloseable {
             });
 
             if(component.clipChildren().get(false)){
+                log.log(FINE, "Enter clipping context for {0}: {1}", new Object[]{component, componentBounds});
                 renderer.enterClippingRegion(componentBounds);
             }
 
             renderChildren(ui, component, uiSkin);
 
             if(component.clipChildren().get(false)){
+                log.log(FINE, "Exit clipping context for {0}: {1}", new Object[]{component, componentBounds});
                 renderer.exitClippingRegion();
             }
 
@@ -216,7 +223,7 @@ public class DisplayEngine implements AutoCloseable {
 
         }else{
             if(!component.isLayoutOnly()){
-                log.log(Level.WARNING, "Cannot render component {0} because no skin is present", component.styleName().get());
+                log.log(WARNING, "Cannot render component {0} because no skin is present", component.styleName().get());
             }else{
                 renderer.renderDebug(getCanvas(), ui.getLayout().getSceneBounds(component));
             }
@@ -266,7 +273,7 @@ public class DisplayEngine implements AutoCloseable {
                 var mixStyle = styleLookup.getStyle(mixName);
 
                 if(mixStyle == null){
-                    log.log(Level.WARNING, "Could not find style %s", mixName);
+                    log.log(WARNING, "Could not find style {0}", mixName);
                     continue;
                 }
 
@@ -300,7 +307,7 @@ public class DisplayEngine implements AutoCloseable {
                     }
                 }
             }catch(Exception e){
-                log.log(Level.WARNING, "Failed to load font {0} for skin {1}: {2}", path, skin.getName(), e);
+                log.log(WARNING, "Failed to load font {0} for skin {1}: {2}", new Object[]{path, skin.getName(), e});
             }
         }
     }
@@ -313,7 +320,7 @@ public class DisplayEngine implements AutoCloseable {
         try(var is = skin.getResolver().resolve(path)){
             return loadImage(is);
         }catch (Exception e){
-            log.log(Level.WARNING, "Failed to load image {0} for skin {1}: {2}. Check that the file exists and is not corrupt.", path, skin.getName(), e);
+            log.log(WARNING, "Failed to load image {0} for skin {1}: {2}. Check that the file exists and is not corrupt.", new Object[]{path, skin.getName(), e});
             return null;
         }
     }
@@ -342,7 +349,7 @@ public class DisplayEngine implements AutoCloseable {
         try(var is = skin.getResolver().resolve(path)){
             return loadSvg(is);
         }catch(Exception e){
-            log.log(Level.WARNING, "Failed to load svg {0} for skin {1}: {2}. Check that the file exists and is not corrupt.", path, skin.getName(), e);
+            log.log(WARNING, "Failed to load svg {0} for skin {1}: {2}. Check that the file exists and is not corrupt.", new Object[]{path, skin.getName(), e});
             return null;
         }
     }

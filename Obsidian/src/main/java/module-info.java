@@ -2,6 +2,7 @@ module myworld.obsidian {
     requires io.github.humbleui.skija.shared;
     requires io.github.humbleui.types;
     requires org.lwjgl.yoga;
+    requires java.logging;
 
     exports myworld.obsidian;
     exports myworld.obsidian.components;

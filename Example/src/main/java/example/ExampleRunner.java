@@ -16,6 +16,8 @@
 
 package example;
 
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.components.*;
 import myworld.obsidian.components.layout.Pane;
@@ -24,6 +26,8 @@ import myworld.obsidian.components.layout.Viewport;
 import myworld.obsidian.components.text.TextDisplay;
 import myworld.obsidian.components.text.TextField;
 import myworld.obsidian.display.ColorRGBA;
+import myworld.obsidian.display.DisplayEngine;
+import myworld.obsidian.display.Renderer;
 import myworld.obsidian.display.skin.obsidian.ObsidianSkin;
 import myworld.obsidian.events.input.CharacterEvent;
 import myworld.obsidian.events.input.KeyEvent;
@@ -39,6 +43,7 @@ import myworld.obsidian.scene.Component;
 import myworld.obsidian.scene.layout.Column;
 import myworld.obsidian.text.Text;
 import myworld.obsidian.text.TextStyle;
+import myworld.obsidian.util.LogUtil;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
@@ -383,6 +388,11 @@ public class ExampleRunner {
         imageView.layout().clampedSize(18, 18);
 
         layout.center().addChild(imageView);
+
+        LogUtil.initLogging(new ConsoleHandler());
+        LogUtil.setLevel(Level.FINER);
+        LogUtil.setLevel(DisplayEngine.class, Level.FINER);
+        LogUtil.setLevel(Renderer.class, Level.FINER);
 
         ui.requestFocus(textField);
 

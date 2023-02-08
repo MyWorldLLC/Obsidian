@@ -15,14 +15,18 @@ import myworld.obsidian.text.Text;
 import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextShadow;
 import myworld.obsidian.text.TextStyle;
+import myworld.obsidian.util.LogUtil;
 
-import static java.lang.System.Logger.Level;
 
 import java.util.*;
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.INFO;
 
 public class Renderer implements AutoCloseable {
 
-    private static final System.Logger log = System.getLogger(Renderer.class.getName());
+    private static final Logger log = LogUtil.loggerFor(Renderer.class);
 
     protected final FontCollection fontCollection;
     protected final TypefaceFontProvider typeProvider;
@@ -54,6 +58,7 @@ public class Renderer implements AutoCloseable {
     }
 
     public void enterClippingRegion(Bounds2D clipRegion) {
+        log.log(FINE, "Entered clipping region {0}", clipRegion);
         clipRegions.push(clipRegion);
     }
 
@@ -71,11 +76,13 @@ public class Renderer implements AutoCloseable {
         while (it.hasNext()) {
             clip = safeIntersect(clip, boundsToRect(it.next()));
         }
+        log.log(FINE, "Calculated screen clip as {0}", clip);
         return clip;
     }
 
     public void exitClippingRegion() {
-        clipRegions.pop();
+        var region = clipRegions.pop();
+        log.log(FINE, "Exiting clipping region {0}", region);
     }
 
     public ValueProperty<ColorRGBA> debugBoundsColor() {
@@ -94,6 +101,7 @@ public class Renderer implements AutoCloseable {
             debugPaint.setColor(debugColor.get().toARGB());
             debugPaint.setStroke(true);
             debugPaint.setStrokeWidth(1f);
+            log.log(FINE, "Rendering debug shape {0}", boundingRect);
             canvas.drawRect(boundingRect, debugPaint);
         }
     }
@@ -101,6 +109,7 @@ public class Renderer implements AutoCloseable {
     public void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars, StyleLookup styles) {
         try {
 
+            log.log(FINE, "Saving canvas for style render");
             canvas.save();
 
             renderDebug(canvas, componentBounds);
@@ -109,6 +118,7 @@ public class Renderer implements AutoCloseable {
             var boundingRect = new Rect(componentBounds.left() - 0.5f, componentBounds.top() - 0.5f, componentBounds.right() - 0.5f, componentBounds.bottom() - 0.5f);
 
             Rect clippingRect = calculateScreenClip();
+            log.log(FINE, "Clipping to {0}", clippingRect);
             canvas.clipRect(clippingRect, true);
 
             var geometry = (Object) createSkiaGeometry(boundingRect, style, renderVars, styles);
@@ -148,7 +158,9 @@ public class Renderer implements AutoCloseable {
 
                     switch (style.rule(StyleRules.OVERFLOW_MODE, renderVars, OverflowModes.SCALE)) {
                         case OverflowModes.CLIP -> {
-                            canvas.clipRect(safeIntersect(clippingRect, boundingRect), true);
+                            var overflowClip = safeIntersect(clippingRect, boundingRect);
+                            log.log(FINE, "Overwriting default clip for overflow mode CLIP to {0}", overflowClip);
+                            canvas.clipRect(overflowClip, true);
                         }
 
                         case OverflowModes.SCALE_UNIFORM -> transform = Matrix33.IDENTITY
@@ -177,6 +189,8 @@ public class Renderer implements AutoCloseable {
                         paint.setAntiAlias(true);
                         canvas.drawPath(renderPath, paint);
                     } else if (fill instanceof ResourceHandle handle) {
+                        log.log(FINE, "Overwriting clipping to render shape for {0} resource {1} rendering",
+                                new Object[]{handle.type(), handle.path()});
                         canvas.clipPath(renderPath, true);
                         if (handle.type().equals(ResourceHandle.Type.SVG)) {
                             var svg = activeSkin.getCachedSvg(handle.path());
@@ -190,9 +204,11 @@ public class Renderer implements AutoCloseable {
                             }
                         }
                     } else if (fill instanceof ObsidianSvg svgFill) {
+                        log.log(FINE, "Overwriting clipping to render shape for SVG rendering");
                         canvas.clipPath(renderPath, true);
                         renderSvg(canvas, svgFill, visualBounds);
                     } else if (fill instanceof ObsidianImage imageFill) {
+                        log.log(FINE, "Overwriting clipping to render shape for image rendering");
                         canvas.clipPath(renderPath, true);
                         renderImage(canvas, imageFill, visualBounds);
                     }
@@ -210,9 +226,12 @@ public class Renderer implements AutoCloseable {
                 // during creation, and none of the style variables (such as fill color)
                 // available from the outer scopes here may be used.
                 try{
+                    log.log(FINE, "Saving canvas for text render");
                     canvas.save();
 
-                    canvas.clipRect(safeIntersect(clippingRect, boundingRect), true);
+                    var textClip = safeIntersect(clippingRect, boundingRect);
+                    log.log(FINE, "Overwriting clipping for rendering text: {0}", textClip);
+                    canvas.clipRect(textClip, true);
 
                     var textColor = new Paint();
                     textColor.setColor(text.color().toARGB());
@@ -244,13 +263,15 @@ public class Renderer implements AutoCloseable {
 
                     renderDecoratedText(canvas, text.text(), text.decorations(), text.bounds().getLeft(), text.bounds().getTop(), textColor);
                 } finally {
+                    log.log(FINE, "Restoring canvas after text render");
                     canvas.restore();
                 }
             }
 
         } catch (Exception e) {
-            log.log(Level.INFO, "Error rendering style ", e);
+            log.log(INFO, "Error rendering style", e);
         } finally {
+            log.log(FINE, "Restoring canvas after style render");
             canvas.restore();
         }
     }
@@ -274,6 +295,7 @@ public class Renderer implements AutoCloseable {
     protected void renderSvg(Canvas canvas, ObsidianSvg svg, Rect bounds) {
         if (svg.getDom() != null) {
             try (var svgRoot = svg.getDom().getRoot()) {
+                log.log(FINE, "Saving canvas for svg render");
                 canvas.save();
                 canvas.resetMatrix();
                 canvas.translate(bounds.getLeft(), bounds.getTop());
@@ -295,6 +317,7 @@ public class Renderer implements AutoCloseable {
                 svg.getDom().render(canvas);
 
             }finally{
+                log.log(FINE, "Restoring canvas after svg render");
                 canvas.restore();
             }
         }
@@ -302,6 +325,7 @@ public class Renderer implements AutoCloseable {
 
     protected void renderImage(Canvas canvas, ObsidianImage image, Rect bounds) {
         try{
+            log.log(FINE, "Saving canvas for image render");
             canvas.save();
             canvas.resetMatrix();
             canvas.translate(bounds.getLeft(), bounds.getTop());
@@ -310,6 +334,7 @@ public class Renderer implements AutoCloseable {
 
             canvas.drawImage(image.getImage(), 0, 0);
         }finally{
+            log.log(FINE, "Restoring canvas after image render");
             canvas.restore();
         }
 
