@@ -33,9 +33,9 @@ def getPlatform(){
 
 def getSkijaPlatform(){
     def platforms = [
-            'win': 'windows',
+            'win': 'windows-x64',
             'mac': 'macos-x64',
-            'linux': 'linux'
+            'linux': 'linux-x64'
     ]
     platforms[platform]
 }
@@ -61,7 +61,7 @@ def generatePlatformConfig(platformProject, skijaName, lwjglName, obsidianName, 
 
         if(jfxName == null){
             api project(':Obsidian')
-            implementation "io.github.humbleui:skija-$skijaName:0.105.0"
+            implementation "io.github.humbleui:skija-$skijaName:0.109.1"
             implementation "org.lwjgl:lwjgl-yoga:3.3.1:natives-$lwjglName"
         }else{
             api project(':ObsidianJFX')
