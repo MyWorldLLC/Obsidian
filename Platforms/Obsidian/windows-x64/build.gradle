@@ -1,1 +1,1 @@
-ext.generatePlatformConfig(project, 'windows', 'windows', 'windows-x64')
+ext.generatePlatformConfig(project, 'windows-x64', 'windows', 'windows-x64')
