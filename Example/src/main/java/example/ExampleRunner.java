@@ -390,9 +390,9 @@ public class ExampleRunner {
         layout.center().addChild(imageView);
 
         LogUtil.initLogging(new ConsoleHandler());
-        LogUtil.setLevel(Level.FINER);
-        LogUtil.setLevel(DisplayEngine.class, Level.FINER);
-        LogUtil.setLevel(Renderer.class, Level.FINER);
+        //LogUtil.setLevel(Level.FINER);
+        //LogUtil.setLevel(DisplayEngine.class, Level.FINER);
+        //LogUtil.setLevel(Renderer.class, Level.FINER);
 
         ui.requestFocus(textField);
 

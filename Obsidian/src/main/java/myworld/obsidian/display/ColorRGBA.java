@@ -38,6 +38,38 @@ public record ColorRGBA(byte r, byte g, byte b, byte a) {
         return Colors.hex(r, g, b, a);
     }
 
+    public ColorRGBA withR(int r){
+        return new ColorRGBA((byte)r, g, b, a);
+    }
+
+    public ColorRGBA withG(int g){
+        return new ColorRGBA(r, (byte)g, b, a);
+    }
+
+    public ColorRGBA withB(int b){
+        return new ColorRGBA(r, g, (byte)b, a);
+    }
+
+    public ColorRGBA withA(int a){
+        return new ColorRGBA(r, g, b, (byte)a);
+    }
+
+    public ColorRGBA withR(String r){
+        return new ColorRGBA((byte)parseHexChannel(r), g, b, a);
+    }
+
+    public ColorRGBA withG(String g){
+        return new ColorRGBA(r, (byte)parseHexChannel(g), b, a);
+    }
+
+    public ColorRGBA withB(String b){
+        return new ColorRGBA(r, g, (byte)parseHexChannel(b), a);
+    }
+
+    public ColorRGBA withA(String a){
+        return new ColorRGBA(r, g, b, (byte)parseHexChannel(a));
+    }
+
     @Override
     public String toString(){
         return "ColorRGBA[" + toHex() + "]";
@@ -55,6 +87,13 @@ public record ColorRGBA(byte r, byte g, byte b, byte a) {
         return new ColorRGBA((byte)r, (byte)g, (byte) b, (byte)a);
     }
 
+    public static int parseHexChannel(String hex){
+        if(hex.length() != 2){
+            throw new IllegalArgumentException("Invalid hex color channel string: '%s'".formatted(hex));
+        }
+        return Integer.parseInt(hex, 16);
+    }
+
     public static ColorRGBA of(String hex){
         if(hex.length() != Colors.COLOR_RGB_HEX_PATTERN.length() && hex.length() != Colors.COLOR_RGBA_HEX_PATTERN.length()){
             throw new IllegalArgumentException("Invalid hex color string: must match either %s or %s"
@@ -69,7 +108,6 @@ public record ColorRGBA(byte r, byte g, byte b, byte a) {
             a = hex.substring(7, 9);
         }
 
-        final int radix = 16;
-        return ColorRGBA.of(Integer.parseInt(r, radix), Integer.parseInt(g, radix), Integer.parseInt(b, radix), Integer.parseInt(a, radix));
+        return ColorRGBA.of(parseHexChannel(r), parseHexChannel(g), parseHexChannel(b), parseHexChannel(a));
     }
 }
