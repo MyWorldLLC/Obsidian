@@ -108,6 +108,10 @@ public class TextField extends Component {
         return text.getValue();
     }
 
+    public void setValue(String s){
+        text.setText(s);
+    }
+
     protected static class TextFieldEditor implements Editor {
 
         protected final ValueProperty<Character> mask;
