@@ -227,11 +227,9 @@ public class Renderer implements AutoCloseable {
                 // available from the outer scopes here may be used.
                 try{
                     log.log(FINE, "Saving canvas for text render");
-                    canvas.save();
-
                     var textClip = safeIntersect(clippingRect, boundingRect);
                     log.log(FINE, "Overwriting clipping for rendering text: {0}", textClip);
-                    canvas.clipRect(textClip, true);
+                    canvas.saveLayer(textClip, null);
 
                     var textColor = new Paint();
                     textColor.setColor(text.color().toARGB());
