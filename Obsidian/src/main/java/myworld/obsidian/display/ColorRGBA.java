@@ -16,6 +16,8 @@
 
 package myworld.obsidian.display;
 
+import java.util.function.Function;
+
 public record ColorRGBA(byte r, byte g, byte b, byte a) {
 
     public ColorRGBA(int color){
@@ -68,6 +70,10 @@ public record ColorRGBA(byte r, byte g, byte b, byte a) {
 
     public ColorRGBA withA(String a){
         return new ColorRGBA(r, g, b, (byte)parseHexChannel(a));
+    }
+
+    public ColorRGBA with(Function<ColorRGBA, ColorRGBA> modifier){
+        return modifier.apply(this);
     }
 
     @Override
