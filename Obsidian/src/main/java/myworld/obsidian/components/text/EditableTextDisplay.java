@@ -156,6 +156,10 @@ public class EditableTextDisplay extends Component {
         label.selection().set(null);
     }
 
+    public void selectAll(){
+        select(0, editor().get().length());
+    }
+
     public Range<Integer> selection(){
         return label.selection().get();
     }
@@ -245,6 +249,12 @@ public class EditableTextDisplay extends Component {
                 e.delete(cursorPos.get(), cursorPos.get() + 1);
             }
         });
+    }
+
+    public void setText(String s){
+        selectAll();
+        delete();
+        insert(s);
     }
 
     public void cursorForward(){
