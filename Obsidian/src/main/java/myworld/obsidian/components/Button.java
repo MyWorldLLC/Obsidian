@@ -24,7 +24,6 @@ public class Button extends Component {
 
     public Button(){
         styleName.set(COMPONENT_STYLE_NAME);
-        layout.margin().set(new Offsets(Distance.pixels(10)));
 
         pressed = new ValueProperty<>(false);
 
