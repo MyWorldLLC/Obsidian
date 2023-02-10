@@ -301,7 +301,7 @@ public class Renderer implements AutoCloseable {
         if (svg.getDom() != null) {
             try (var svgRoot = svg.getDom().getRoot()) {
                 log.log(FINE, "Saving canvas for svg render");
-                canvas.save();
+                canvas.saveLayer(bounds, null);
                 canvas.resetMatrix();
                 canvas.translate(bounds.getLeft(), bounds.getTop());
 
@@ -331,7 +331,7 @@ public class Renderer implements AutoCloseable {
     protected void renderImage(Canvas canvas, ObsidianImage image, Rect bounds) {
         try{
             log.log(FINE, "Saving canvas for image render");
-            canvas.save();
+            canvas.saveLayer(bounds, null);
             canvas.resetMatrix();
             canvas.translate(bounds.getLeft(), bounds.getTop());
             canvas.scale((bounds.getWidth() - 1) / image.width(),
