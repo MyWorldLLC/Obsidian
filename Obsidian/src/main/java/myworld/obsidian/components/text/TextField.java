@@ -13,6 +13,7 @@ import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 
 import static myworld.obsidian.events.dispatch.EventFilters.*;
+import static myworld.obsidian.events.dispatch.EventHandlers.*;
 
 public class TextField extends Component {
 
@@ -48,20 +49,20 @@ public class TextField extends Component {
         clipChildren.set(true);
 
         dispatcher.subscribe(CharacterEvent.class, e -> text.editable().get() && !e.getManager().isControlDown(),
-                evt -> text.insert(evt.getCharacters()));
+                consuming(evt -> text.insert(evt.getCharacters())));
 
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT), evt -> text.cursorBackward());
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.RIGHT), evt -> text.cursorForward());
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_SHIFT, Key.LEFT), evt -> text.adjustHighlight(false));
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_SHIFT, Key.RIGHT), evt -> text.adjustHighlight(true));
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.BACKSPACE), evt -> text.delete());
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT), consuming(evt -> text.cursorBackward()));
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.RIGHT), consuming(evt -> text.cursorForward()));
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_SHIFT, Key.LEFT), consuming(evt -> text.adjustHighlight(false)));
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_SHIFT, Key.RIGHT), consuming(evt -> text.adjustHighlight(true)));
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.BACKSPACE), consuming(evt -> text.delete()));
 
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_C), evt -> text.copy());
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_X), evt -> text.cut());
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_V), evt -> text.paste());
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.RIGHT_CONTROL, Key.KEY_C), evt -> text.copy());
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.RIGHT_CONTROL, Key.KEY_X), evt -> text.cut());
-        dispatcher.subscribe(KeyEvent.class, accelerator(Key.RIGHT_CONTROL, Key.KEY_V), evt -> text.paste());
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_C), consuming(evt -> text.copy()));
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_X), consuming(evt -> text.cut()));
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.LEFT_CONTROL, Key.KEY_V), consuming(evt -> text.paste()));
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.RIGHT_CONTROL, Key.KEY_C), consuming(evt -> text.copy()));
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.RIGHT_CONTROL, Key.KEY_X), consuming(evt -> text.cut()));
+        dispatcher.subscribe(KeyEvent.class, accelerator(Key.RIGHT_CONTROL, Key.KEY_V), consuming(evt -> text.paste()));
 
         dispatcher.subscribe(MouseButtonEvent.class, mousePressed(), evt ->{
             text.startPointerSelect(evt.getX());
