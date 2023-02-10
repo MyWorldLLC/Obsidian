@@ -41,11 +41,20 @@ public class ChipmunkSkinLoader {
 
             var skin = new UISkin(skinModule.getSkinName(), resolver);
             skin.variables().set(varModule.getVars());
-            skin.addFonts(skinModule.getFonts());
+            skin.addFonts(skinModule.getFonts()
+                    .stream()
+                    .map(p -> resolvePath(path, p))
+                    .collect(Collectors.toList()));
 
-            skin.addImages(skinModule.getImages());
+            skin.addImages(skinModule.getImages()
+                    .stream()
+                    .map(p -> resolvePath(path, p))
+                    .collect(Collectors.toList()));
 
-            skin.addSvgs(skinModule.getSvgs());
+            skin.addSvgs(skinModule.getSvgs()
+                    .stream()
+                    .map(p -> resolvePath(path, p))
+                    .collect(Collectors.toList()));
 
 
 

@@ -8,7 +8,7 @@ public class ResourceCache<K, V> {
     protected final Map<K, V> cache;
 
     public ResourceCache(){
-        cache = new IdentityHashMap<>();
+        cache = new HashMap<>();
     }
 
     public synchronized V cache(K key, V value){
