@@ -19,6 +19,7 @@ import myworld.obsidian.util.LogUtil;
 
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.util.logging.Level.FINE;
@@ -196,11 +197,15 @@ public class Renderer implements AutoCloseable {
                             var svg = activeSkin.getCachedSvg(handle.path());
                             if (svg != null) {
                                 renderSvg(canvas, svg, visualBounds);
+                            }else{
+                                log.log(Level.WARNING, "Missing SVG {0}", handle.path());
                             }
                         } else if (handle.type().equals(ResourceHandle.Type.IMAGE)) {
                             var image = activeSkin.getCachedImage(handle.path());
                             if (image != null) {
                                 renderImage(canvas, image, visualBounds);
+                            }else{
+                                log.log(Level.WARNING, "Missing image {0}", handle.path());
                             }
                         }
                     } else if (fill instanceof ObsidianSvg svgFill) {
