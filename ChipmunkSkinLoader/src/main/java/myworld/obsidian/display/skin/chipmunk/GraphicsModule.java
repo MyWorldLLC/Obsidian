@@ -95,8 +95,8 @@ public class GraphicsModule implements ChipmunkModule {
     }
 
     @AllowChipmunkLinkage
-    public StyleRule svgResource(String path){
-        return StyleRule.constant(ResourceHandle.svg(path));
+    public StyleRule svgResource(Object path){
+        return StyleRule.of(v -> ResourceHandle.svg(evaluate(path, v)));
     }
 
     @AllowChipmunkLinkage
@@ -105,8 +105,8 @@ public class GraphicsModule implements ChipmunkModule {
     }
 
     @AllowChipmunkLinkage
-    public StyleRule imageResource(String path){
-        return StyleRule.constant(ResourceHandle.image(path));
+    public StyleRule imageResource(Object path){
+        return StyleRule.of(v -> ResourceHandle.image(evaluate(path, v)));
     }
 
     @AllowChipmunkLinkage
