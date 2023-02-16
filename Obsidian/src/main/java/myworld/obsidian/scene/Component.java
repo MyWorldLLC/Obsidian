@@ -121,6 +121,12 @@ public class Component {
         return removed;
     }
 
+    public void removeChildren(Component... children){
+        for(var child : children){
+            removeChild(child);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends Component> T withChildren(Component... children){
         addChildren(children);
