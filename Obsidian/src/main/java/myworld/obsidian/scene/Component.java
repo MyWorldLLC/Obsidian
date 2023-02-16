@@ -127,6 +127,10 @@ public class Component {
         }
     }
 
+    public void removeAllChildren(){
+        removeChildren(children.toArray(new Component[]{}));
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends Component> T withChildren(Component... children){
         addChildren(children);
