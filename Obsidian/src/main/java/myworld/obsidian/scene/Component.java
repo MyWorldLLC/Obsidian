@@ -26,6 +26,8 @@ import myworld.obsidian.layout.ComponentLayout;
 import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.properties.MapProperty;
 import myworld.obsidian.properties.ValueProperty;
+import myworld.obsidian.scene.events.AttachEvent;
+import myworld.obsidian.scene.events.DetachEvent;
 import myworld.obsidian.util.ReverseListIterator;
 
 import java.util.function.Consumer;
@@ -84,6 +86,14 @@ public class Component {
 
         renderVars.put(FOCUSED_DATA_NAME, focused);
         renderVars.put(HOVERED_DATA_NAME, hovered);
+
+        parent.addListener((p, o, n) -> {
+            if(o != null && n == null){
+                apply(c -> onDetach(o, this));
+            }else if(o == null && n != null){
+                apply(c -> onAttach(n, this));
+            }
+        });
     }
 
     protected void requestVisualUpdate(){
@@ -103,7 +113,6 @@ public class Component {
         }
         child.parent().set(this);
         children.add(index, child);
-        child.onAttach();
     }
 
     public void addChildren(Component... children){
@@ -116,7 +125,6 @@ public class Component {
         var removed = children.removeIf(c -> c == child);
         if(removed){
             child.parent().set(null);
-            child.onDetach();
         }
         return removed;
     }
@@ -285,9 +293,13 @@ public class Component {
         apply(c -> c.focusable().set(true));
     }
 
-    public void onAttach(){}
+    private final void onAttach(Component parent, Component child){
+        dispatcher.dispatch(new AttachEvent(parent, child));
+    }
 
-    public void onDetach(){}
+    private final void onDetach(Component parent, Component child){
+        dispatcher.dispatch(new DetachEvent(parent, child));
+    }
 
     public EventDispatcher dispatcher(){
         return dispatcher;
