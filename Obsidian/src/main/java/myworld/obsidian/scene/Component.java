@@ -332,7 +332,12 @@ public class Component {
 
     public void apply(Consumer<Component> c){
         c.accept(this);
-        children.forEach(child -> child.apply(c));
+        // Use index-based iteration so we don't get
+        // ConcurrentModificationException if modifying
+        // a component during apply().
+        for(int i = 0; i < children.size(); i++){
+            children.get(i).apply(c);
+        }
     }
 
     public Component with(Consumer<Component> c){
