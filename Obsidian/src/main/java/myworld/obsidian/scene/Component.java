@@ -89,9 +89,9 @@ public class Component {
 
         parent.addListener((p, o, n) -> {
             if(o != null && n == null){
-                apply(c -> onDetach(o, this));
+                onDetach(o);
             }else if(o == null && n != null){
-                apply(c -> onAttach(n, this));
+                onAttach(n);
             }
         });
     }
@@ -293,12 +293,12 @@ public class Component {
         apply(c -> c.focusable().set(true));
     }
 
-    private final void onAttach(Component parent, Component child){
-        dispatcher.dispatch(new AttachEvent(parent, child));
+    private final void onAttach(Component parent){
+        dispatcher.dispatch(new AttachEvent(parent, this));
     }
 
-    private final void onDetach(Component parent, Component child){
-        dispatcher.dispatch(new DetachEvent(parent, child));
+    private final void onDetach(Component parent){
+        dispatcher.dispatch(new DetachEvent(parent, this));
     }
 
     public EventDispatcher dispatcher(){
