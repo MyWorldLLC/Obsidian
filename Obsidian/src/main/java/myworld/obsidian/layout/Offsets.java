@@ -32,6 +32,10 @@ public record Offsets(Distance left, Distance top, Distance right, Distance bott
         return modifier.apply(this);
     }
 
+    public static Offsets uniform(Distance d){
+        return new Offsets(d);
+    }
+
     public static Offsets shift(Distance left, Distance top){
         return new Offsets(left, top, ZERO.right(), ZERO.bottom());
     }
