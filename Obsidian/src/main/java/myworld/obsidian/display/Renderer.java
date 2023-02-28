@@ -524,7 +524,7 @@ public class Renderer implements AutoCloseable {
             value = TextStyle.NORMAL;
         }
         if (value instanceof String s) {
-            return getFontStyle(TextStyle.valueOf(s));
+            return getFontStyle(TextStyle.named(s));
         }
         return getFontStyle((TextStyle) value);
     }
