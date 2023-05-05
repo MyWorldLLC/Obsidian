@@ -247,8 +247,8 @@ public class Renderer implements AutoCloseable {
                         var background = new Rect(
                                 boundingRect.getLeft(),
                                 boundingRect.getTop(),
-                                boundingRect.getLeft() + text.text().getBlockBounds().getWidth(),
-                                boundingRect.getTop() + text.text().getBlockBounds().getHeight()
+                                boundingRect.getLeft() + text.blob().getBlockBounds().getWidth(),
+                                boundingRect.getTop() + text.blob().getBlockBounds().getHeight()
                         );
 
                         canvas.drawRect(background, backgroundPaint);
@@ -259,14 +259,14 @@ public class Renderer implements AutoCloseable {
                         for (var shadow : text.shadows()) {
                             shadowPaint.setColor(shadow.color().toARGB());
                             shadowPaint.setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.NORMAL, shadow.blurSigma(), false));
-                            renderDecoratedText(canvas, text.text(), text.decorations(),
+                            renderDecoratedText(canvas, text, text.decorations(),
                                     shadow.offset().x().toPixels(boundingRect.getWidth()) + boundingRect.getLeft(),
                                     shadow.offset().y().toPixels(boundingRect.getHeight()) + boundingRect.getTop(),
                                     shadowPaint);
                         }
                     }
 
-                    renderDecoratedText(canvas, text.text(), text.decorations(), text.bounds().getLeft(), text.bounds().getTop(), textColor);
+                    renderDecoratedText(canvas, text, text.decorations(), text.bounds().getLeft(), text.bounds().getTop(), textColor);
                 } finally {
                     log.log(FINE, "Restoring canvas after text render");
                     canvas.restore();
@@ -281,17 +281,18 @@ public class Renderer implements AutoCloseable {
         }
     }
 
-    protected void renderDecoratedText(Canvas canvas, TextBlob text, TextDecoration decor, float x, float y, Paint fill) {
-        canvas.drawTextBlob(text, x, y, fill);
+    protected void renderDecoratedText(Canvas canvas, RenderableText text, TextDecoration decor, float x, float y, Paint fill) {
+        canvas.drawTextBlob(text.blob(), x, y, fill);
+        //canvas.drawString(text.text(), x, y + 20, text.font(), fill);
 
         if (decor != null) {
             if (decor.underline()) {
-                float underlineY = Math.round(y + text.getTightBounds().getBottom()) - 0.5f;
-                canvas.drawLine(x, underlineY, x + text.getBlockBounds().getWidth(), underlineY, fill);
+                float underlineY = Math.round(y + text.blob().getTightBounds().getBottom()) - 0.5f;
+                canvas.drawLine(x, underlineY, x + text.blob().getBlockBounds().getWidth(), underlineY, fill);
             }
             if (decor.strikethrough()) {
-                float strikeY = Math.round(y + (text.getTightBounds().getTop() + text.getTightBounds().getBottom()) / 2.0f) - 0.5f;
-                canvas.drawLine(x, strikeY, x + text.getBlockBounds().getWidth(), strikeY, fill);
+                float strikeY = Math.round(y + (text.blob().getTightBounds().getTop() + text.blob().getTightBounds().getBottom()) / 2.0f) - 0.5f;
+                canvas.drawLine(x, strikeY, x + text.blob().getBlockBounds().getWidth(), strikeY, fill);
             }
         }
 
@@ -395,7 +396,7 @@ public class Renderer implements AutoCloseable {
 
             var font = getFont(style, renderVars);
 
-            TextBlob blob = shaper.shape(text.text(), font, boundingRect.getWidth() + 1);
+            var blob = shaper.shape(text.text(), font, boundingRect.getWidth());
 
             var color = style.rule(StyleRules.COLOR, renderVars, Colors.BLACK);
             ColorRGBA backgroundColor = null;
@@ -403,7 +404,7 @@ public class Renderer implements AutoCloseable {
                 backgroundColor = style.rule(StyleRules.TEXT_BACKGROUND_COLOR, renderVars);
             }
 
-            return new RenderableText(blob, font, boundingRect, color, backgroundColor, getTextDecoration(style, renderVars), getShadows(style, renderVars));
+            return new RenderableText(text.text(), blob, font, boundingRect, color, backgroundColor, getTextDecoration(style, renderVars), getShadows(style, renderVars));
 
         } else {
             // Default to filling in the componentBounds as a rectangle

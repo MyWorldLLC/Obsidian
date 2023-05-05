@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     implementation 'org.lwjgl:lwjgl-yoga:3.3.1'
-    implementation 'io.github.humbleui:skija-shared:0.109.1'
+    implementation 'io.github.humbleui:skija-shared:0.109.2'
 }
 
 java {
