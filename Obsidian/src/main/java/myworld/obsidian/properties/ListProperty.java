@@ -33,10 +33,27 @@ public class ListProperty<T> extends Property<ListChangeListener<T>> implements 
 
     public ListProperty(int initialCapacity){
         values = Collections.synchronizedList(new ArrayList<>(initialCapacity));
+        bindListener = new ListChangeListener<>() {
+            @Override
+            public void onAdd(ListProperty<T> prop, int index, T element){
+                values.add(index, element);
+            }
+
+            @Override
+            public void onChange(ListProperty<T> prop, int index, T oldValue, T newValue){
+                 values.set(index, newValue);
+            }
+
+            @Override
+            public void onRemove(ListProperty<T> prop, int index, T element){
+                values.remove(index);
+            }
+        };
     }
 
     public ListProperty(T[] initialValues){
-        values = Collections.synchronizedList(new ArrayList<>(Arrays.asList(initialValues)));
+        this(initialValues.length);
+        values.addAll(Arrays.asList(initialValues));
     }
 
     private ListProperty(List<T> backedBy){

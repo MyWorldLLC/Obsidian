@@ -26,6 +26,7 @@ public class ValueProperty<T> extends Property<ValueChangeListener<T>> implement
 
     public ValueProperty(){
         value = new AtomicReference<>();
+        bindListener = (p, o, n) -> value.set(n);
     }
 
     public ValueProperty(T initialValue){

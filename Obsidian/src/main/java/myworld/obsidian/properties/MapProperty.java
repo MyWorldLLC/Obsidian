@@ -28,6 +28,23 @@ public class MapProperty<K, V> extends Property<MapChangeListener<K, V>> impleme
 
     public MapProperty(){
         values = new ConcurrentHashMap<>();
+        bindListener = new MapChangeListener<>() {
+            @Override
+            public void onAdd(MapProperty<K, V> prop, K key, V value){
+                values.put(key, value);
+            }
+
+            @Override
+            public void onChange(MapProperty<K, V> prop, K key, V oldValue, V newValue){
+                values.put(key, newValue);
+            }
+
+            @Override
+            public void onRemove(MapProperty<K, V> prop, K key, V value){
+                values.remove(key);
+            }
+
+        };
     }
 
     @Override

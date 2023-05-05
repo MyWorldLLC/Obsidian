@@ -21,9 +21,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class Property<T> {
 
     protected final CopyOnWriteArrayList<T> listeners;
+    protected volatile T bindListener;
 
     protected Property(){
+        this(null);
+    }
+
+    protected Property(T bindListener){
         listeners = new CopyOnWriteArrayList<>();
+        this.bindListener = bindListener;
+    }
+
+    public T getBindListener(){
+        return bindListener;
     }
 
     public void addListener(T listener){
@@ -36,5 +46,13 @@ public abstract class Property<T> {
 
     protected void subscribeAll(Property<T> other){
         listeners.forEach(other::addListener);
+    }
+
+    public void bind(Property<T> other){
+        addListener(other.getBindListener());
+    }
+
+    public void unbind(Property<T> other){
+        removeListener(other.getBindListener());
     }
 }
