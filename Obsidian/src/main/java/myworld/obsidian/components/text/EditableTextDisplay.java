@@ -86,8 +86,17 @@ public class EditableTextDisplay extends Component {
         renderVars.put(LINE_HEIGHT_VAR_NAME, () -> label.getRuler()
                 .getLineHeight());
 
-        preRender(() -> label.text().set(editor().get().toString()));
+        preLayout(() -> {
+            var editor = editor().get();
+            if(editor != null && editor.pendingSync()){
+                label.text().set(editor.sync());
+            }
+        });
 
+    }
+
+    public ValueProperty<String> text(){
+        return label.text();
     }
 
     public ValueProperty<StyleClass> style(){

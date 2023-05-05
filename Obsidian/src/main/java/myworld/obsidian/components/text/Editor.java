@@ -8,4 +8,7 @@ public interface Editor {
     int length();
     String toString();
 
+    boolean pendingSync();
+    String sync();
+
 }

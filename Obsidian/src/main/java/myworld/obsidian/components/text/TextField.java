@@ -93,7 +93,7 @@ public class TextField extends Component {
         return mask;
     }
 
-    public EditableTextDisplay text(){
+    public EditableTextDisplay editableText(){
         return text;
     }
 
@@ -118,17 +118,21 @@ public class TextField extends Component {
         protected final ValueProperty<Character> mask;
         protected final StringBuilder builder = new StringBuilder();
 
+        protected boolean needsSync = false;
+
         public TextFieldEditor(ValueProperty<Character> mask){
             this.mask = mask;
         }
 
         @Override
         public void insert(int index, String s) {
+            needsSync = true;
             builder.insert(index, s);
         }
 
         @Override
         public void delete(int start, int end) {
+            needsSync = true;
             builder.delete(start, end);
         }
 
@@ -145,6 +149,17 @@ public class TextField extends Component {
         @Override
         public String toString(){
             return getContents();
+        }
+
+        @Override
+        public boolean pendingSync(){
+            return needsSync;
+        }
+
+        @Override
+        public String sync(){
+            needsSync = false;
+            return toString();
         }
 
         protected String getContents(){
