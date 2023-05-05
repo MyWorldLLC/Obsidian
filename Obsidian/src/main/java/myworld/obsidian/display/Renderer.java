@@ -3,6 +3,8 @@ package myworld.obsidian.display;
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.paragraph.*;
 import io.github.humbleui.skija.shaper.Shaper;
+import io.github.humbleui.skija.shaper.ShapingOptions;
+import io.github.humbleui.skija.shaper.TextBlobBuilderRunHandler;
 import io.github.humbleui.skija.svg.SVGLengthContext;
 import io.github.humbleui.skija.svg.SVGLengthType;
 import io.github.humbleui.types.Point;
@@ -247,8 +249,8 @@ public class Renderer implements AutoCloseable {
                         var background = new Rect(
                                 boundingRect.getLeft(),
                                 boundingRect.getTop(),
-                                boundingRect.getLeft() + text.blob().getBlockBounds().getWidth(),
-                                boundingRect.getTop() + text.blob().getBlockBounds().getHeight()
+                                boundingRect.getLeft() + text.line().getWidth(),
+                                boundingRect.getTop() + text.line().getHeight()
                         );
 
                         canvas.drawRect(background, backgroundPaint);
@@ -282,17 +284,25 @@ public class Renderer implements AutoCloseable {
     }
 
     protected void renderDecoratedText(Canvas canvas, RenderableText text, TextDecoration decor, float x, float y, Paint fill) {
-        canvas.drawTextBlob(text.blob(), x, y, fill);
-        //canvas.drawString(text.text(), x, y + 20, text.font(), fill);
+
+        var line = text.line();
+        var renderBaseline = y + line.getHeight() - line.getDescent();
+
+        // drawTextLine() seems to base its coordinate system around the line's baseline
+        canvas.drawTextLine(line, x, renderBaseline, fill);
 
         if (decor != null) {
+
             if (decor.underline()) {
-                float underlineY = Math.round(y + text.blob().getTightBounds().getBottom()) - 0.5f;
-                canvas.drawLine(x, underlineY, x + text.blob().getBlockBounds().getWidth(), underlineY, fill);
+                float underlineY = Math.round(renderBaseline) - 0.5f;
+                canvas.drawLine(x, underlineY, x + line.getWidth(), underlineY, fill);
             }
             if (decor.strikethrough()) {
-                float strikeY = Math.round(y + (text.blob().getTightBounds().getTop() + text.blob().getTightBounds().getBottom()) / 2.0f) - 0.5f;
-                canvas.drawLine(x, strikeY, x + text.blob().getBlockBounds().getWidth(), strikeY, fill);
+                // Set the strikethrough at halfway between the baseline and the capital letter height (or the ascender,
+                // if capital height cannot be determined).
+                float height = line.getCapHeight() > 0 ? line.getCapHeight() : line.getAscent();
+                float strikeY = Math.round(renderBaseline - 0.5f * height) - 0.5f;
+                canvas.drawLine(x, strikeY, x + line.getWidth(), strikeY, fill);
             }
         }
 
@@ -396,7 +406,8 @@ public class Renderer implements AutoCloseable {
 
             var font = getFont(style, renderVars);
 
-            var blob = shaper.shape(text.text(), font, boundingRect.getWidth());
+            //var blob = shaper.shape(text.text(), font, boundingRect.getWidth());
+            var line = shaper.shapeLine(text.text(), font, ShapingOptions.DEFAULT);
 
             var color = style.rule(StyleRules.COLOR, renderVars, Colors.BLACK);
             ColorRGBA backgroundColor = null;
@@ -404,7 +415,7 @@ public class Renderer implements AutoCloseable {
                 backgroundColor = style.rule(StyleRules.TEXT_BACKGROUND_COLOR, renderVars);
             }
 
-            return new RenderableText(text.text(), blob, font, boundingRect, color, backgroundColor, getTextDecoration(style, renderVars), getShadows(style, renderVars));
+            return new RenderableText(text.text(), line /*blob*/, font, boundingRect, color, backgroundColor, getTextDecoration(style, renderVars), getShadows(style, renderVars));
 
         } else {
             // Default to filling in the componentBounds as a rectangle

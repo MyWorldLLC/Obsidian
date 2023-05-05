@@ -11,6 +11,8 @@ public class TextRuler {
 
     protected final Renderer renderer;
     protected final Font font;
+    // TODO - these algorithms probably do not take shaping into account (depends on what
+    //  Skia is doing internally). We should shape lines explicitly and measure from those.
 
     protected TextRuler(Renderer renderer, Font font){
         this.renderer = renderer;
