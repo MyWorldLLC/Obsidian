@@ -192,8 +192,8 @@ public class LayoutEngine {
                         case WRAP_REVERSE -> YGWrapReverse;
                     });
 
-            YGNodeStyleSetFlexGrow(node, layout.flexGrow().get());
-            YGNodeStyleSetFlexShrink(node, layout.flexShrink().get());
+            YGNodeStyleSetFlexGrow(node, layout.flexGrow().get().floatValue());
+            YGNodeStyleSetFlexShrink(node, layout.flexShrink().get().floatValue());
 
             setDimension(layout.flexBasis().get(),
                     () -> YGNodeStyleSetFlexBasisAuto(node),
@@ -204,7 +204,7 @@ public class LayoutEngine {
             YGNodeStyleSetAlignSelf(node, yogaAlignment(layout.alignSelf().get()));
             YGNodeStyleSetAlignItems(node, yogaAlignment(layout.alignItems().get()));
 
-            YGNodeStyleSetAspectRatio(node, layout.aspectRatio().get());
+            YGNodeStyleSetAspectRatio(node, layout.aspectRatio().get().floatValue());
 
             YGNodeStyleSetJustifyContent(node,
                     switch (layout.justifyContent().get()){

@@ -11,15 +11,15 @@ public class ComponentLayout {
 
     protected final ValueProperty<FlexDirection> flexDirection;
     protected final ValueProperty<FlexWrap> flexWrap;
-    protected final ValueProperty<Float> flexGrow;
-    protected final ValueProperty<Float> flexShrink;
+    protected final ValueProperty<Number> flexGrow;
+    protected final ValueProperty<Number> flexShrink;
     protected final ValueProperty<Distance> flexBasis;
 
     protected final ValueProperty<ItemAlignment> alignContent;
     protected final ValueProperty<ItemAlignment> alignSelf;
     protected final ValueProperty<ItemAlignment> alignItems;
 
-    protected final ValueProperty<Float> aspectRatio;
+    protected final ValueProperty<Number> aspectRatio;
 
     protected final ValueProperty<ItemJustification> justifyContent;
     protected final ValueProperty<LayoutDirection> layoutDirection;
@@ -89,11 +89,11 @@ public class ComponentLayout {
         return flexWrap;
     }
 
-    public ValueProperty<Float> flexGrow() {
+    public ValueProperty<Number> flexGrow() {
         return flexGrow;
     }
 
-    public ValueProperty<Float> flexShrink() {
+    public ValueProperty<Number> flexShrink() {
         return flexShrink;
     }
 
@@ -113,7 +113,7 @@ public class ComponentLayout {
         return alignItems;
     }
 
-    public ValueProperty<Float> aspectRatio() {
+    public ValueProperty<Number> aspectRatio() {
         return aspectRatio;
     }
 
@@ -192,5 +192,23 @@ public class ComponentLayout {
 
     public void clampedSize(float width, float height){
         clampedSize(Distance.pixels(width), Distance.pixels(height));
+    }
+
+    public void clampedWidth(Distance width){
+        minWidth.set(width);
+        maxWidth.set(width);
+    }
+
+    public void clampedWidth(float width){
+        clampedWidth(Distance.pixels(width));
+    }
+
+    public void clampedHeight(Distance height){
+        minHeight.set(height);
+        maxHeight.set(height);
+    }
+
+    public void clampedHeight(float height){
+        clampedHeight(Distance.pixels(height));
     }
 }
