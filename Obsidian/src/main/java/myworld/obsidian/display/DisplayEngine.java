@@ -34,6 +34,7 @@ import myworld.obsidian.util.LogUtil;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.util.logging.Level.FINE;
@@ -157,77 +158,82 @@ public class DisplayEngine implements AutoCloseable {
         return getImageInfo(getSurface().getWidth(), getSurface().getHeight());
     }
 
-    public void render(ObsidianUI ui, Component component, UISkin uiSkin){
+    public void render(ObsidianUI ui, Component component, UISkin uiSkin) {
 
-        renderer.setActiveSkin(uiSkin);
+        try {
 
-        var skin = uiSkin.getComponentSkin(component.styleName().get());
+            renderer.setActiveSkin(uiSkin);
 
-        component.preRenderers().forEach(Runnable::run);
+            var skin = uiSkin.getComponentSkin(component.styleName().get());
 
-        if(skin != null && !component.isLayoutOnly()){
+            component.preRenderers().forEach(Runnable::run);
 
-            var renderVars = component.generateRenderVars();
+            if (skin != null && !component.isLayoutOnly()) {
 
-            var backgroundLayers = new ArrayList<StyleClass>();
-            var foregroundLayers = new ArrayList<StyleClass>();
+                var renderVars = component.generateRenderVars();
 
-            var styleLookup = new StyleLookup(skin, uiSkin);
+                var backgroundLayers = new ArrayList<StyleClass>();
+                var foregroundLayers = new ArrayList<StyleClass>();
 
-            // For each named layer, merge all style classes applicable for the given renderVars
-            // (including state-independent classes)
-            for(var layer : skin.layerNames()){
+                var styleLookup = new StyleLookup(skin, uiSkin);
 
-                var styleClasses = skin.activeForLayer(layer, renderVars, s -> mixStyles(s, renderVars, styleLookup));
+                // For each named layer, merge all style classes applicable for the given renderVars
+                // (including state-independent classes)
+                for (var layer : skin.layerNames()) {
 
-                var background = styleClasses.stream()
-                        .filter(s -> !s.isForegroundLayer())
-                        .reduce(StyleClass::merge)
-                        .orElse(null);
+                    var styleClasses = skin.activeForLayer(layer, renderVars, s -> mixStyles(s, renderVars, styleLookup));
 
-                var foreground = styleClasses.stream()
-                        .filter(StyleClass::isForegroundLayer)
-                        .reduce(StyleClass::merge)
-                        .orElse(null);
+                    var background = styleClasses.stream()
+                            .filter(s -> !s.isForegroundLayer())
+                            .reduce(StyleClass::merge)
+                            .orElse(null);
 
-                if(background != null){
-                    backgroundLayers.add(background);
+                    var foreground = styleClasses.stream()
+                            .filter(StyleClass::isForegroundLayer)
+                            .reduce(StyleClass::merge)
+                            .orElse(null);
+
+                    if (background != null) {
+                        backgroundLayers.add(background);
+                    }
+
+                    if (foreground != null) {
+                        foregroundLayers.add(foreground);
+                    }
+
                 }
 
-                if(foreground != null){
-                    foregroundLayers.add(foreground);
+                var componentBounds = ui.getLayout().getSceneBounds(component);
+                backgroundLayers.forEach(style -> {
+                    renderer.render(getCanvas(), componentBounds, style, renderVars, styleLookup);
+                });
+
+                if (component.clipChildren().get(false)) {
+                    log.log(FINE, "Enter clipping context for {0}: {1}", new Object[]{component, componentBounds});
+                    renderer.enterClippingRegion(componentBounds);
                 }
 
+                renderChildren(ui, component, uiSkin);
+
+                if (component.clipChildren().get(false)) {
+                    log.log(FINE, "Exit clipping context for {0}: {1}", new Object[]{component, componentBounds});
+                    renderer.exitClippingRegion();
+                }
+
+                foregroundLayers.forEach(style -> {
+                    renderer.render(getCanvas(), componentBounds, style, renderVars, styleLookup);
+                });
+
+            } else {
+                if (!component.isLayoutOnly()) {
+                    log.log(WARNING, "Cannot render component {0} because no skin is present", component.styleName().get());
+                } else {
+                    renderer.renderDebug(getCanvas(), ui.getLayout().getSceneBounds(component));
+                }
+                renderChildren(ui, component, uiSkin);
             }
-
-            var componentBounds = ui.getLayout().getSceneBounds(component);
-            backgroundLayers.forEach(style -> {
-                renderer.render(getCanvas(), componentBounds, style, renderVars, styleLookup);
-            });
-
-            if(component.clipChildren().get(false)){
-                log.log(FINE, "Enter clipping context for {0}: {1}", new Object[]{component, componentBounds});
-                renderer.enterClippingRegion(componentBounds);
-            }
-
-            renderChildren(ui, component, uiSkin);
-
-            if(component.clipChildren().get(false)){
-                log.log(FINE, "Exit clipping context for {0}: {1}", new Object[]{component, componentBounds});
-                renderer.exitClippingRegion();
-            }
-
-            foregroundLayers.forEach(style -> {
-                renderer.render(getCanvas(), componentBounds, style, renderVars, styleLookup);
-            });
-
-        }else{
-            if(!component.isLayoutOnly()){
-                log.log(WARNING, "Cannot render component {0} because no skin is present", component.styleName().get());
-            }else{
-                renderer.renderDebug(getCanvas(), ui.getLayout().getSceneBounds(component));
-            }
-            renderChildren(ui, component, uiSkin);
+        } catch (Exception e) {
+            log.log(WARNING, "Error rendering component {0}: {1}", new Object[]{component, e});
         }
 
     }
