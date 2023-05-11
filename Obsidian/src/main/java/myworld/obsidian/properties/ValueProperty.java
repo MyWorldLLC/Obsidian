@@ -16,6 +16,7 @@
 
 package myworld.obsidian.properties;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -63,6 +64,10 @@ public class ValueProperty<T> extends Property<ValueChangeListener<T>> implement
 
     public boolean isSet(){
         return get() != null;
+    }
+
+    public boolean is(T other){
+        return Objects.equals(get(), other);
     }
 
 }
