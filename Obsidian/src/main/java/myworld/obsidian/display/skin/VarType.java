@@ -19,10 +19,12 @@ package myworld.obsidian.display.skin;
 import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.display.ObsidianImage;
 import myworld.obsidian.display.ObsidianSvg;
+import myworld.obsidian.geometry.Distance;
 
 public enum VarType {
     BOOLEAN(Boolean.class),
     COLOR(ColorRGBA.class),
+    DISTANCE(Distance.class),
     FLOAT(Float.class),
     IMAGE(ObsidianImage.class),
     SVG(ObsidianSvg.class),

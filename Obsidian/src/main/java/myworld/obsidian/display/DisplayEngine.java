@@ -34,7 +34,6 @@ import myworld.obsidian.util.LogUtil;
 
 import java.io.InputStream;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.util.logging.Level.FINE;
