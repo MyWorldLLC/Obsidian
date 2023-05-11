@@ -204,8 +204,9 @@ public class DisplayEngine implements AutoCloseable {
                 }
 
                 var componentBounds = ui.getLayout().getSceneBounds(component);
+                var componentDebugName = component.toString();
                 backgroundLayers.forEach(style -> {
-                    renderer.render(getCanvas(), componentBounds, style, renderVars, styleLookup);
+                    renderer.render(getCanvas(), componentBounds, componentDebugName, style, renderVars, styleLookup);
                 });
 
                 if (component.clipChildren().get(false)) {
@@ -221,7 +222,7 @@ public class DisplayEngine implements AutoCloseable {
                 }
 
                 foregroundLayers.forEach(style -> {
-                    renderer.render(getCanvas(), componentBounds, style, renderVars, styleLookup);
+                    renderer.render(getCanvas(), componentBounds, componentDebugName, style, renderVars, styleLookup);
                 });
 
             } else {

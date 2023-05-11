@@ -109,7 +109,7 @@ public class Renderer implements AutoCloseable {
         }
     }
 
-    public void render(Canvas canvas, Bounds2D componentBounds, StyleClass style, Variables renderVars, StyleLookup styles) {
+    public void render(Canvas canvas, Bounds2D componentBounds, String styleDebugName, StyleClass style, Variables renderVars, StyleLookup styles) {
         try {
 
             log.log(FINE, "Saving canvas for style render");
@@ -276,7 +276,7 @@ public class Renderer implements AutoCloseable {
             }
 
         } catch (Exception e) {
-            log.log(INFO, "Error rendering style", e);
+            log.log(INFO, "Error rendering style for component {0}: {1}", new Object[]{styleDebugName, e});
         } finally {
             log.log(FINE, "Restoring canvas after style render");
             canvas.restore();
