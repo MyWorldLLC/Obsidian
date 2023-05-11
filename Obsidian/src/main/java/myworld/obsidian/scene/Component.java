@@ -30,7 +30,10 @@ import myworld.obsidian.scene.events.AttachEvent;
 import myworld.obsidian.scene.events.DetachEvent;
 import myworld.obsidian.util.ReverseListIterator;
 
+import java.util.ArrayDeque;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static myworld.obsidian.display.RenderOrder.ASCENDING;
@@ -41,6 +44,7 @@ public class Component {
     public static final String HOVERED_DATA_NAME = "hovered";
 
     protected final ValueProperty<ObsidianUI> ui;
+    protected final ValueProperty<String> id;
     protected final ValueProperty<Component> parent;
     protected final ListProperty<Component> children;
     protected final ListProperty<Effect> effects;
@@ -64,6 +68,7 @@ public class Component {
     public Component(Component... children){
         parent = new ValueProperty<>();
         ui = new DelegatingValueProperty<>(parent, Component::ui);
+        id = new ValueProperty<>();
         this.children = new ListProperty<>(children);
         effects = new ListProperty<>();
         tags = new ListProperty<>();
@@ -101,6 +106,28 @@ public class Component {
         if(hasParent()){
             getParent().requestVisualUpdate();
         }
+    }
+
+    public Optional<Component> findChild(Predicate<Component> p){
+        return children.stream().filter(p).findFirst();
+    }
+
+    public Optional<Component> find(String... ids){
+        if(ids.length == 0){
+            throw new IllegalArgumentException("Component ids must not be an empty array");
+        }
+
+        return find(0, ids);
+    }
+
+    protected Optional<Component> find(int idIndex, String...ids){
+
+        if(idIndex == ids.length){
+            return Optional.empty();
+        }
+
+        return findChild(c -> c.id().is(ids[idIndex]))
+                .flatMap(c -> c.find(idIndex + 1, ids));
     }
 
     public void addChild(Component child){
@@ -151,6 +178,10 @@ public class Component {
 
     public ValueProperty<ObsidianUI> ui(){
         return ui;
+    }
+
+    public ValueProperty<String> id(){
+        return id;
     }
 
     public ValueProperty<Component> parent(){
@@ -357,6 +388,12 @@ public class Component {
             throw new IllegalStateException("Component is not attached to a scene");
         }
         return ui.get().getLayout().getSceneBounds(this);
+    }
+
+    @Override
+    public String toString(){
+        var baseString = super.toString();
+        return id().isSet() ? "%s[%s]".formatted(baseString, id().get()) : baseString;
     }
 
     public static String defaultStyleName(Component component){
