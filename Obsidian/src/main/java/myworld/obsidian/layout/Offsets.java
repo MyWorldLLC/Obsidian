@@ -49,14 +49,11 @@ public record Offsets(Distance left, Distance top, Distance right, Distance bott
         var distances = Arrays.stream(offsets.split(","))
                 .map(Distance::fromString).toArray(Distance[]::new);
 
-        if(distances.length == 1){
-            return Offsets.uniform(distances[0]);
-        }else if(distances.length == 2){
-            return Offsets.shift(distances[0], distances[1]);
-        }else if(distances.length == 4){
-            return new Offsets(distances[0], distances[1], distances[2], distances[3]);
-        }
-
-        throw new IllegalArgumentException("Offset string must consist of 1, 2, or 4 distances");
+        return switch (distances.length){
+            case 1 -> Offsets.uniform(distances[0]);
+            case 2 -> Offsets.shift(distances[0], distances[1]);
+            case 4 -> new Offsets(distances[0], distances[1], distances[2], distances[3]);
+            default -> throw new IllegalArgumentException("Offset string must consist of 1, 2, or 4 distances");
+        };
     }
 }
