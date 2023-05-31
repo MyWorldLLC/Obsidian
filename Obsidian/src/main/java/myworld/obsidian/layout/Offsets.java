@@ -2,6 +2,7 @@ package myworld.obsidian.layout;
 
 import myworld.obsidian.geometry.Distance;
 
+import java.util.Arrays;
 import java.util.function.Function;
 
 public record Offsets(Distance left, Distance top, Distance right, Distance bottom) {
@@ -42,5 +43,20 @@ public record Offsets(Distance left, Distance top, Distance right, Distance bott
 
     public static Offsets shift(float left, float top){
         return shift(Distance.pixels(left), Distance.pixels(top));
+    }
+
+    public static Offsets fromString(String offsets){
+        var distances = Arrays.stream(offsets.split(","))
+                .map(Distance::fromString).toArray(Distance[]::new);
+
+        if(distances.length == 1){
+            return Offsets.uniform(distances[0]);
+        }else if(distances.length == 2){
+            return Offsets.shift(distances[0], distances[1]);
+        }else if(distances.length == 4){
+            return new Offsets(distances[0], distances[1], distances[2], distances[3]);
+        }
+
+        throw new IllegalArgumentException("Offset string must consist of 1, 2, or 4 distances");
     }
 }
