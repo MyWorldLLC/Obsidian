@@ -112,22 +112,27 @@ public class Component {
         return children.stream().filter(p).findFirst();
     }
 
-    public Optional<Component> find(String... ids){
-        if(ids.length == 0){
-            throw new IllegalArgumentException("Component ids must not be an empty array");
+    public Optional<Component> find(String id){
+
+        var component = this;
+
+        for(var partial : id.split("\\.")){
+            var found = false;
+
+            for(var child : component.children()){
+                if(child.id().is(partial)){
+                    component = child;
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found){
+                return Optional.empty();
+            }
         }
 
-        return find(0, ids);
-    }
-
-    protected Optional<Component> find(int idIndex, String...ids){
-
-        if(idIndex == ids.length){
-            return Optional.empty();
-        }
-
-        return findChild(c -> c.id().is(ids[idIndex]))
-                .flatMap(c -> c.find(idIndex + 1, ids));
+        return Optional.of(component);
     }
 
     public void addChild(Component child){
