@@ -9,6 +9,7 @@ import myworld.obsidian.scene.Component;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class InputManager {
@@ -20,6 +21,9 @@ public class InputManager {
     protected final ValueProperty<Component> mouseButtonTarget;
     protected final EventDispatcher dispatcher;
 
+    protected final ValueProperty<Consumer<Exception>> uncaughtExceptionHandler;
+    protected final ValueProperty<Consumer<Throwable>> uncaughtThrowableHandler;
+
     public InputManager(ObsidianUI ui){
         this.ui = ui;
         state = new KeyStates();
@@ -27,6 +31,8 @@ public class InputManager {
         mousePosition = new ValueProperty<>();
         mouseButtonTarget = new ValueProperty<>();
         dispatcher = new EventDispatcher();
+        uncaughtExceptionHandler = new ValueProperty<>();
+        uncaughtThrowableHandler = new ValueProperty<>();
     }
 
     public MousePos getMousePosition(){
@@ -77,11 +83,27 @@ public class InputManager {
     }
 
     protected <T extends InputEvent> T handleEvent(T evt){
-        dispatcher.dispatch(evt);
-        if(!evt.isConsumed()){
-            ui.fireEvent(evt);
+        try{
+            dispatcher.dispatch(evt);
+            if(!evt.isConsumed()){
+                ui.fireEvent(evt);
+            }
+            return evt;
+        }catch(Exception e){
+            if(uncaughtExceptionHandler.isSet()){
+                uncaughtExceptionHandler.get().accept(e);
+                return evt;
+            }else{
+                throw e;
+            }
+        }catch(Throwable t){
+            if(uncaughtThrowableHandler.isSet()){
+                uncaughtThrowableHandler.get().accept(t);
+                return evt;
+            }else{
+                throw t;
+            }
         }
-        return evt;
     }
 
     public boolean isDown(MouseButton button){
@@ -147,6 +169,14 @@ public class InputManager {
                 .map(e -> Key.values()[e.getKey()])
                 .collect(Collectors.toSet());
         return pressedSet.equals(keys);
+    }
+
+    public ValueProperty<Consumer<Exception>> uncaughtExceptionHandler(){
+        return uncaughtExceptionHandler;
+    }
+
+    public ValueProperty<Consumer<Throwable>> uncaughtThrowableHandler(){
+        return uncaughtThrowableHandler;
     }
 
 }
