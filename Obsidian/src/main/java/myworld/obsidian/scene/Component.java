@@ -108,7 +108,23 @@ public class Component {
         }
     }
 
-    public Optional<Component> findChild(Predicate<Component> p){
+    public Optional<Component> find(Predicate<Component> p){
+
+        if(p.test(this)){
+            return Optional.of(this);
+        }
+
+        for(var child : children){
+            var maybeMatch = child.find(p);
+            if(maybeMatch.isPresent()){
+                return maybeMatch;
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    public Optional<Component> findDirectChild(Predicate<Component> p){
         return children.stream().filter(p).findFirst();
     }
 
