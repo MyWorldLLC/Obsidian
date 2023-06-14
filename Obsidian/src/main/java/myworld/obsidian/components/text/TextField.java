@@ -66,13 +66,13 @@ public class TextField extends Component {
 
         dispatcher.subscribe(MouseButtonEvent.class, mousePressed(), evt ->{
             text.startPointerSelect(evt.getX());
+            if(!focused().get()){
+                ui.get().requestFocus(this);
+            }
             evt.consume();
         });
 
         dispatcher.subscribe(MouseMoveEvent.class, e -> e.getManager().isDown(MouseButton.PRIMARY), evt -> {
-            if(!focused().get()){
-                ui.get().requestFocus(this);
-            }
             text.midPointerSelect(evt.getX(), evt.getY());
             evt.consume();
         });
