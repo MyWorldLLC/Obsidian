@@ -17,7 +17,7 @@
 package example;
 
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
+
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.components.*;
 import myworld.obsidian.components.layout.Pane;
@@ -26,6 +26,7 @@ import myworld.obsidian.components.layout.Viewport;
 import myworld.obsidian.components.text.TextDisplay;
 import myworld.obsidian.components.text.TextField;
 import myworld.obsidian.display.ColorRGBA;
+import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
 import myworld.obsidian.display.skin.obsidian.ObsidianSkin;
 import myworld.obsidian.events.input.CharacterEvent;
 import myworld.obsidian.events.input.KeyEvent;
@@ -206,7 +207,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class ExampleRunner {
 
-    public static final String CHIPMUNK_SKIN_EXAMPLE = "/example/chipmunk/obsidian/Skin.chp";
+    public static final String CHIPMUNK_SKIN_EXAMPLE = "/example/chipmunk/obsidian";
 
     protected long window;
 
@@ -263,13 +264,10 @@ public class ExampleRunner {
 
         ui = ObsidianUI.createForGL(getRenderWidth(), getRenderHeight(), 4, 0);
         // NOTE: demo either Chipmunk skins of Java skins by selecting one of the lines below
-        //ui.registerSkin(ChipmunkSkinLoader.loadFromClasspath(CHIPMUNK_SKIN_EXAMPLE));
+        //var skin = ChipmunkSkinLoader.loadFromClasspath(CHIPMUNK_SKIN_EXAMPLE);
         var skin = ObsidianSkin.create();
-        skin.addSvgs(List.of("/example/svg/cancel.svg"));
-        skin.addImages(List.of("/example/16px/cancel.png"));
         skin.addComponentSkin(ExampleComponentSkin.create());
-        ui.registerSkin(skin);
-        ui.useSkin("Obsidian");
+        ui.useSkin(skin);
         ui.clipboard().set(new GLFWClipboard(window));
         //ui.getDisplay().enableRenderDebug(Colors.RED);
 
@@ -372,13 +370,13 @@ public class ExampleRunner {
         layout.right().addChild(vSlider);
 
         var svgView = new SvgView();
-        svgView.svg().set(skin.getCachedSvg("/example/svg/cancel.svg"));
+        svgView.svg().set(skin.getCachedSvg("/svg/cancel.svg"));
         svgView.layout().clampedSize(50, 50);
 
         layout.center().addChild(svgView);
 
         var imageView = new ImageView();
-        imageView.image().set(skin.getCachedImage("/example/16px/cancel.png"));
+        imageView.image().set(skin.getCachedImage("/16px/cancel.png"));
         imageView.layout().clampedSize(18, 18);
 
         layout.center().addChild(imageView);

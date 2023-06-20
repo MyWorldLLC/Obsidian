@@ -26,5 +26,6 @@ module myworld.obsidian {
     exports myworld.obsidian.scene.layout;
     exports myworld.obsidian.text;
     exports myworld.obsidian.util;
+    exports myworld.obsidian.display.skin.resolvers;
 
 }

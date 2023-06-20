@@ -1,0 +1,19 @@
+module component
+
+from obsidian.component import *
+from obsidian.graphics import *
+from obsidian.style import *
+
+def component(){
+
+    name('SvgView')
+
+    data({
+        'svg': 'svg'
+    })
+
+    layer('background', {
+        'geometry': rectangle('100%', '100%'),
+        'color': data('svg')
+    })
+}

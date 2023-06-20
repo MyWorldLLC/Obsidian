@@ -9,6 +9,7 @@ import myworld.obsidian.display.skin.*;
 import myworld.obsidian.display.skin.builder.ComponentSkinBuilder;
 import myworld.obsidian.display.skin.builder.RuleBuilder;
 import myworld.obsidian.display.skin.builder.UISkinBuilder;
+import myworld.obsidian.display.skin.resolvers.ClasspathResolver;
 import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.geometry.Ellipse;
 import myworld.obsidian.geometry.Move;
@@ -32,7 +33,7 @@ public class ObsidianSkin {
     public static final ColorRGBA SLATE_GRAY = ColorRGBA.of("#666666FF");
 
     public static UISkin create(){
-        return create(ObsidianSkin.class::getResourceAsStream);
+        return create(new ClasspathResolver(ObsidianSkin.class, "/myworld/obsidian/skin"));
     }
 
     public static UISkin create(ResourceResolver resolver){
@@ -58,15 +59,15 @@ public class ObsidianSkin {
                         )
                 )
                 .withFonts(List.of(
-                        "/myworld/obsidian/skin/fonts/clear-sans/ClearSans-Bold.ttf",
-                        "/myworld/obsidian/skin/fonts/clear-sans/ClearSans-BoldItalic.ttf",
-                        "/myworld/obsidian/skin/fonts/clear-sans/ClearSans-Italic.ttf",
-                        "/myworld/obsidian/skin/fonts/clear-sans/ClearSans-Light.ttf",
-                        "/myworld/obsidian/skin/fonts/clear-sans/ClearSans-Bold.ttf",
-                        "/myworld/obsidian/skin/fonts/clear-sans/ClearSans-Medium.ttf",
-                        "/myworld/obsidian/skin/fonts/clear-sans/ClearSans-MediumItalic.ttf",
-                        "/myworld/obsidian/skin/fonts/clear-sans/ClearSans-Regular.ttf",
-                        "/myworld/obsidian/skin/fonts/clear-sans/ClearSans-Thin.ttf"
+                        "fonts/clear-sans/ClearSans-Bold.ttf",
+                        "fonts/clear-sans/ClearSans-BoldItalic.ttf",
+                        "fonts/clear-sans/ClearSans-Italic.ttf",
+                        "fonts/clear-sans/ClearSans-Light.ttf",
+                        "fonts/clear-sans/ClearSans-Bold.ttf",
+                        "fonts/clear-sans/ClearSans-Medium.ttf",
+                        "fonts/clear-sans/ClearSans-MediumItalic.ttf",
+                        "fonts/clear-sans/ClearSans-Regular.ttf",
+                        "fonts/clear-sans/ClearSans-Thin.ttf"
                 ))
                 .build();
     }

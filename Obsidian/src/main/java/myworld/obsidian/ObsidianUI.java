@@ -198,6 +198,10 @@ public class ObsidianUI {
         layout.ifSet(engine -> engine.unregisterRoot(root));
     }
 
+    public boolean isRegistered(String skinName){
+        return skins.containsKey(skinName);
+    }
+
     public void registerSkin(UISkin skin){
         skins.put(skin.getName(), skin);
         display.ifSet(d -> d.loadResources(skin));
@@ -209,6 +213,13 @@ public class ObsidianUI {
 
     public void useSkin(String name){
         selectedSkin.set(name);
+    }
+
+    public void useSkin(UISkin skin){
+        if(!isRegistered(skin.getName())){
+            registerSkin(skin);
+        }
+        useSkin(skin.getName());
     }
 
     public ValueProperty<String> selectedSkin(){

@@ -1,0 +1,19 @@
+module component
+
+from obsidian.component import *
+from obsidian.graphics import *
+from obsidian.style import *
+from obsidian.vars import *
+
+def component(){
+
+    name('Viewport')
+
+    layer('viewport', {
+        'color': white,
+        'geometry': rectangle('100%', '100%'),
+        'border-color': color('#AAAAAA'),
+        'border-width': 1
+    })
+
+}

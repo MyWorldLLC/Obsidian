@@ -8,13 +8,21 @@ import chipmunk.vm.ChipmunkVM;
 import chipmunk.vm.ModuleLoader;
 import chipmunk.vm.jvm.CompilationUnit;
 import myworld.obsidian.display.skin.*;
+import myworld.obsidian.display.skin.resolvers.ClasspathResolver;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class ChipmunkSkinLoader {
 
-    public static UISkin load(String path, ResourceResolver resolver) throws Exception {
+    public static final String DEFAULT_SKIN_FILE_NAME = "Skin.chp";
+
+    public static UISkin load(ResourceResolver resolver) throws Exception {
+        return load(resolver, DEFAULT_SKIN_FILE_NAME);
+    }
+
+    public static UISkin load(ResourceResolver resolver, String skinFileName) throws Exception {
+
         var vm = new ChipmunkVM();
         try{
             vm.start();
@@ -31,7 +39,7 @@ public class ChipmunkSkinLoader {
 
             var runtimeUnit = new CompilationUnit();
             runtimeUnit.setModuleLoader(new ModuleLoader());
-            runtimeUnit.getModuleLoader().addToLoaded(Arrays.asList(compile(loader, new ChipmunkSource(resolver.resolve(path), path))));
+            runtimeUnit.getModuleLoader().addToLoaded(Arrays.asList(compile(loader, new ChipmunkSource(resolver.resolve(skinFileName), skinFileName))));
             runtimeUnit.getModuleLoader().setDelegate(loader);
             runtimeUnit.setEntryModule("skin");
             runtimeUnit.setEntryMethodName("skin");
@@ -41,22 +49,11 @@ public class ChipmunkSkinLoader {
 
             var skin = new UISkin(skinModule.getSkinName(), resolver);
             skin.variables().set(varModule.getVars());
-            skin.addFonts(skinModule.getFonts()
-                    .stream()
-                    .map(p -> resolvePath(path, p))
-                    .collect(Collectors.toList()));
+            skin.addFonts(skinModule.getFonts());
 
-            skin.addImages(skinModule.getImages()
-                    .stream()
-                    .map(p -> resolvePath(path, p))
-                    .collect(Collectors.toList()));
+            skin.addImages(skinModule.getImages());
 
-            skin.addSvgs(skinModule.getSvgs()
-                    .stream()
-                    .map(p -> resolvePath(path, p))
-                    .collect(Collectors.toList()));
-
-
+            skin.addSvgs(skinModule.getSvgs());
 
             styleModule.getStyles().forEach(style -> skin.styles().put(style.name(), style));
 
@@ -82,7 +79,7 @@ public class ChipmunkSkinLoader {
                 var componentUnit = new CompilationUnit();
                 componentUnit.setModuleLoader(new ModuleLoader());
                 componentUnit.getModuleLoader().addToLoaded(Arrays.asList(helperModules));
-                componentUnit.getModuleLoader().addToLoaded(Arrays.asList(compile(componentLoader, new ChipmunkSource(resolver.resolve(resolvePath(path, componentPath)), componentPath))));
+                componentUnit.getModuleLoader().addToLoaded(Arrays.asList(compile(componentLoader, new ChipmunkSource(resolver.resolve(componentPath), componentPath))));
                 componentUnit.setEntryModule("component");
                 componentUnit.setEntryMethodName("component");
 
@@ -127,16 +124,19 @@ public class ChipmunkSkinLoader {
     }
 
     public static UISkin loadFromClasspath(String path) throws Exception {
-        return load(path, ChipmunkSkinLoader.class::getResourceAsStream);
+        return load(new ClasspathResolver(path));
     }
 
-    protected static String resolvePath(String skinPath, String componentPath){
-        var pathParts = new ArrayList<>(List.of(skinPath.split("/")));
-        if(pathParts.size() > 0){
-            pathParts.remove(pathParts.size() - 1);
-        }
-        pathParts.add(componentPath);
-        return String.join("/", pathParts.toArray(new String[]{})).replaceAll("//", "/");
+    public static UISkin loadFromClasspath(Class<?> resolveFrom, String path) throws Exception {
+        return load(new ClasspathResolver(resolveFrom, path));
+    }
+
+    public static UISkin loadFromClasspath(String path, String skinFileName) throws Exception {
+        return load(new ClasspathResolver(path), skinFileName);
+    }
+
+    public static UISkin loadFromClasspath(Class<?> resolveFrom, String path, String skinFileName) throws Exception {
+        return load(new ClasspathResolver(resolveFrom, path), skinFileName);
     }
 
 }

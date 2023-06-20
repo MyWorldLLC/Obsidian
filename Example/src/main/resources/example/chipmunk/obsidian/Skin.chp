@@ -17,7 +17,10 @@ def skin(){
         '/components/TextField.chp',
         '/components/Button.chp',
         '/components/Checkbox.chp',
-        '/components/Slider.chp'
+        '/components/ImageView.chp',
+        '/components/Slider.chp',
+        '/components/SvgView.chp',
+        '/components/Viewport.chp'
     ])
 
     fonts([
@@ -29,6 +32,11 @@ def skin(){
         '/fonts/clear-sans/ClearSans-MediumItalic.ttf',
         '/fonts/clear-sans/ClearSans-Regular.ttf',
         '/fonts/clear-sans/ClearSans-Thin.ttf'
+    ])
+
+    images([
+        '/svg/cancel.svg',
+        '/16px/cancel.png'
     ])
 
     vars['highlightColor'] = color('#25EFF988')
