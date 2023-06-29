@@ -2,13 +2,13 @@ package myworld.obsidian.input;
 
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.events.dispatch.EventDispatcher;
+import myworld.obsidian.events.dispatch.EventFilters;
 import myworld.obsidian.events.input.*;
+import myworld.obsidian.properties.ListProperty;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -19,6 +19,7 @@ public class InputManager {
     protected final Map<MouseButton, Boolean> mouseState;
     protected final ValueProperty<MousePos> mousePosition;
     protected final ValueProperty<Component> mouseButtonTarget;
+    protected final ListProperty<Accelerator> accelerators;
     protected final EventDispatcher dispatcher;
 
     protected final ValueProperty<Consumer<Exception>> uncaughtExceptionHandler;
@@ -30,6 +31,7 @@ public class InputManager {
         mouseState = new HashMap<>();
         mousePosition = new ValueProperty<>();
         mouseButtonTarget = new ValueProperty<>();
+        accelerators = new ListProperty<>();
         dispatcher = new EventDispatcher();
         uncaughtExceptionHandler = new ValueProperty<>();
         uncaughtThrowableHandler = new ValueProperty<>();
@@ -179,4 +181,27 @@ public class InputManager {
         return uncaughtThrowableHandler;
     }
 
+    public void addAccelerator(Consumer<AcceleratorEvent> listener, Key... keys){
+        Consumer<KeyEvent> handler = (evt) -> {
+            listener.accept(new AcceleratorEvent(evt.getManager(), keys));
+        };
+        accelerators.add(new Accelerator(keys, handler));
+        dispatcher.subscribe(KeyEvent.class, EventFilters.accelerator(keys), handler);
+    }
+
+    public void removeAccelerators(Key... keys){
+        removeAccelerators(
+                accelerators.stream()
+                .filter(a -> Arrays.equals(a.keys(), keys))
+                .toList());
+    }
+
+    public void clearAccelerators(){
+        removeAccelerators(new ArrayList<>(accelerators));
+    }
+
+    protected void removeAccelerators(Collection<Accelerator> toRemove){
+        toRemove.forEach(accelerator -> dispatcher.unsubscribe(KeyEvent.class, accelerator.listener()));
+        accelerators.removeAll(toRemove);
+    }
 }
