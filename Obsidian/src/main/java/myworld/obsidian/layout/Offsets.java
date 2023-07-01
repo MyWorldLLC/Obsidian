@@ -13,6 +13,14 @@ public record Offsets(Distance left, Distance top, Distance right, Distance bott
         return new Offsets(dist);
     }
 
+    public static Offsets of(Distance left, Distance top){
+        return new Offsets(left, top, Layout.AUTO, Layout.AUTO);
+    }
+
+    public static Offsets of(Distance left, Distance top, Distance right, Distance bottom){
+        return new Offsets(left, top, right, bottom);
+    }
+
     public Offsets(Distance dist){
         this(dist, dist, dist, dist);
     }
