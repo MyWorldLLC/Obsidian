@@ -9,6 +9,10 @@ public record Offsets(Distance left, Distance top, Distance right, Distance bott
     public static final Offsets AUTO = new Offsets(Layout.AUTO, Layout.AUTO, Layout.AUTO, Layout.AUTO);
     public static final Offsets ZERO = new Offsets(Layout.ZERO, Layout.ZERO, Layout.ZERO, Layout.ZERO);
 
+    public static Offsets of(Distance dist){
+        return new Offsets(dist);
+    }
+
     public Offsets(Distance dist){
         this(dist, dist, dist, dist);
     }
