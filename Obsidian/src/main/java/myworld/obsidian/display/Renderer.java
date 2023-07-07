@@ -132,8 +132,16 @@ public class Renderer implements AutoCloseable {
 
             Move position = style.rule(StyleRules.POSITION, renderVars);
             Rotate rotation = style.rule(StyleRules.ROTATION, renderVars);
+            Skew skew = style.rule(StyleRules.SKEW, renderVars);
 
             Matrix33 transform = Matrix33.IDENTITY;
+            if(skew != null){
+                transform = Matrix33.makeSkew(
+                        skew.x().toPixels(componentBounds.width()) - 0.5f,
+                            skew.y().toPixels(componentBounds.height()) - 0.5f
+                ).makeConcat(transform);
+            }
+
             if (rotation != null) {
                 transform = Matrix33.makeRotate(-rotation.angle(),
                                 new Point(componentBounds.left() + componentBounds.width() / 2f,
