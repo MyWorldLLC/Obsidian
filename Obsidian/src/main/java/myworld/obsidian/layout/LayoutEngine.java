@@ -22,6 +22,7 @@ import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.geometry.Point2D;
 import myworld.obsidian.properties.ListChangeListener;
 import myworld.obsidian.properties.ListProperty;
+import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
 
 import java.util.function.Consumer;
@@ -56,9 +57,25 @@ public class LayoutEngine {
         root.layout().clampedSize(Distance.pixels(fWidth), Distance.pixels(fHeight));
         syncLayoutProperties(root);
 
-        var node = getYogaNode(root);
+        calculateLayout(root, fWidth, fHeight);
+
+        var reLayout = new ValueProperty<>(false);
+
+        root.apply(c -> {
+            c.postLayouts().forEach(Runnable::run);
+            if(!c.postLayouts().isEmpty()){
+                syncLayoutProperties(c);
+                reLayout.set(true);
+            }
+        });
+
+        reLayout.ifSet(b -> calculateLayout(root, fWidth, fHeight));
+    }
+
+    protected void calculateLayout(Component c, float availableWidth, float availableHeight){
+        var node = getYogaNode(c);
         if(node != null){
-            YGNodeCalculateLayout(node, fWidth, fHeight, YGDirectionLTR);
+            YGNodeCalculateLayout(node, availableWidth, availableHeight, YGDirectionLTR);
         }
     }
 

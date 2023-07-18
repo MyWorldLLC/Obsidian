@@ -30,7 +30,6 @@ import myworld.obsidian.scene.events.AttachEvent;
 import myworld.obsidian.scene.events.DetachEvent;
 import myworld.obsidian.util.ReverseListIterator;
 
-import java.util.ArrayDeque;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -59,6 +58,7 @@ public class Component {
     protected final ValueProperty<RenderOrder> renderOrder;
     protected final MapProperty<String, Supplier<?>> renderVars;
     protected final ListProperty<Runnable> preLayouts;
+    protected final ListProperty<Runnable> postLayouts;
     protected final ListProperty<Runnable> preRenderers;
     protected final EventDispatcher dispatcher;
 
@@ -82,6 +82,7 @@ public class Component {
         renderOrder = new ValueProperty<>(ASCENDING);
         renderVars = new MapProperty<>();
         preLayouts = new ListProperty<>();
+        postLayouts = new ListProperty<>();
         preRenderers = new ListProperty<>();
         dispatcher = new EventDispatcher();
 
@@ -294,6 +295,14 @@ public class Component {
 
     public void preLayout(Runnable r){
         preLayouts.add(r);
+    }
+
+    public ListProperty<Runnable> postLayouts() {
+        return postLayouts;
+    }
+
+    public void postLayout(Runnable r){
+        postLayouts.add(r);
     }
 
     public ListProperty<Runnable> preRenderers(){
