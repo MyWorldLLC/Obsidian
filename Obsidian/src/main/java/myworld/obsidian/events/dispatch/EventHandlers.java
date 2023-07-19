@@ -17,4 +17,8 @@ public class EventHandlers {
         return consuming(evt -> handler.run());
     }
 
+    public static <T extends BaseEvent> void handleOnce(EventDispatcher dispatcher, Class<T> eventType, Consumer<T> handler){
+        dispatcher.subscribe(eventType, new OneOffHandler<>(dispatcher, eventType, handler));
+    }
+
 }
