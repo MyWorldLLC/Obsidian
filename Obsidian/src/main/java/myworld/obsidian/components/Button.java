@@ -1,10 +1,12 @@
 package myworld.obsidian.components;
 
+import myworld.obsidian.behaviors.ButtonBehavior;
 import myworld.obsidian.components.text.TextDisplay;
 import myworld.obsidian.events.input.MouseButtonEvent;
 import myworld.obsidian.events.scene.ButtonEvent;
 import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.geometry.Point2D;
+import myworld.obsidian.input.MouseButton;
 import myworld.obsidian.layout.Offsets;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;
@@ -20,32 +22,14 @@ public class Button extends Component {
 
     public static final String COMPONENT_STYLE_NAME = "Button";
     public static final String PRESSED_DATA_NAME = "pressed";
-    protected final ValueProperty<Boolean> pressed;
+    protected final ButtonBehavior behavior;
 
     public Button(){
         styleName.set(COMPONENT_STYLE_NAME);
 
-        pressed = new ValueProperty<>(false);
+        behavior = ButtonBehavior.create(MouseButton.PRIMARY, this);
 
-        dispatcher.subscribe(MouseButtonEvent.class, mousePressed(), evt -> {
-            pressed.set(true);
-            dispatcher.dispatch(new ButtonEvent(this, ButtonEvent.Type.PRESSED, evt));
-            evt.consume();
-        });
-
-        dispatcher.subscribe(MouseButtonEvent.class, mouseReleased(), evt -> {
-            if(pressed.get(false)){
-                pressed.set(false);
-                dispatcher.dispatch(new ButtonEvent(this, ButtonEvent.Type.RELEASED, evt));
-
-                if(ui.get().isOver(evt.getPoint(), this)){
-                    dispatcher.dispatch(new ButtonEvent(this, ButtonEvent.Type.CLICKED, evt));
-                }
-                evt.consume();
-            }
-        });
-
-        renderVars.put(PRESSED_DATA_NAME, pressed);
+        renderVars.put(PRESSED_DATA_NAME, behavior.pressed());
     }
 
     public Button addButtonListener(Consumer<ButtonEvent> listener){
@@ -74,11 +58,11 @@ public class Button extends Component {
     }
 
     public ValueProperty<Boolean> pressed(){
-        return pressed;
+        return behavior.pressed();
     }
 
     public boolean isPressed(){
-        return pressed.get();
+        return pressed().get();
     }
 
     public static Button textButton(Text text){

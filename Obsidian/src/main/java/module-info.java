@@ -5,6 +5,7 @@ module myworld.obsidian {
     requires java.logging;
 
     exports myworld.obsidian;
+    exports myworld.obsidian.behaviors;
     exports myworld.obsidian.components;
     exports myworld.obsidian.components.layout;
     exports myworld.obsidian.components.text;
