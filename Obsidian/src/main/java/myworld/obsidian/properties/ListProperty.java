@@ -136,7 +136,7 @@ public class ListProperty<T> extends Property<ListChangeListener<T>> implements 
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        var changed = new ValueProperty<Boolean>();
+        var changed = new ValueProperty<>(false);
         c.forEach(t -> {
             var contained = remove(t);
             if(contained){
