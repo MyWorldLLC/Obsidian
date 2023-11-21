@@ -48,7 +48,7 @@ public class EventFilters {
     }
 
     public static Predicate<KeyEvent> accelerator(Key... keys){
-        return evt -> evt.getManager().onlyKeysDown(Set.of(keys));
+        return evt -> evt.isDown() && !evt.isRepeating() && evt.getManager().onlyKeysDown(Set.of(keys));
     }
 
     public static Predicate<MouseButtonEvent> mousePressed(MouseButton button){
