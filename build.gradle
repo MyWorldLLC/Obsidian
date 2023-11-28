@@ -52,29 +52,15 @@ def getLwjglPlatform(){
 group = 'com.myworldvw'
 version = gitVersion
 
-def generatePlatformConfig(platformProject, skijaName, lwjglName, obsidianName, jfxName = null){
+def generatePlatformConfig(platformProject, skijaName, lwjglName, obsidianName){
 
     platformProject.apply plugin: 'java-library'
     platformProject.apply plugin: 'maven-publish'
 
     platformProject.dependencies {
-
-        if(jfxName == null){
-            api project(':Obsidian')
-            implementation "io.github.humbleui:skija-$skijaName:0.109.1"
-            implementation "org.lwjgl:lwjgl-yoga:3.3.1:natives-$lwjglName"
-        }else{
-            api project(':ObsidianJFX')
-            api project(":Platforms:Obsidian:${obsidianName - 'jfx-'}")
-            // These are all API so that the user can depend on this module
-            // without any separate config needed to get appropriate JFX
-            // modules.
-            api "org.openjfx:javafx-base:$jfxVersion:$jfxName"
-            api "org.openjfx:javafx-graphics:$jfxVersion:$jfxName"
-            api "org.openjfx:javafx-controls:$jfxVersion:$jfxName"
-            api "org.openjfx:javafx-web:$jfxVersion:$jfxName"
-            api "org.openjfx:javafx-media:$jfxVersion:$jfxName"
-        }
+        api project(':Obsidian')
+        implementation "io.github.humbleui:skija-$skijaName:0.109.1"
+        implementation "org.lwjgl:lwjgl-yoga:3.3.1:natives-$lwjglName"
     }
 
     platformProject.java {
