@@ -83,13 +83,17 @@ public class EditableTextDisplay extends Component {
 
             return Math.min(offset, bounds.width());
         });
+
         renderVars.put(LINE_HEIGHT_VAR_NAME, () -> label.getRuler()
                 .getLineHeight());
 
         preLayout(() -> {
             var editor = editor().get();
             if(editor != null && editor.pendingSync()){
-                label.text().set(editor.sync());
+                var sync = editor.sync();
+                if(!sync.equals(label.text().get())){
+                    label.text().set(sync);
+                }
             }
         });
 
