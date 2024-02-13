@@ -183,7 +183,7 @@ public class InputManager {
 
     public void addAccelerator(Consumer<AcceleratorEvent> listener, Key... keys){
         Consumer<KeyEvent> handler = (evt) -> {
-            listener.accept(new AcceleratorEvent(evt.getManager(), keys));
+            listener.accept(new AcceleratorEvent(evt.getManager(), evt, keys));
         };
         accelerators.add(new Accelerator(keys, handler));
         dispatcher.subscribe(KeyEvent.class, EventFilters.accelerator(keys), handler);
