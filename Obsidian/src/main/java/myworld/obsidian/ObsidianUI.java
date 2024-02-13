@@ -34,11 +34,14 @@ import myworld.obsidian.scene.Component;
 import myworld.obsidian.layout.LayoutEngine;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Effect;
+import myworld.obsidian.util.LogUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static myworld.obsidian.events.dispatch.EventFilters.mousePressed;
 import static myworld.obsidian.events.dispatch.EventFilters.keyPressed;
@@ -48,6 +51,8 @@ public class ObsidianUI {
     public static final CursorHandler DISCARDING_CURSOR_HANDLER = (c) -> {};
 
     public static final String ROOT_COMPONENT_STYLE_NAME = "Root";
+
+    private static final Logger log = LogUtil.loggerFor(ObsidianUI.class);
 
     protected final Component root;
     protected final ValueProperty<LayoutEngine> layout;
@@ -64,6 +69,8 @@ public class ObsidianUI {
 
     protected final Map<String, UISkin> skins;
     protected final ValueProperty<String> selectedSkin;
+
+    protected final Deque<Runnable> updateTasks;
 
     public static ObsidianUI createForGL(int width, int height, int samples, int framebufferHandle){
         return new ObsidianUI(DisplayEngine.createForGL(width, height, samples, framebufferHandle));
@@ -128,6 +135,8 @@ public class ObsidianUI {
 
         clearColor = new ValueProperty<>(Colors.BLACK);
 
+        updateTasks = new ArrayDeque<>();
+
         // Register event handlers/filters that are useful for base UI functionality
         input.get().getDispatcher().subscribe(MouseMoveEvent.class, this::mouseHoverWatcher);
     }
@@ -169,6 +178,7 @@ public class ObsidianUI {
     }
 
     public void update(double tpf){
+        runUpdateTasks();
         layout.get().layout();
         updateEffects(root, tpf);
     }
@@ -236,6 +246,23 @@ public class ObsidianUI {
             return skin.getStyle(name);
         }
         return null;
+    }
+
+    public void enqueueTask(Runnable task){
+        updateTasks.push(task);
+    }
+
+    protected void runUpdateTasks(){
+        var task = updateTasks.poll();
+        while(task != null){
+            try{
+                task.run();
+            }catch (Exception e){
+                log.log(Level.WARNING, "Caught exception while running update task", e);
+            }
+
+            task = updateTasks.poll();
+        }
     }
 
     public boolean requestFocus(Component component){
