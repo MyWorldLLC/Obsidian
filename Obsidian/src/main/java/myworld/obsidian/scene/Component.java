@@ -438,8 +438,12 @@ public class Component {
     }
 
     public Bounds2D getContentBounds(){
-        var bounds = calculate(Component::getSceneBounds).toList();
-        return bounds.get(0).merge(bounds.subList(1, bounds.size()).toArray(new Bounds2D[]{}));
+        if(children.isEmpty()){
+            return getSceneBounds();
+        }else{
+            var bounds = children.stream().map(Component::getSceneBounds).toList();
+            return bounds.get(0).merge(bounds.subList(1, bounds.size()).toArray(new Bounds2D[]{}));
+        }
     }
 
     @Override
