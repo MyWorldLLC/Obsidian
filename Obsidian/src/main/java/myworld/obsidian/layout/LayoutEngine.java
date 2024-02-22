@@ -106,41 +106,12 @@ public class LayoutEngine {
     public Bounds2D getLocalBounds(Component component){
         var node = getYogaNode(component);
         if(node != null){
-
-            var isAbsolute = component.layout().positionType().is(PositionType.ABSOLUTE);
-            var offsets = component.layout().offsets().get(Offsets.AUTO);
-
-            var rawWidth = YGNodeLayoutGetWidth(node);
-            var rawHeight = YGNodeLayoutGetHeight(node);
-
-            var width = rawWidth;
-            var height = rawHeight;
-
-            if(isAbsolute){
-
-                // These are for scaling percentage-based offsets
-                var scaleWidth = width;
-                var scaleHeight = height;
-                if(component.hasParent()){
-                    var parentBounds = component.getParent().getLocalBounds();
-                    scaleWidth = parentBounds.width();
-                    scaleHeight = parentBounds.height();
-                }
-
-                // Yoga considers the offsets to be part of the width/height when absolute positioning is used,
-                // but this is very awkward for downstream consumers since it requires different layout logic.
-                // Instead, compute the visual bounds as usual without regard for offsets when absolute positioning
-                // is used.
-                width -= Math.abs(maybeAutoToPixels(offsets.left(), scaleWidth) + maybeAutoToPixels(offsets.right(), scaleWidth));
-                height -= Math.abs(maybeAutoToPixels(offsets.top(), scaleHeight) + maybeAutoToPixels(offsets.bottom(), scaleHeight));
-            }
-
             return new Bounds2D(
                     new Point2D(
                             YGNodeLayoutGetLeft(node),
                             YGNodeLayoutGetTop(node)),
-                    width,
-                    height
+                    YGNodeLayoutGetWidth(node),
+                    YGNodeLayoutGetHeight(node)
             );
         }
         return Bounds2D.UNDEFINED;
