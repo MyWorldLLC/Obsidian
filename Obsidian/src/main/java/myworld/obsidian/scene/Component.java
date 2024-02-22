@@ -30,10 +30,13 @@ import myworld.obsidian.scene.events.AttachEvent;
 import myworld.obsidian.scene.events.DetachEvent;
 import myworld.obsidian.util.ReverseListIterator;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static myworld.obsidian.display.RenderOrder.ASCENDING;
 
@@ -401,6 +404,20 @@ public class Component {
         }
     }
 
+    public <T> Stream<T> calculate(Function<Component, T> f){
+        var t = f.apply(this);
+        var streams = new ArrayList<Stream<T>>();
+
+        // Again, index-based iteration so we don't have an
+        // issue if a function modifies a component's children
+        // during calculate().
+        for(int i = 0; i < children.size(); i++){
+            streams.add(children.get(i).calculate(f));
+        }
+
+        return Stream.concat(Stream.of(t), streams.stream().flatMap(Function.identity()));
+    }
+
     public Component with(Consumer<Component> c){
         c.accept(this);
         return this;
@@ -418,6 +435,11 @@ public class Component {
             throw new IllegalStateException("Component is not attached to a scene");
         }
         return ui.get().getLayout().getSceneBounds(this);
+    }
+
+    public Bounds2D getContentBounds(){
+        var bounds = calculate(Component::getLocalBounds).toList();
+        return bounds.get(0).merge(bounds.subList(1, bounds.size()).toArray(new Bounds2D[]{}));
     }
 
     @Override

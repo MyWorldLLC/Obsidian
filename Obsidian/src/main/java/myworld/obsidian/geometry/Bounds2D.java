@@ -43,4 +43,18 @@ public record Bounds2D(Point2D origin, float width, float height) {
     public Bounds2D resize(float width, float height){
         return new Bounds2D(origin, width, height);
     }
+
+    public Bounds2D merge(Bounds2D... others){
+        var left = left();
+        var right = right();
+        var top = top();
+        var bottom = bottom();
+        for(var bound : others){
+            left = Math.min(left, bound.left());
+            right = Math.max(right, bound.right());
+            top = Math.min(top, bound.top());
+            bottom = Math.max(bottom, bound.bottom());
+        }
+        return new Bounds2D(new Point2D(left, top), right - left, bottom - top);
+    }
 }
