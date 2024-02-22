@@ -95,18 +95,48 @@ public class LayoutEngine {
         return LAYOUT_UNDEFINED;
     }
 
+    protected boolean isAbsolute(Component component){
+        var isAbsolute = component.layout().positionType().is(PositionType.ABSOLUTE);
+        if(!isAbsolute && component.hasParent()){
+            return isAbsolute(component.getParent());
+        }
+        return isAbsolute;
+    }
+
     public Bounds2D getLocalBounds(Component component){
         var node = getYogaNode(component);
         if(node != null){
+            var isAbsolute = isAbsolute(component);
+            var offsets = component.layout().offsets().get(Offsets.ZERO);
+
+            var rawWidth = YGNodeLayoutGetWidth(node);
+            var rawHeight = YGNodeLayoutGetHeight(node);
+
+            var width = rawWidth;
+            var height = rawHeight;
+
+            if(isAbsolute){
+                // Yoga considers the offsets to be part of the width/height when absolute positioning is used,
+                // but this is very awkward for downstream consumers since it requires different layout logic.
+                // Instead, compute the visual bounds as usual without regard for offsets when absolute positioning
+                // is used.
+                width -= Math.abs(maybeAutoToPixels(offsets.left(), width) + maybeAutoToPixels(offsets.right(), width));
+                height -= Math.abs(maybeAutoToPixels(offsets.top(), height) + maybeAutoToPixels(offsets.bottom(), height));
+            }
+
             return new Bounds2D(
                     new Point2D(
                             YGNodeLayoutGetLeft(node),
                             YGNodeLayoutGetTop(node)),
-                    YGNodeLayoutGetWidth(node),
-                    YGNodeLayoutGetHeight(node)
+                    width,
+                    height
             );
         }
         return Bounds2D.UNDEFINED;
+    }
+
+    protected float maybeAutoToPixels(Distance d, float pxSize){
+        return d.equals(Layout.AUTO) ? 0f : d.toPixels(pxSize);
     }
 
     public Bounds2D getSceneBounds(Component component){
