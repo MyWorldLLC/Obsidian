@@ -438,7 +438,7 @@ public class Component {
     }
 
     public Bounds2D getContentBounds(){
-        var bounds = calculate(Component::getLocalBounds).toList();
+        var bounds = calculate(Component::getSceneBounds).toList();
         return bounds.get(0).merge(bounds.subList(1, bounds.size()).toArray(new Bounds2D[]{}));
     }
 
