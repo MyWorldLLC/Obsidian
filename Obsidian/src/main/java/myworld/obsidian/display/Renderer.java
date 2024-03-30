@@ -142,18 +142,18 @@ public class Renderer implements AutoCloseable {
                 ).makeConcat(transform);
             }
 
-            if (rotation != null) {
-                transform = Matrix33.makeRotate(-rotation.angle(),
-                                new Point(componentBounds.left() + componentBounds.width() / 2f,
-                                        componentBounds.top() + componentBounds.height() / 2f))
-                        .makeConcat(transform);
-            }
-
             if (position != null) {
                 transform = Matrix33.makeTranslate(
                                 // The shift by 0.5f aligns pixels so that they make a crisp line rather than a blurred one
                                 position.x().toPixels(componentBounds.width()) - 0.5f,
                                 position.y().toPixels(componentBounds.height()) - 0.5f)
+                        .makeConcat(transform);
+            }
+
+            if (rotation != null) {
+                transform = Matrix33.makeRotate(-rotation.angle(),
+                                new Point(componentBounds.left() + componentBounds.width() / 2f,
+                                        componentBounds.top() + componentBounds.height() / 2f))
                         .makeConcat(transform);
             }
 
