@@ -132,6 +132,7 @@ public class Renderer implements AutoCloseable {
 
             Move position = style.rule(StyleRules.POSITION, renderVars);
             Rotate rotation = style.rule(StyleRules.ROTATION, renderVars);
+            Move rotationCenter = style.rule(StyleRules.ROTATION_CENTER, renderVars);
             Skew skew = style.rule(StyleRules.SKEW, renderVars);
 
             Matrix33 transform = Matrix33.IDENTITY;
@@ -151,9 +152,16 @@ public class Renderer implements AutoCloseable {
             }
 
             if (rotation != null) {
-                transform = Matrix33.makeRotate(-rotation.angle(),
-                                new Point(componentBounds.left() + componentBounds.width() / 2f,
-                                        componentBounds.top() + componentBounds.height() / 2f))
+                Point center;
+                if(rotationCenter != null){
+                    center = new Point(rotationCenter.x().toPixels(componentBounds.width()) - 0.5f,
+                            rotationCenter.y().toPixels(componentBounds.height()) - 0.5f);
+                }else{
+                    // If rotation center is not defined, use the drawing's center.
+                    center = new Point(componentBounds.left() + componentBounds.width() / 2f,
+                                    componentBounds.top() + componentBounds.height() / 2f);
+                }
+                transform = Matrix33.makeRotate(-rotation.angle(), center)
                         .makeConcat(transform);
             }
 
