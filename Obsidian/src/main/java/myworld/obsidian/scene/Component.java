@@ -221,6 +221,13 @@ public class Component {
         return getParent() != null;
     }
 
+    public void removeFromParent(){
+        var parent = getParent();
+        if(parent != null){
+            parent.removeChild(this);
+        }
+    }
+
     public ListProperty<Component> children(){
         return children;
     }
