@@ -1,6 +1,7 @@
 include ':ChipmunkSkinLoader',
         ':Example' ,
         ':Obsidian',
+        ':SkiaDisplayEngine',
         ':Platforms:all',
         ':Platforms:windows-x64',
         ':Platforms:linux-x64',

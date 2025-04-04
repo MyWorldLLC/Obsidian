@@ -72,13 +72,6 @@ public class ObsidianUI {
 
     protected final Deque<Runnable> updateTasks;
 
-    public static ObsidianUI createForGL(int width, int height, int samples, int framebufferHandle){
-        return new ObsidianUI(DisplayEngine.createForGL(width, height, samples, framebufferHandle));
-    }
-
-    public static ObsidianUI createForCpu(int width, int height){
-        return new ObsidianUI(DisplayEngine.createForCpu(width, height));
-    }
 
     public static ObsidianUI createHeadless(){
         return new ObsidianUI(null);

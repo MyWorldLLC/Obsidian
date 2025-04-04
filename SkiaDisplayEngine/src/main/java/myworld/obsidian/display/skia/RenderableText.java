@@ -1,8 +1,9 @@
-package myworld.obsidian.display;
+package myworld.obsidian.display.skia;
 
 import io.github.humbleui.skija.Font;
 import io.github.humbleui.skija.TextLine;
 import io.github.humbleui.types.Rect;
+import myworld.obsidian.display.ColorRGBA;
 import myworld.obsidian.text.TextDecoration;
 import myworld.obsidian.text.TextShadow;
 

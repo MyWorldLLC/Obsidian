@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian.text;
+package myworld.obsidian.display.skia;
 
 import io.github.humbleui.skija.Typeface;
 import myworld.obsidian.properties.ListProperty;

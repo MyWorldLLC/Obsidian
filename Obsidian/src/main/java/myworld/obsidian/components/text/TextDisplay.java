@@ -1,13 +1,10 @@
 package myworld.obsidian.components.text;
 
 import myworld.obsidian.display.ColorRGBA;
-import myworld.obsidian.display.Colors;
 import myworld.obsidian.display.TextRuler;
 import myworld.obsidian.display.skin.StyleClass;
-import myworld.obsidian.display.skin.StyleRule;
 import myworld.obsidian.display.skin.StyleRules;
 import myworld.obsidian.display.skin.Variables;
-import myworld.obsidian.display.skin.builder.RuleBuilder;
 import myworld.obsidian.geometry.Distance;
 import myworld.obsidian.properties.ValueProperty;
 import myworld.obsidian.scene.Component;

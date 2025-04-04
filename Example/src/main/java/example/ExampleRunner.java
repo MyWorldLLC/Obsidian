@@ -18,6 +18,7 @@ package example;
 
 import java.util.logging.ConsoleHandler;
 
+import myworld.obsidian.display.skia.SkiaDisplayEngine;
 import myworld.obsidian.ObsidianUI;
 import myworld.obsidian.components.*;
 import myworld.obsidian.components.layout.Pane;
@@ -26,7 +27,6 @@ import myworld.obsidian.components.layout.Viewport;
 import myworld.obsidian.components.text.TextDisplay;
 import myworld.obsidian.components.text.TextField;
 import myworld.obsidian.display.ColorRGBA;
-import myworld.obsidian.display.skin.chipmunk.ChipmunkSkinLoader;
 import myworld.obsidian.display.skin.obsidian.ObsidianSkin;
 import myworld.obsidian.events.input.CharacterEvent;
 import myworld.obsidian.events.input.KeyEvent;
@@ -42,8 +42,6 @@ import myworld.obsidian.text.Text;
 import myworld.obsidian.util.LogUtil;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-
-import java.util.List;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
@@ -262,7 +260,8 @@ public class ExampleRunner {
         GL.createCapabilities();
         glfwSwapInterval(1); // Use VSync
 
-        ui = ObsidianUI.createForGL(getRenderWidth(), getRenderHeight(), 4, 0);
+        var displayEngine = SkiaDisplayEngine.createForGL(getRenderWidth(), getRenderHeight(), 4, 0);
+        ui = new ObsidianUI(displayEngine);
         // NOTE: demo either Chipmunk skins of Java skins by selecting one of the lines below
         //var skin = ChipmunkSkinLoader.loadFromClasspath(CHIPMUNK_SKIN_EXAMPLE);
         var skin = ObsidianSkin.create();

@@ -14,6 +14,14 @@
  *    limitations under the License.
  */
 
-package myworld.obsidian.text;
+package myworld.obsidian.display.skia;
 
-public record FontFeatures(TypeFeatures type, int size) { }
+import io.github.humbleui.skija.Typeface;
+
+public record TypeFeatures(String familyName, boolean isBold, boolean isItalic, boolean isMonospace) {
+
+    public static TypeFeatures forTypeface(Typeface face){
+        return new TypeFeatures(face.getFamilyName(), face.isBold(), face.isItalic(), face.isFixedPitch());
+    }
+
+}

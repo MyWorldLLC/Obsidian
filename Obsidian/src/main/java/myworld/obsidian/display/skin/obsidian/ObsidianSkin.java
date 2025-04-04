@@ -15,7 +15,6 @@ import myworld.obsidian.geometry.Ellipse;
 import myworld.obsidian.geometry.Move;
 import myworld.obsidian.geometry.Rectangle;
 import myworld.obsidian.scene.Component;
-import myworld.obsidian.text.TextShadow;
 import myworld.obsidian.text.TextStyle;
 
 import static myworld.obsidian.display.skin.StyleRules.*;

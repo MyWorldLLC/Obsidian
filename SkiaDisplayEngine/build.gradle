@@ -4,7 +4,8 @@ plugins {
 }
 
 dependencies {
-    implementation 'org.lwjgl:lwjgl-yoga:3.3.1'
+    implementation 'io.github.humbleui:skija-shared:0.109.2'
+    implementation project(':Obsidian')
 }
 
 java {
@@ -23,7 +24,7 @@ publishing {
         maven(MavenPublication){
 
             groupId = group
-            artifactId = 'obsidian'
+            artifactId = 'obsidian-skia'
             version = version
 
             from components.java

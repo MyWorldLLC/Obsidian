@@ -1,4 +1,4 @@
-package myworld.obsidian.display;
+package myworld.obsidian.display.skia;
 
 import io.github.humbleui.skija.*;
 

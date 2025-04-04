@@ -10,6 +10,7 @@ dependencies{
 
     implementation project(':Obsidian')
     implementation project(':ChipmunkSkinLoader')
+    implementation project(':SkiaDisplayEngine')
 
     runtimeOnly "io.github.humbleui:skija-$skijaPlatform:0.109.1"
     runtimeOnly "org.lwjgl:lwjgl:3.3.1:natives-$lwjglPlatform"

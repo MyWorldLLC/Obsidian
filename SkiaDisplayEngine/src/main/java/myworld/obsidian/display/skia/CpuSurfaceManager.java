@@ -1,4 +1,4 @@
-package myworld.obsidian.display;
+package myworld.obsidian.display.skia;
 
 import io.github.humbleui.skija.Surface;
 
@@ -20,7 +20,7 @@ public class CpuSurfaceManager implements SurfaceManager {
             surface.close();
         }
 
-        surface = Surface.makeRaster(DisplayEngine.getImageInfo(width, height));
+        surface = Surface.makeRaster(SkiaDisplayEngine.getImageInfo(width, height));
     }
 
     @Override

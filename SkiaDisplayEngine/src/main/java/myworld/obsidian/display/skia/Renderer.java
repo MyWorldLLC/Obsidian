@@ -1,15 +1,15 @@
-package myworld.obsidian.display;
+package myworld.obsidian.display.skia;
 
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.paragraph.*;
 import io.github.humbleui.skija.shaper.Shaper;
 import io.github.humbleui.skija.shaper.ShapingOptions;
-import io.github.humbleui.skija.shaper.TextBlobBuilderRunHandler;
 import io.github.humbleui.skija.svg.SVGLengthContext;
 import io.github.humbleui.skija.svg.SVGLengthType;
 import io.github.humbleui.types.Point;
 import io.github.humbleui.types.RRect;
 import io.github.humbleui.types.Rect;
+import myworld.obsidian.display.*;
 import myworld.obsidian.display.skin.*;
 import myworld.obsidian.geometry.*;
 import myworld.obsidian.properties.ValueProperty;
@@ -214,23 +214,23 @@ public class Renderer implements AutoCloseable {
                         if (handle.type().equals(ResourceHandle.Type.SVG)) {
                             var svg = activeSkin.getCachedSvg(handle.path());
                             if (svg != null) {
-                                renderSvg(canvas, svg, visualBounds);
+                                renderSvg(canvas, (ObsidianSkiaSvg) svg, visualBounds);
                             }else{
                                 log.log(Level.WARNING, "Missing SVG {0}", handle.path());
                             }
                         } else if (handle.type().equals(ResourceHandle.Type.IMAGE)) {
                             var image = activeSkin.getCachedImage(handle.path());
                             if (image != null) {
-                                renderImage(canvas, image, visualBounds);
+                                renderImage(canvas, (ObsidianSkiaImage) image, visualBounds);
                             }else{
                                 log.log(Level.WARNING, "Missing image {0}", handle.path());
                             }
                         }
-                    } else if (fill instanceof ObsidianSvg svgFill) {
+                    } else if (fill instanceof ObsidianSkiaSvg svgFill) {
                         log.log(FINE, "Overwriting clipping to render shape for SVG rendering");
                         canvas.clipPath(renderPath, true);
                         renderSvg(canvas, svgFill, visualBounds);
-                    } else if (fill instanceof ObsidianImage imageFill) {
+                    } else if (fill instanceof ObsidianSkiaImage imageFill) {
                         log.log(FINE, "Overwriting clipping to render shape for image rendering");
                         canvas.clipPath(renderPath, true);
                         renderImage(canvas, imageFill, visualBounds);
@@ -324,7 +324,7 @@ public class Renderer implements AutoCloseable {
 
     }
 
-    protected void renderSvg(Canvas canvas, ObsidianSvg svg, Rect bounds) {
+    protected void renderSvg(Canvas canvas, ObsidianSkiaSvg svg, Rect bounds) {
         if (svg.getDom() != null) {
             try (var svgRoot = svg.getDom().getRoot()) {
                 log.log(FINE, "Saving canvas for svg render");
@@ -355,7 +355,7 @@ public class Renderer implements AutoCloseable {
         }
     }
 
-    protected void renderImage(Canvas canvas, ObsidianImage image, Rect bounds) {
+    protected void renderImage(Canvas canvas, ObsidianSkiaImage image, Rect bounds) {
         try{
             log.log(FINE, "Saving canvas for image render");
             canvas.saveLayer(bounds, null);
@@ -470,12 +470,12 @@ public class Renderer implements AutoCloseable {
         return font;
     }
 
-    public TextRuler getTextRuler(String fontFamily, TextStyle style, float size) {
-        return new TextRuler(this, getFont(fontFamily, style, size));
+    public SkiaTextRuler getTextRuler(String fontFamily, TextStyle style, float size) {
+        return new SkiaTextRuler(this, getFont(fontFamily, style, size));
     }
 
-    public TextRuler getTextRuler(StyleClass textStyle, Variables v) {
-        return new TextRuler(this, getFont(textStyle, v));
+    public SkiaTextRuler getTextRuler(StyleClass textStyle, Variables v) {
+        return new SkiaTextRuler(this, getFont(textStyle, v));
     }
 
     protected Rect boundsToRect(Bounds2D bounds) {
