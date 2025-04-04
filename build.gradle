@@ -59,6 +59,7 @@ def generatePlatformConfig(platformProject, skijaName, lwjglName, obsidianName){
 
     platformProject.dependencies {
         api project(':Obsidian')
+        api project(':SkiaDisplayEngine')
         implementation "io.github.humbleui:skija-$skijaName:0.109.1"
         implementation "org.lwjgl:lwjgl-yoga:3.3.1:natives-$lwjglName"
     }
